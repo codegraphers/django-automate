@@ -30,8 +30,8 @@ class RuleInline(admin.StackedInline):
 
 @admin.register(TriggerSpec)
 class TriggerSpecAdmin(admin.ModelAdmin):
-    list_display = ["automation", "type", "enabled"]
-    list_filter = ["type", "enabled", "automation"]
+    list_display = ["automation", "type", "is_active"]
+    list_filter = ["type", "is_active", "automation"]
     formfield_overrides = {
         models.JSONField: {'widget': JSONEditorWidget},
     }
@@ -39,7 +39,8 @@ class TriggerSpecAdmin(admin.ModelAdmin):
 class ExecutionStepInline(admin.TabularInline):
     model = ExecutionStep
     extra = 0
-    readonly_fields = ["step_id", "step_name", "connector_slug", "status", "duration_ms", "started_at"]
+    # Canonical StepRun: node_key, status, started_at
+    readonly_fields = ["node_key", "status", "started_at"]
     can_delete = False
     
     def has_add_permission(self, request, obj=None):
@@ -47,20 +48,23 @@ class ExecutionStepInline(admin.TabularInline):
 
 @admin.register(ExecutionStep)
 class ExecutionStepAdmin(admin.ModelAdmin):
-    list_display = ["execution_id", "step_id", "step_name", "status", "connector_slug", "started_at"]
-    list_filter = ["status", "connector_slug", "started_at"]
-    search_fields = ["execution__id", "step_name"]
-    readonly_fields = ["execution", "input_data", "output_data", "error_message"]
+    # Canonical StepRun
+    list_display = ["execution_id", "node_key", "status", "started_at"]
+    list_filter = ["status", "started_at"]
+    search_fields = ["execution__id", "node_key"]
+    readonly_fields = ["execution", "input_data", "output_data", "error_data", "provider_meta"]
     
     def has_add_permission(self, request):
         return False
 
 @admin.register(Automation)
 class AutomationAdmin(admin.ModelAdmin):
-    list_display = ["name", "slug", "enabled", "environment", "created_at"]
-    list_filter = ["enabled", "environment"]
+    list_display = ["name", "slug", "is_active", "created_at"]
+    list_filter = ["is_active"]
     search_fields = ["name", "slug"]
     prepopulated_fields = {"slug": ("name",)}
+    # inlines = [TriggerSpecInline, RuleInline] # Rule is gone from models? RuleSpec exist.
+    # We shimmed RuleSpec as Rule.
     inlines = [TriggerSpecInline, RuleInline]
 
     def get_urls(self):
@@ -89,10 +93,10 @@ class EventAdmin(admin.ModelAdmin):
 
 @admin.register(Execution)
 class ExecutionAdmin(admin.ModelAdmin):
-    list_display = ["id", "automation", "status", "started_at", "attempts", "duration_ms"]
+    list_display = ["id", "automation", "status", "started_at", "attempt"]
     list_filter = ["status", "automation"]
     ordering = ["-started_at"]
-    readonly_fields = ["started_at", "finished_at", "duration_ms", "error_summary", "attempts"]
+    readonly_fields = ["started_at", "finished_at", "attempt"]
     actions = ["replay_execution"]
     inlines = [ExecutionStepInline]
 

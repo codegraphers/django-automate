@@ -4,186 +4,31 @@ from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from django.utils import timezone
 
-class TriggerTypeChoices(models.TextChoices):
-    MODEL_SIGNAL = "model_signal", _("Model Signal")
-    SCHEDULE = "schedule", _("Schedule")
-    WEBHOOK = "webhook", _("Webhook")
-    MANUAL = "manual", _("Manual")
+# =============================================================================
+# CORE SHIM LAYER (Area C Refactor)
+# =============================================================================
+# These models are now canonical in `src/automate_core`.
+# We import them here to maintain backward compatibility for imports,
+# but the database tables are now owned by `automate_core`.
 
-class EventStatusChoices(models.TextChoices):
-    NEW = "new", _("New")
-    DISPATCHED = "dispatched", _("Dispatched")
-    PROCESSING = "processing", _("Processing")
-    DONE = "done", _("Done")
-    FAILED = "failed", _("Failed")
+from automate_core.models import (
+    Automation,
+    Workflow,
+    Trigger,
+    Trigger as TriggerSpec, # Alias for old name
+    RuleSpec as Rule,        # Alias for old name
+    Event,
+    Execution,
+    StepRun as ExecutionStep # Alias for old name
+)
 
-class Automation(models.Model):
-    """
-    Defines an automation process.
-    """
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=255)
-    slug = models.SlugField(max_length=255, unique=True)
-    description = models.TextField(blank=True)
-    
-    enabled = models.BooleanField(default=True)
-    
-    # Environment scope (dev, prod, etc) - simple for now
-    environment = models.CharField(max_length=50, default="default")
-    
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-    def __str__(self):
-        return self.name
+# Re-export choices if needed for compat (though explicit import is better)
+# EventStatusChoices = Event.Status # If we implemented it that way
+# For now, relying on consumers to update or use string values which match.
 
-class TriggerSpec(models.Model):
-    """
-    Configuration for what triggers an automation.
-    """
-    automation = models.ForeignKey(Automation, related_name="triggers", on_delete=models.CASCADE)
-    type = models.CharField(max_length=50, choices=TriggerTypeChoices.choices)
-    
-    # Config specific to the trigger type (e.g. model name, cron schedule, etc)
-    config = models.JSONField(default=dict)
-    
-    enabled = models.BooleanField(default=True)
-    
-    def clean(self):
-        from .services.trigger import TriggerMatchingService
-        TriggerMatchingService().validate_config(self)
-        super().clean()
-
-    def save(self, *args, **kwargs):
-        self.clean()
-        super().save(*args, **kwargs)
-    
-    def __str__(self):
-        return f"{self.type} -> {self.automation.name}"
-
-class Rule(models.Model):
-    """
-    Conditions that must be met for an automation to proceed.
-    Uses generic JSON logic (e.g. { "==": [ { "var": "event.source" }, "webhook" ] })
-    """
-    automation = models.ForeignKey(Automation, related_name="rules", on_delete=models.CASCADE)
-    priority = models.IntegerField(default=0)
-    
-    # Condition logic in JSON format
-    conditions = models.JSONField(default=dict)
-    
-    enabled = models.BooleanField(default=True)
-    
-    def __str__(self):
-        return f"Rule {self.id} for {self.automation.name}"
-
-class Event(models.Model):
-    """
-    An immutable record of something happening.
-    Events are ingested, persisted, and then processed.
-    """
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    
-    # The type of event (e.g. 'order.created', 'manual.trigger')
-    event_type = models.CharField(max_length=255, db_index=True)
-    
-    # Schema version for the payload
-    schema_version = models.IntegerField(default=1)
-    
-    # Source of the event (e.g. 'system', 'webhook', 'user')
-    source = models.CharField(max_length=255)
-    
-    # The actual data
-    payload = models.JSONField(default=dict)
-    
-    # Idempotency key to prevent duplicate processing
-    idempotency_key = models.CharField(max_length=255, null=True, blank=True, db_index=True)
-    
-    # Metadata: who/what caused this
-    actor_id = models.CharField(max_length=255, null=True, blank=True)
-    
-    status = models.CharField(
-        max_length=20, 
-        choices=EventStatusChoices.choices, 
-        default=EventStatusChoices.NEW,
-        db_index=True
-    )
-    
-    created_at = models.DateTimeField(default=timezone.now, db_index=True)
-    processed_at = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        ordering = ["-created_at"]
-        indexes = [
-            models.Index(fields=["status", "created_at"]),
-        ]
-        constraints = [
-            models.UniqueConstraint(fields=["idempotency_key"], name="unique_event_idempotency"),
-        ]
-
-    def __str__(self):
-        return f"{self.event_type} ({self.id})"
-
-class ExecutionStatusChoices(models.TextChoices):
-    QUEUED = "queued"
-    RUNNING = "running"
-    SUCCESS = "success"
-    FAILED = "failed"
-    CANCELED = "canceled"
-
-class Execution(models.Model):
-    """
-    State of a single run of an automation.
-    """
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    event = models.ForeignKey(Event, related_name="executions", on_delete=models.CASCADE)
-    automation = models.ForeignKey(Automation, related_name="executions", on_delete=models.CASCADE)
-    
-    # Snapshot of the workflow version used
-    workflow_version = models.IntegerField(default=1)
-    
-    status = models.CharField(
-        max_length=20,
-        choices=ExecutionStatusChoices.choices,
-        default=ExecutionStatusChoices.QUEUED
-    )
-    
-    attempts = models.IntegerField(default=0)
-    max_retries = models.IntegerField(default=3) # configurable per automation later
-    
-    started_at = models.DateTimeField(null=True, blank=True)
-    finished_at = models.DateTimeField(null=True, blank=True)
-    duration_ms = models.IntegerField(null=True, blank=True)
-    
-    error_summary = models.TextField(blank=True)
-    
-    class Meta:
-        ordering = ["-started_at"]
-        constraints = [
-            models.UniqueConstraint(fields=["event", "automation", "workflow_version"], name="unique_execution_dispatch")
-        ]
-
-class ExecutionStep(models.Model):
-    """
-    Log of a single step within an execution.
-    """
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    execution = models.ForeignKey(Execution, related_name="steps", on_delete=models.CASCADE)
-    
-    step_id = models.CharField(max_length=255) # Reference to node in graph
-    step_name = models.CharField(max_length=255)
-    connector_slug = models.CharField(max_length=255)
-    
-    input_data = models.JSONField(default=dict) # Redacted inputs
-    output_data = models.JSONField(default=dict) # Redacted outputs
-    
-    status = models.CharField(max_length=20, choices=ExecutionStatusChoices.choices)
-    
-    started_at = models.DateTimeField(auto_now_add=True)
-    finished_at = models.DateTimeField(null=True, blank=True)
-    duration_ms = models.IntegerField(null=True, blank=True)
-    
-    error_message = models.TextField(blank=True)
+# =============================================================================
+# LEGACY / FEATURE MODELS (To be moved to respective packages)
+# =============================================================================
 
 class LLMProvider(models.Model):
     slug = models.SlugField(max_length=50, unique=True, primary_key=True)
@@ -251,27 +96,8 @@ class PromptVersion(models.Model):
         unique_together = ("prompt", "version")
         ordering = ["-version"]
 
-class Workflow(models.Model):
-    """
-    Defines the steps of an automation as a graph.
-    """
-    automation = models.ForeignKey(Automation, related_name="workflows", on_delete=models.CASCADE)
-    version = models.IntegerField(default=1)
-    
-    # Graph definition: nodes, edges
-    # {
-    #   "nodes": [ { "id": "step1", "type": "slack", "config": {...}, "next": ["step2"] } ],
-    #   "edges": []
-    # }
-    graph = models.JSONField(default=dict)
-    
-    is_live = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.CharField(max_length=255, blank=True)
-
-    class Meta:
-        unique_together = ("automation", "version")
-        ordering = ["-version"]
+# Workflow moved to automate_core
+# from automate_core.models import Workflow (already imported above)
 
 from .outbox import Outbox, OutboxStatusChoices
 from .dlq import DeadLetter
