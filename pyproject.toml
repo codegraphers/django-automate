@@ -8,19 +8,21 @@ dynamic = ["version"]
 description = "A powerful automation framework for Django"
 readme = "README.md"
 requires-python = ">=3.10"
-license = "MIT"
+license = { file = "LICENSE" }
 keywords = ["django", "automation", "workflow", "llm", "ai"]
 authors = [
-  { name = "Ahmed Jawed", email = "ahmed@example.com" },
+  { name = "CodeGraphers", email = "oss@codegraphers.com" },
 ]
 classifiers = [
   "Framework :: Django",
+  "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
     "django>=4.2",
+    "djangorestframework>=3.14",
     "celery>=5.3",
     "pydantic>=2.5",
     "jsonschema>=4.19",
@@ -40,6 +42,9 @@ packages = [
     "src/automate_connectors", 
     "src/automate_interop",
     "src/automate_modal",
+    "src/automate_observability",
+    "src/automate_studio",
+    "src/automate_datachat",
     "src/rag"
 ]
 
@@ -58,9 +63,9 @@ dev = [
 ]
 
 [project.urls]
-Documentation = "https://github.com/example/django-automate#readme"
-Issues = "https://github.com/example/django-automate/issues"
-Source = "https://github.com/example/django-automate"
+Documentation = "https://github.com/codegraphers/django-automate#readme"
+Issues = "https://github.com/codegraphers/django-automate/issues"
+Source = "https://github.com/codegraphers/django-automate"
 
 [tool.hatch.version]
 path = "src/automate/__init__.py"
