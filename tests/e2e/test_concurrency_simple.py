@@ -1,4 +1,6 @@
+import random
 import threading
+import time
 
 import pytest
 from django.db import connections
@@ -28,16 +30,14 @@ def test_outbox_concurrency():
 
     # Define Worker
     def worker(wid):
-        import time 
-        import random
         # Clean connections for thread
         connections.close_all()
         dispatcher = Dispatcher()
         # Process until empty
         # dispatch_batch returns list of entries processed
-        
+
         empty_retries = 10  # Retry a few times if we get empty result (transient lock)
-        
+
         while True:
             processed = dispatcher.dispatch_batch(batch_size=5, worker_id=wid)
             if not processed:
@@ -48,7 +48,7 @@ def test_outbox_concurrency():
                 break
             else:
                 empty_retries = 10  # Reset on success
-            
+
         connections.close_all()
 
     t1 = threading.Thread(target=worker, args=("worker-1",))

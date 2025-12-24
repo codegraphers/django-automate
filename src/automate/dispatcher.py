@@ -1,5 +1,7 @@
 import datetime
 import logging
+import random
+import time
 import uuid
 
 from django.conf import settings
@@ -42,8 +44,6 @@ class Dispatcher:
         now = timezone.now()
         # ttl_cutoff = now - datetime.timedelta(seconds=LOCK_TTL)
 
-        from django.conf import settings  # Ensure settings is available
-
         # Robustness: Retry on SQLite locks to allow concurrency tests to pass
         is_sqlite = "sqlite" in settings.DATABASES["default"]["ENGINE"]
         max_retries = 5 if is_sqlite else 1
@@ -82,12 +82,9 @@ class Dispatcher:
 
             except Exception as e:
                 # Catch SQLite locking errors specifically
-                if is_sqlite and "database table is locked" in str(e):
-                    if attempt < max_retries - 1:
-                        import time
-                        import random
-                        time.sleep(random.uniform(0.05, 0.2))  # Backoff
-                        continue
+                if is_sqlite and "database table is locked" in str(e) and attempt < max_retries - 1:
+                    time.sleep(random.uniform(0.05, 0.2))  # Backoff
+                    continue
                 raise e
 
         return []
