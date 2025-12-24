@@ -1,0 +1,41 @@
+{% extends "admin/index.html" %}
+
+{% block content %}
+<div
+    style="margin-bottom: 2rem; background: #fff; padding: 1.5rem; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);">
+    <h2 style="margin-top: 0; color: #1e293b; font-size: 1.25rem; font-weight: 600;">🚀 Automation Studio</h2>
+    <p style="color: #64748b; margin-bottom: 1.5rem;">Visual tools for building, testing, and monitoring your automation
+        workflows.</p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+        <a href="/studio/wizard/" style="text-decoration: none; color: inherit;">
+            <div style="border: 1px solid #e2e8f0; padding: 1rem; border-radius: 6px; transition: all 0.2s; background: #f8fafc;"
+                onmouseover="this.style.borderColor='#2563eb'; this.style.backgroundColor='#eff6ff'"
+                onmouseout="this.style.borderColor='#e2e8f0'; this.style.backgroundColor='#f8fafc'">
+                <div style="font-weight: 600; color: #2563eb; margin-bottom: 0.25rem;">✨ Automation Wizard</div>
+                <div style="font-size: 0.85rem; color: #64748b;">Visual builder with AI Copilot & Drag-n-Drop</div>
+            </div>
+        </a>
+
+        <a href="/studio/tester/" style="text-decoration: none; color: inherit;">
+            <div style="border: 1px solid #e2e8f0; padding: 1rem; border-radius: 6px; transition: all 0.2s; background: #f8fafc;"
+                onmouseover="this.style.borderColor='#6366f1'; this.style.backgroundColor='#eef2ff'"
+                onmouseout="this.style.borderColor='#e2e8f0'; this.style.backgroundColor='#f8fafc'">
+                <div style="font-weight: 600; color: #6366f1; margin-bottom: 0.25rem;">🧠 Rule Tester</div>
+                <div style="font-size: 0.85rem; color: #64748b;">Debug JSON logic and test conditions</div>
+            </div>
+        </a>
+
+        <a href="/studio/explorer/run-123/" style="text-decoration: none; color: inherit;">
+            <div style="border: 1px solid #e2e8f0; padding: 1rem; border-radius: 6px; transition: all 0.2s; background: #f8fafc;"
+                onmouseover="this.style.borderColor='#10b981'; this.style.backgroundColor='#ecfdf5'"
+                onmouseout="this.style.borderColor='#e2e8f0'; this.style.backgroundColor='#f8fafc'">
+                <div style="font-weight: 600; color: #10b981; margin-bottom: 0.25rem;">⏱️ Execution Explorer</div>
+                <div style="font-size: 0.85rem; color: #64748b;">View run timelines and audit logs</div>
+            </div>
+        </a>
+    </div>
+</div>
+
+{{ block.super }}
+{% endblock %}

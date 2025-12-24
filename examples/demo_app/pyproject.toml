@@ -1,0 +1,21 @@
+[project]
+name = "example_project"
+version = "0.1.0"
+description = "Example project for django-automate"
+requires-python = ">=3.10"
+dependencies = [
+    "django-automate",
+]
+
+[tool.hatch.envs.default]
+dependencies = [
+  "psycopg2-binary",
+  "django-celery-beat",
+  "redis",
+]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.pip-tools]
+generate-hashes = true

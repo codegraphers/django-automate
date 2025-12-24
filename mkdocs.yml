@@ -1,0 +1,48 @@
+site_name: Django Automate
+site_description: Production-grade automation for Django.
+theme:
+        name: material
+        features:
+                - navigation.expand
+                - content.code.copy
+                - property.headers
+                - navigation.indexes
+
+nav:
+        - Welcome: index.md
+        - Quickstart:
+                  - Install: quickstart/install.md
+                  - First Automation: quickstart/first-automation.md
+        - Concepts:
+                  - Mental Model: concepts/mental-model.md
+        - Features:
+                  - Data Chat (Text-to-SQL): features/datachat.md
+                  - RAG Subsystem: features/rag.md
+                  - MCP Integration: features/mcp-integration.md
+                  - Embeddable Widget: features/embeddable-widget.md
+        - How-To Guides:
+                  - Rules: how-to/rules/jsonlogic-subset.md
+                  - LLM Providers: how-to/llm/provider-profiles.md
+                  - Secrets: how-to/secrets/secretref.md
+                  - Connectors: how-to/connectors/write-custom-connector.md
+        - Reference:
+                  - Settings: reference/settings.md
+                  - Python API:
+                            - Overview: reference/python-api/index.md
+                            - Rules: reference/python-api/rules.md
+                            - LLM: reference/python-api/llm.md
+                  - REST API: reference/rest-api/index.md
+                  - Data Models: reference/data-models/index.md
+        - Extending:
+                  - Plugins: extending/plugin-system.md
+                  - Contracts: extending/contracts/connector-adapter.md
+        - Studio:
+                  - Overview: studio/overview.md
+                  - Execution Explorer: studio/execution-explorer.md
+        - Security:
+                  - Threat Model: security/threat-model.md
+                  - Webhook Signatures: security/webhook-signatures.md
+        - Deployment:
+                  - Operations: deployment/checklist.md
+        - Contributing:
+                  - Style Guide: contributing/docs-style-guide.md

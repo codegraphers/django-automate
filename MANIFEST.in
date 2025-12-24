@@ -1,0 +1,10 @@
+include LICENSE
+include README.md
+include pyproject.toml
+
+recursive-include src/automate/templates *
+recursive-include src/automate/static *
+recursive-include src/automate/migrations *
+
+global-exclude *.py[cod]
+global-exclude __pycache__

@@ -1,0 +1,345 @@
+{% extends "admin/base.html" %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+    #datachat-fab {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        width: 56px;
+        height: 56px;
+        background: #2563eb;
+        border-radius: 50%;
+        color: white;
+        text-align: center;
+        line-height: 56px;
+        font-size: 24px;
+        cursor: pointer;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        z-index: 1000;
+        transition: transform 0.2s;
+    }
+
+    #datachat-fab:hover {
+        transform: scale(1.05);
+        background: #1d4ed8;
+    }
+
+    #datachat-window {
+        display: none;
+        position: fixed;
+        bottom: 96px;
+        right: 24px;
+        width: 380px;
+        height: 600px;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        z-index: 1000;
+        flex-direction: column;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        overflow: hidden;
+    }
+
+    #datachat-header {
+        padding: 16px;
+        background: white;
+        border-bottom: 1px solid #f3f4f6;
+        font-weight: 600;
+        color: #111827;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    #datachat-messages {
+        flex: 1;
+        padding: 16px;
+        overflow-y: auto;
+        background: #f9fafb;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    #datachat-input-area {
+        padding: 16px;
+        background: white;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        gap: 8px;
+    }
+
+    #datachat-input {
+        flex: 1;
+        padding: 10px 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 20px;
+        font-family: inherit;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+    #datachat-input:focus {
+        border-color: #2563eb;
+    }
+
+    #datachat-send {
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 0 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    #datachat-send:hover {
+        background: #1d4ed8;
+    }
+
+    #datachat-send:disabled {
+        background: #93c5fd;
+        cursor: not-allowed;
+    }
+
+    .message {
+        max-width: 85%;
+        padding: 10px 14px;
+        border-radius: 12px;
+        font-size: 14px;
+        line-height: 1.5;
+        position: relative;
+        word-wrap: break-word;
+    }
+
+    .msg-user {
+        background: #2563eb;
+        color: white;
+        align-self: flex-end;
+        border-bottom-right-radius: 4px;
+    }
+
+    .msg-bot {
+        background: white;
+        color: #374151;
+        align-self: flex-start;
+        border: 1px solid #e5e7eb;
+        border-bottom-left-radius: 4px;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    }
+
+    .msg-error {
+        background: #fef2f2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+
+    .sql-code {
+        margin-top: 8px;
+        background: #1e293b;
+        color: #e2e8f0;
+        padding: 8px;
+        border-radius: 6px;
+        font-family: 'Monaco', 'Consolas', monospace;
+        font-size: 12px;
+        overflow-x: auto;
+    }
+
+    .loading-dots {
+        display: inline-flex;
+        gap: 4px;
+    }
+
+    .loading-dots span {
+        width: 6px;
+        height: 6px;
+        background: #9ca3af;
+        border-radius: 50%;
+        animation: bounce 1.4s infinite ease-in-out both;
+    }
+
+    .loading-dots span:nth-child(1) {
+        animation-delay: -0.32s;
+    }
+
+    .loading-dots span:nth-child(2) {
+        animation-delay: -0.16s;
+    }
+
+    @keyframes bounce {
+
+        0%,
+        80%,
+        100% {
+            transform: scale(0);
+        }
+
+        40% {
+            transform: scale(1);
+        }
+    }
+</style>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const fab = document.getElementById('datachat-fab');
+        const win = document.getElementById('datachat-window');
+        const input = document.getElementById('datachat-input');
+        const send = document.getElementById('datachat-send');
+        const msgs = document.getElementById('datachat-messages');
+
+        // Toggle Window (now in history section below)
+
+        function appendMessage(html, type) {
+            msgs.insertAdjacentHTML('beforeend', html);
+            msgs.scrollTop = msgs.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const q = input.value.trim();
+            if (!q) return;
+
+            // User Message
+            input.value = '';
+            appendMessage(`<div class="message msg-user">${q}</div>`);
+
+            // Loading Indicator
+            const loadingId = 'loading-' + Date.now();
+            appendMessage(`
+                <div class="message msg-bot" id="${loadingId}">
+                    <div class="loading-dots"><span></span><span></span><span></span></div>
+                </div>
+            `);
+
+            try {
+                const resp = await fetch('/datachat/api/chat/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({ question: q })
+                });
+
+                const data = await resp.json();
+
+                // Remove Loading
+                document.getElementById(loadingId).remove();
+
+                if (data.error || (data.answer && data.answer.includes("Error"))) {
+                    appendMessage(`<div class="message msg-bot msg-error">
+                        <strong>Cannot allow that:</strong><br>${data.error || data.answer}
+                    </div>`);
+                } else {
+                    let content = `<div>${data.answer}</div>`;
+                    if (data.sql) {
+                        content += `<div class="sql-code">${data.sql}</div>`;
+                    }
+                    appendMessage(`<div class="message msg-bot">${content}</div>`);
+                }
+            } catch (err) {
+                document.getElementById(loadingId).remove();
+                appendMessage(`<div class="message msg-bot msg-error">Network Error: ${err.message}</div>`);
+            }
+        }
+
+        send.addEventListener('click', sendMessage);
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        // === History Loading ===
+        let historyPage = 1;
+        let hasMoreHistory = true;
+        let loadingHistory = false;
+
+        async function loadHistory(page = 1) {
+            if (loadingHistory || (!hasMoreHistory && page > 1)) return;
+            loadingHistory = true;
+
+            try {
+                const resp = await fetch(`/datachat/api/history/?page=${page}&limit=15`);
+                const data = await resp.json();
+
+                hasMoreHistory = data.has_more;
+                historyPage = page;
+
+                if (data.messages.length > 0 && page === 1) {
+                    // Clear and load initial messages
+                    msgs.innerHTML = '';
+                }
+
+                // Prepend older messages (for scroll up)
+                const fragment = document.createDocumentFragment();
+                data.messages.forEach(msg => {
+                    const div = document.createElement('div');
+                    div.className = `message msg-${msg.role === 'user' ? 'user' : 'bot'}`;
+
+                    if (msg.role === 'assistant') {
+                        let content = `<div>${msg.content}</div>`;
+                        if (msg.sql) {
+                            content += `<div class="sql-code">${msg.sql}</div>`;
+                        }
+                        div.innerHTML = content;
+                    } else {
+                        div.textContent = msg.content;
+                    }
+
+                    fragment.appendChild(div);
+                });
+
+                if (page === 1) {
+                    msgs.appendChild(fragment);
+                    msgs.scrollTop = msgs.scrollHeight;
+                } else {
+                    const oldScrollHeight = msgs.scrollHeight;
+                    msgs.insertBefore(fragment, msgs.firstChild);
+                    msgs.scrollTop = msgs.scrollHeight - oldScrollHeight;
+                }
+
+            } catch (err) {
+                console.error('Failed to load history:', err);
+            } finally {
+                loadingHistory = false;
+            }
+        }
+
+        // Load history on chat open
+        fab.addEventListener('click', () => {
+            const isHidden = win.style.display === 'none' || win.style.display === '';
+            win.style.display = isHidden ? 'flex' : 'none';
+            if (isHidden) {
+                loadHistory(1);
+                setTimeout(() => input.focus(), 100);
+            }
+        });
+
+        // Infinite scroll for older messages
+        msgs.addEventListener('scroll', () => {
+            if (msgs.scrollTop < 50 && hasMoreHistory && !loadingHistory) {
+                loadHistory(historyPage + 1);
+            }
+        });
+    });
+</script>
+{% endblock %}
+
+{% block footer %}
+{{ block.super }}
+
+<div id="datachat-fab">💬</div>
+<div id="datachat-window">
+    <div id="datachat-header">Data Chat</div>
+    <div id="datachat-messages"></div>
+    <div id="datachat-input-area">
+        <input type="text" id="datachat-input" placeholder="Ask your data...">
+        <button id="datachat-send">Send</button>
+    </div>
+</div>
+{% endblock %}

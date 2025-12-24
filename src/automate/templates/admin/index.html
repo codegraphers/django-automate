@@ -1,0 +1,21 @@
+{% extends "admin/index.html" %}
+{% load i18n %}
+
+{% block sidebar %}
+{{ block.super }}
+<div class="module" style="margin-top: 20px;">
+    <table>
+        <caption>
+            <a href="javascript:void(0)" class="section">🧪 Developer Tools</a>
+        </caption>
+        <tbody>
+            <tr>
+                <th scope="row">
+                    <a href="{% url 'admin:prompt_eval' %}">📊 Prompt Evaluation</a>
+                </th>
+                <td><a href="{% url 'admin:prompt_eval' %}" class="viewlink">View</a></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

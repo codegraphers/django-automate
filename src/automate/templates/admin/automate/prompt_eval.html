@@ -1,0 +1,350 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}Prompt Evaluation | {{ block.super }}{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+    .prompt-eval-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .eval-section {
+        background: var(--body-bg);
+        border: 1px solid var(--hairline-color);
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .eval-section h2 {
+        margin-top: 0;
+        color: var(--body-loud-color);
+        border-bottom: 2px solid var(--primary);
+        padding-bottom: 10px;
+    }
+
+    .prompt-card {
+        background: var(--darkened-bg);
+        border: 1px solid var(--hairline-color);
+        border-radius: 6px;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+    .prompt-card h3 {
+        margin: 0 0 10px 0;
+        color: var(--primary);
+    }
+
+    .prompt-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+    }
+
+    .stat-box {
+        background: var(--body-bg);
+        border: 1px solid var(--hairline-color);
+        border-radius: 6px;
+        padding: 12px;
+        text-align: center;
+    }
+
+    .stat-value {
+        font-size: 24px;
+        font-weight: bold;
+        color: var(--primary);
+    }
+
+    .stat-label {
+        font-size: 12px;
+        color: var(--body-quiet-color);
+        margin-top: 4px;
+    }
+
+    .template-preview {
+        background: #1e1e1e;
+        color: #d4d4d4;
+        padding: 15px;
+        border-radius: 6px;
+        font-family: monospace;
+        font-size: 13px;
+        white-space: pre-wrap;
+        max-height: 200px;
+        overflow-y: auto;
+        margin-top: 10px;
+    }
+
+    .test-playground {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .test-input textarea,
+    .test-input input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid var(--hairline-color);
+        border-radius: 4px;
+        font-family: inherit;
+        margin-bottom: 10px;
+    }
+
+    .test-input textarea {
+        min-height: 100px;
+        font-family: monospace;
+    }
+
+    .test-output {
+        background: var(--darkened-bg);
+        padding: 15px;
+        border-radius: 6px;
+        min-height: 200px;
+    }
+
+    .btn-test {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+    .btn-test:hover {
+        opacity: 0.9;
+    }
+
+    .version-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        margin-left: 10px;
+    }
+
+    .version-badge.approved {
+        background: #22c55e;
+        color: white;
+    }
+
+    .version-badge.draft {
+        background: #f59e0b;
+        color: white;
+    }
+
+    .version-badge.rejected {
+        background: #ef4444;
+        color: white;
+    }
+
+    .recent-requests table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .recent-requests th,
+    .recent-requests td {
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--hairline-color);
+        text-align: left;
+    }
+
+    .recent-requests th {
+        background: var(--darkened-bg);
+        font-weight: 600;
+    }
+
+    .status-success {
+        color: #22c55e;
+    }
+
+    .status-failed {
+        color: #ef4444;
+    }
+
+    .status-pending {
+        color: #f59e0b;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="prompt-eval-container">
+    <h1>🧪 Prompt Evaluation</h1>
+
+    <!-- Prompts Overview -->
+    <div class="eval-section">
+        <h2>📝 Registered Prompts</h2>
+
+        {% for prompt in prompts %}
+        <div class="prompt-card">
+            <h3>
+                {{ prompt.name }}
+                <code
+                    style="font-size: 12px; background: var(--darkened-bg); padding: 2px 6px; border-radius: 4px;">{{ prompt.slug }}</code>
+            </h3>
+            <p>{{ prompt.description }}</p>
+
+            <!-- Versions -->
+            <div style="margin: 10px 0;">
+                <strong>Versions:</strong>
+                {% for version in prompt.versions.all %}
+                <span class="version-badge {{ version.status }}">v{{ version.version }} ({{ version.status }})</span>
+                {% empty %}
+                <em>No versions</em>
+                {% endfor %}
+            </div>
+
+            <!-- Metrics -->
+            {% if prompt.metrics %}
+            <div class="prompt-stats">
+                <div class="stat-box">
+                    <div class="stat-value">{{ prompt.metrics.total_calls|default:"0" }}</div>
+                    <div class="stat-label">Total Calls</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">{{ prompt.metrics.avg_latency|floatformat:0|default:"—" }}ms</div>
+                    <div class="stat-label">Avg Latency</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">{{ prompt.metrics.avg_input_tokens|floatformat:0|default:"—" }}</div>
+                    <div class="stat-label">Avg Input Tokens</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">{{ prompt.metrics.avg_output_tokens|floatformat:0|default:"—" }}</div>
+                    <div class="stat-label">Avg Output Tokens</div>
+                </div>
+            </div>
+            {% else %}
+            <p style="color: var(--body-quiet-color);">No metrics available yet.</p>
+            {% endif %}
+
+            <!-- Template Preview -->
+            {% for version in prompt.versions.all|slice:":1" %}
+            <details style="margin-top: 15px;">
+                <summary style="cursor: pointer; font-weight: 500;">📄 View Template (v{{ version.version }})</summary>
+                <div style="margin-top: 10px;">
+                    <strong>System:</strong>
+                    <div class="template-preview">{{ version.system_template }}</div>
+                    <strong style="margin-top: 10px; display: block;">User:</strong>
+                    <div class="template-preview">{{ version.user_template }}</div>
+                </div>
+            </details>
+            {% endfor %}
+        </div>
+        {% empty %}
+        <p>No prompts registered. They will be auto-created on first chat.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Test Playground -->
+    <div class="eval-section">
+        <h2>🎮 Test Playground</h2>
+        <div class="test-playground">
+            <div class="test-input">
+                <label><strong>Prompt Slug:</strong></label>
+                <input type="text" id="test-slug" value="datachat_sql_generator" placeholder="datachat_sql_generator">
+
+                <label><strong>Version:</strong></label>
+                <input type="number" id="test-version" value="1" min="1">
+
+                <label><strong>Variables (JSON):</strong></label>
+                <textarea id="test-vars">{
+    "schema": "CREATE TABLE users (id, username, email);",
+    "history": "",
+    "question": "Show me all users"
+}</textarea>
+
+                <button class="btn-test" onclick="testPrompt()">🚀 Render Template</button>
+            </div>
+
+            <div class="test-output" id="test-output">
+                <em>Click "Render Template" to see the result...</em>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Requests -->
+    <div class="eval-section recent-requests">
+        <h2>📊 Recent LLM Requests</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Prompt</th>
+                    <th>Purpose</th>
+                    <th>Status</th>
+                    <th>Latency</th>
+                    <th>Tokens (In/Out)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for req in recent_requests %}
+                <tr>
+                    <td>{{ req.created_at|timesince }} ago</td>
+                    <td><code>{{ req.prompt_slug }}</code></td>
+                    <td>{{ req.purpose }}</td>
+                    <td class="status-{{ req.status|lower }}">{{ req.status }}</td>
+                    <td>{{ req.latency_ms|default:"—" }}ms</td>
+                    <td>{{ req.input_tokens|default:"—" }} / {{ req.output_tokens|default:"—" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center;">No requests yet. Try the Data Chat!</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    async function testPrompt() {
+        const slug = document.getElementById('test-slug').value;
+        const version = parseInt(document.getElementById('test-version').value);
+        const varsText = document.getElementById('test-vars').value;
+        const output = document.getElementById('test-output');
+
+        try {
+            const variables = JSON.parse(varsText);
+
+            output.innerHTML = '<em>Loading...</em>';
+
+            const resp = await fetch('/admin/prompt-eval/test/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt_slug: slug, version, variables })
+            });
+
+            const data = await resp.json();
+
+            if (data.error) {
+                output.innerHTML = `<div style="color: #ef4444;">Error: ${data.error}</div>`;
+            } else {
+                output.innerHTML = `
+                <strong>System Prompt:</strong>
+                <pre style="background: #1e1e1e; color: #d4d4d4; padding: 10px; border-radius: 4px; white-space: pre-wrap;">${escapeHtml(data.system_prompt)}</pre>
+                <strong>User Prompt:</strong>
+                <pre style="background: #1e1e1e; color: #d4d4d4; padding: 10px; border-radius: 4px; white-space: pre-wrap;">${escapeHtml(data.user_prompt)}</pre>
+            `;
+            }
+        } catch (e) {
+            output.innerHTML = `<div style="color: #ef4444;">JSON Parse Error: ${e.message}</div>`;
+        }
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+</script>
+{% endblock %}

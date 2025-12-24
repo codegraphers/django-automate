@@ -1,0 +1,276 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrahead %}
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;600&display=swap"
+    rel="stylesheet">
+<style>
+    :root {
+        --bg-color: #f8fafc;
+        --card-bg: #ffffff;
+        --border-color: #e2e8f0;
+        --accent-color: #6366f1;
+        --success-color: #10b981;
+        --error-color: #ef4444;
+    }
+
+    body {
+        background: var(--bg-color);
+        font-family: 'Inter', sans-serif !important;
+    }
+
+    .tester-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        padding: 0 2rem;
+    }
+
+    .card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .card-header {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #f8fafc;
+    }
+
+    .card-title {
+        font-weight: 600;
+        color: #0f172a;
+        margin: 0;
+        font-size: 1rem;
+    }
+
+    .editor-container {
+        flex: 1;
+        position: relative;
+    }
+
+    textarea {
+        width: 100%;
+        height: 300px;
+        border: none;
+        padding: 1.5rem;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 14px;
+        line-height: 1.5;
+        resize: none;
+        color: #334155;
+        background: white;
+    }
+
+    textarea:focus {
+        outline: none;
+    }
+
+    .action-bar {
+        grid-column: 1 / -1;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .btn-run {
+        background: var(--accent-color);
+        color: white;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1rem;
+    }
+
+    .btn-run:hover {
+        background: #4f46e5;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    .result-pane {
+        grid-column: 1 / -1;
+        min-height: 150px;
+    }
+
+    .result-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .status-pass {
+        background: #d1fae5;
+        color: #059669;
+    }
+
+    .status-fail {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+    .explain-tree {
+        padding: 1.5rem;
+    }
+
+    .tree-node {
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #f8fafc;
+    }
+
+    .node-condition {
+        font-family: 'JetBrains Mono', monospace;
+        color: #475569;
+        font-weight: 500;
+    }
+
+    .node-result {
+        font-weight: bold;
+    }
+
+    .pass {
+        color: var(--success-color);
+    }
+
+    .fail {
+        color: var(--error-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="tester-container">
+    <div style="grid-column: 1 / -1; margin-bottom: 1rem;">
+        <h1 style="color: #0f172a; font-weight: 700; margin-bottom: 0.5rem;">Rules Engine Debugger</h1>
+        <p style="color: #64748b;">Test event filtering logic against a provided rule specification. See exactly why a
+            rule passed or failed.</p>
+    </div>
+
+    <!-- Event Input -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Event Payload (Inputs)</h3>
+            <span
+                style="font-size: 0.75rem; color: #64748b; background: #e2e8f0; padding: 2px 6px; border-radius: 4px;">JSON</span>
+        </div>
+        <div class="editor-container">
+            <textarea id="eventJson">{{ event_json|default:'{}' }}</textarea>
+        </div>
+    </div>
+
+    <!-- Rule Input -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Rule Specification</h3>
+            <span
+                style="font-size: 0.75rem; color: #64748b; background: #e2e8f0; padding: 2px 6px; border-radius: 4px;">Logic</span>
+        </div>
+        <div class="editor-container">
+            <textarea id="ruleSpec">{{ rule_json|default:'{}' }}</textarea>
+        </div>
+    </div>
+
+    <div class="action-bar">
+        <button class="btn-run" onclick="testRule()">
+            <span>▶ Run Test</span>
+        </button>
+    </div>
+
+    <div class="card result-pane" id="result-card" style="display: none;">
+        <div class="card-header result-header">
+            <h3 class="card-title">Evaluation Result</h3>
+            <span id="overall-status" class="status-badge"></span>
+        </div>
+        <div class="explain-tree" id="results">
+            <!-- Tree items injected here -->
+        </div>
+    </div>
+</div>
+
+<script>
+    async function testRule() {
+        const btn = document.querySelector('.btn-run');
+        btn.innerHTML = 'Running...';
+        btn.disabled = true;
+
+        try {
+            const event = JSON.parse(document.getElementById('eventJson').value);
+            const rule_spec = JSON.parse(document.getElementById('ruleSpec').value);
+
+            const res = await fetch('', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ event, rule_spec })
+            });
+
+            const data = await res.json();
+
+            // Show Results
+            const resultCard = document.getElementById('result-card');
+            const statusBadge = document.getElementById('overall-status');
+            const resultsParams = document.getElementById('results');
+
+            resultCard.style.display = 'flex';
+
+            if (data.match) {
+                statusBadge.textContent = 'MATCHED';
+                statusBadge.className = 'status-badge status-pass';
+            } else {
+                statusBadge.textContent = 'DID NOT MATCH';
+                statusBadge.className = 'status-badge status-fail';
+            }
+
+            // Render Tree
+            let treeHtml = '';
+            data.explain.forEach(node => {
+                const icon = node.result ? '✅' : '❌';
+                const cls = node.result ? 'pass' : 'fail';
+                treeHtml += `
+            <div class="tree-node" style="border-left: 4px solid ${node.result ? '#10b981' : '#ef4444'}">
+                <div class="node-condition">${node.node}</div>
+                <div class="node-result ${cls}">${icon} ${node.details || ''}</div>
+            </div>`;
+            });
+
+            resultsParams.innerHTML = treeHtml;
+        } catch (e) {
+            alert("Error parsing JSON: " + e.message);
+        } finally {
+            btn.innerHTML = '<span>▶ Run Test</span>';
+            btn.disabled = false;
+        }
+    }
+</script>
+{% endblock %}

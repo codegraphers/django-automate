@@ -1,0 +1,100 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+    .test-console-container {
+        max_width: 800px;
+        padding: 20px;
+        background: var(--body-bg);
+        border: 1px solid var(--hairline-color);
+        border-radius: 4px;
+    }
+
+    .form-row {
+        margin-bottom: 15px;
+    }
+
+    .form-row label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    textarea {
+        width: 100%;
+        min-height: 100px;
+        font-family: monospace;
+    }
+
+    pre {
+        background: #f8f8f8;
+        padding: 10px;
+        border: 1px solid #ddd;
+        overflow-x: auto;
+    }
+</style>
+<script>
+    async function runTest() {
+        const slug = "{{ endpoint.slug }}";
+        const taskType = document.getElementById('task_type').value;
+        const inputJson = document.getElementById('input_payload').value;
+        const consoleOut = document.getElementById('console-output');
+
+        consoleOut.textContent = "Running...";
+
+        try {
+            const payload = JSON.parse(inputJson);
+
+            const response = await fetch(`/api/modal/endpoints/${slug}/run`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    task_type: taskType,
+                    input: payload
+                })
+            });
+
+            const data = await response.json();
+            consoleOut.textContent = JSON.stringify(data, null, 2);
+
+        } catch (e) {
+            consoleOut.textContent = "Error: " + e.message;
+        }
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="test-console-container">
+    <h2>Test Console: {{ endpoint.name }}</h2>
+    <p>Endpoint Slug: <code>{{ endpoint.slug }}</code></p>
+
+    <div class="form-row">
+        <label for="task_type">Task Type</label>
+        <select id="task_type">
+            {% for task in endpoint.allowed_task_types %}
+            <option value="{{ task }}">{{ task }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="form-row">
+        <label for="input_payload">Input JSON</label>
+        <textarea id="input_payload">{"prompt": "Hello world"}</textarea>
+    </div>
+
+    <div class="form-row">
+        <button class="button" onclick="runTest()">Run Sync</button>
+    </div>
+
+    <div class="form-row">
+        <label>Output</label>
+        <pre id="console-output">Ready</pre>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  web:
+    build: 
+      context: ../../
+      dockerfile: examples/docker/Dockerfile
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ../../src:/app/src
+      - ../demo_app:/app/demo_app
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=1
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+      - db
+
+  worker:
+    build: 
+      context: ../../
+      dockerfile: examples/docker/Dockerfile
+    command: celery -A example_project worker -l info
+    volumes:
+      - ../../src:/app/src
+      - ../demo_app:/app/demo_app
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+      - db
+
+  redis:
+    image: redis:7-alpine
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: automate
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password

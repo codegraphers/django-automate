@@ -1,0 +1,1589 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrahead %}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+    :root {
+        /* Premium Palette */
+        --primary: #3b82f6;
+        /* Blue 500 */
+        --primary-hover: #2563eb;
+        /* Blue 600 */
+        --primary-light: #eff6ff;
+        /* Blue 50 */
+
+        --bg-body: #f8fafc;
+        --bg-panel: #ffffff;
+        --bg-surface: #f1f5f9;
+
+        --border: #e2e8f0;
+        --border-hover: #cbd5e1;
+
+        --text-main: #0f172a;
+        --radius: 12px;
+        --radius-sm: 8px;
+
+        /* Node Colors (Pastel/Vibrant) */
+        --trigger-bg: #eff6ff;
+        --trigger-text: #3b82f6;
+        --filter-bg: #fdf2f8;
+        --filter-text: #db2777;
+        --llm-bg: #f5f3ff;
+        --llm-text: #7c3aed;
+        --action-bg: #ecfdf5;
+        --action-text: #059669;
+
+        --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: var(--font-sans);
+        background-color: var(--bg-app);
+        color: var(--text-main);
+        overflow: hidden;
+        width: 100vw;
+        height: 100vh;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    /* Reset Django Admin leaks */
+    #header,
+    #branding,
+    .breadcrumbs {
+        display: none !important;
+    }
+
+    /* Layout Structure */
+    /* Layout Structure - Fixed to viewport to escape admin containers */
+    .studio-layout {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 9000;
+        /* Above admin UI */
+        background: var(--bg-body);
+        display: grid;
+        grid-template-columns: 260px 1fr 340px;
+        grid-template-rows: 50px 1fr;
+    }
+
+    /* Top Navigation Bar */
+    .studio-header {
+        grid-column: 1 / -1;
+        background: white;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1.5rem;
+        z-index: 20;
+    }
+
+    .studio-brand {
+        font-weight: 600;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-main);
+    }
+
+    .studio-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    /* Left Sidebar: Components */
+    .sidebar-left {
+        background: var(--bg-panel);
+        border-right: 1px solid var(--border);
+        padding: 1rem;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .sidebar-section h3 {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+        margin: 0 0 0.75rem 0.25rem;
+        font-weight: 600;
+    }
+
+    .component-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.6rem 0.75rem;
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        cursor: grab;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        margin-bottom: 0.5rem;
+        user-select: none;
+    }
+
+    .component-item:hover {
+        border-color: var(--primary);
+        box-shadow: var(--shadow-md);
+        transform: translateY(-1px);
+    }
+
+    .component-item:active {
+        cursor: grabbing;
+    }
+
+    .component-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .component-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .component-title {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--text-main);
+    }
+
+    .component-desc {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Canvas Area */
+    .canvas-area {
+        background-color: var(--bg-surface);
+        /* Dot Grid Pattern */
+        background-image: radial-gradient(var(--border-hover) 1px, transparent 1px);
+        background-size: 20px 20px;
+        position: relative;
+        overflow: auto;
+        /* Enable Scroll */
+        box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.02);
+    }
+
+    /* Floating Toolbar (Bottom Center) */
+    .floating-toolbar {
+        position: absolute;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        background: white;
+        padding: 0.35rem;
+        border-radius: 9999px;
+        display: flex;
+        gap: 0.25rem;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid var(--border);
+        z-index: 10;
+        align-items: center;
+    }
+
+    .toolbar-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        border: none;
+        background: transparent;
+        color: var(--text-secondary);
+        font-weight: 500;
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .toolbar-btn:hover {
+        background: var(--bg-surface);
+        color: var(--text-main);
+    }
+
+    .toolbar-btn.primary {
+        background: var(--primary);
+        color: white;
+    }
+
+    .toolbar-btn.primary:hover {
+        background: var(--primary-hover);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    /* Canvas Nodes */
+    .canvas-node {
+        position: absolute;
+        width: 240px;
+        background: white;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-md);
+        border: 1px solid transparent;
+        /* Prepare for border */
+        cursor: pointer;
+        transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+        z-index: 5;
+    }
+
+    .canvas-node:hover {
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-1px);
+    }
+
+    .canvas-node.selected {
+        box-shadow: 0 0 0 2px var(--primary), var(--shadow-lg);
+        border-color: var(--primary);
+        z-index: 10;
+    }
+
+    /* Node Types Styling */
+    .canvas-node.trigger {
+        border: 1px solid var(--trigger-border);
+    }
+
+    .canvas-node.trigger .node-header {
+        background: var(--trigger-bg);
+        color: var(--trigger-text);
+    }
+
+    .canvas-node.action {
+        border: 1px solid var(--action-border);
+    }
+
+    .canvas-node.action .node-header {
+        background: var(--action-bg);
+        color: var(--action-text);
+    }
+
+    .canvas-node.filter {
+        border: 1px solid var(--filter-border);
+    }
+
+    .canvas-node.filter .node-header {
+        background: var(--filter-bg);
+        color: var(--filter-text);
+    }
+
+    .canvas-node.llm {
+        border: 1px solid var(--llm-border);
+    }
+
+    .canvas-node.llm .node-header {
+        background: var(--llm-bg);
+        color: var(--llm-text);
+    }
+
+    .node-header {
+        padding: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        border-top-left-radius: var(--radius);
+        border-top-right-radius: var(--radius);
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .node-body {
+        padding: 0.75rem;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        background: white;
+        border-bottom-left-radius: var(--radius);
+        border-bottom-right-radius: var(--radius);
+    }
+
+    /* Connectors */
+    .node-connector {
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        background: var(--text-muted);
+        border: 2px solid white;
+        border-radius: 50%;
+        cursor: crosshair;
+        transition: all 0.2s;
+        z-index: 100 !important;
+    }
+
+    .node-connector:hover {
+        background: var(--primary);
+        border-color: var(--primary);
+        transform: scale(1.3);
+    }
+
+    .node-connector.input {
+        left: -6px;
+        top: 1.5rem;
+    }
+
+    .node-connector.output {
+        right: -6px;
+        top: 1.5rem;
+    }
+
+    /* Connections SVG */
+    #connections-svg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .connection-line {
+        stroke: var(--text-muted);
+        stroke-width: 2px;
+        fill: none;
+        opacity: 0.6;
+        transition: stroke 0.2s;
+    }
+
+    /* Right Sidebar: Properties (Premium) */
+    .sidebar-right {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-left: 1px solid var(--border);
+        box-shadow: -4px 0 20px rgba(0, 0, 0, 0.05);
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        z-index: 200;
+    }
+
+    .properties-content {
+        padding: 1.5rem;
+    }
+
+    .panel-header {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--bg-app);
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        color: var(--text-main);
+        letter-spacing: -0.02em;
+    }
+
+    /* Form Elements (Filled Style) */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid transparent !important;
+        border-radius: var(--radius);
+        font-size: 0.95rem;
+        color: var(--text-main) !important;
+        background-color: var(--bg-surface) !important;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
+    }
+
+    .form-input:hover,
+    .form-select:hover {
+        background-color: #f1f5f9 !important;
+        /* Slate-100 */
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+        outline: none;
+        outline: none !important;
+        background-color: white !important;
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 0 4px var(--primary-light) !important;
+    }
+
+    /* Tabs (Segmented Control) - FORCED STYLES */
+    .prop-tabs {
+        display: flex !important;
+        flex-direction: row !important;
+        background: #f1f5f9 !important;
+        padding: 4px !important;
+        border-radius: 10px !important;
+        margin-bottom: 1.5rem !important;
+        border: 1px solid #e2e8f0 !important;
+        gap: 0 !important;
+    }
+
+    .prop-tab {
+        flex: 1 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 10px 16px !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        cursor: pointer !important;
+        color: #64748b !important;
+        background: transparent !important;
+        border-radius: 8px !important;
+        transition: all 0.2s ease !important;
+        border: none !important;
+        margin: 0 !important;
+        text-align: center !important;
+    }
+
+    .prop-tab:hover {
+        color: #334155 !important;
+        background: rgba(255, 255, 255, 0.5) !important;
+    }
+
+    .prop-tab.active {
+        background: white !important;
+        color: #3b82f6 !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+        font-weight: 700 !important;
+    }
+
+    /* Form Elements - FORCED STYLES */
+    .form-group {
+        margin-bottom: 1.25rem !important;
+    }
+
+    .form-label {
+        display: block !important;
+        font-size: 11px !important;
+        font-weight: 600 !important;
+        color: #64748b !important;
+        margin-bottom: 8px !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+        width: 100% !important;
+        padding: 12px 14px !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 10px !important;
+        font-size: 14px !important;
+        font-family: inherit !important;
+        color: #1e293b !important;
+        background-color: #ffffff !important;
+        transition: all 0.15s ease !important;
+        box-sizing: border-box !important;
+        -webkit-appearance: none !important;
+        appearance: none !important;
+    }
+
+    .form-input:hover,
+    .form-select:hover {
+        border-color: #cbd5e1 !important;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+        outline: none !important;
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+        background-color: #ffffff !important;
+    }
+
+    .form-select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
+        background-position: right 12px center !important;
+        background-repeat: no-repeat !important;
+        background-size: 16px 16px !important;
+        padding-right: 40px !important;
+    }
+
+
+
+    .json-editor {
+        width: 100%;
+        min-height: 300px;
+        font-family: 'Monaco', 'Menlo', monospace;
+        font-size: 0.8rem;
+        padding: 0.8rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        background: #f8fafc;
+        color: #334155;
+        resize: vertical;
+    }
+
+    /* Variable Picker Styles - Enhanced */
+    .var-picker {
+        position: relative;
+    }
+
+    .var-picker-btn {
+        position: absolute;
+        right: 8px;
+        top: 8px;
+        /* For textarea */
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+
+    .form-input+.var-picker-btn {
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    /* For input */
+
+    .var-picker-btn:hover {
+        background: white;
+        color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    .var-dropdown {
+        position: absolute;
+        top: calc(100% + 4px);
+        right: 0;
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-lg);
+        z-index: 100;
+        width: 300px;
+        max-height: 240px;
+        overflow-y: auto;
+        display: none;
+        animation: fadeIn 0.1s ease-out;
+    }
+
+    .var-dropdown.show {
+        display: block;
+    }
+
+    .var-item {
+        padding: 0.6rem 0.8rem;
+        cursor: pointer;
+        font-size: 0.85rem;
+        border-bottom: 1px solid var(--border);
+        color: var(--text-secondary);
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+
+    .var-item:hover {
+        background: var(--bg-surface);
+        color: var(--text-main);
+    }
+
+    .var-item:last-child {
+        border-bottom: none;
+    }
+
+    .var-item code {
+        font-family: 'Monaco', monospace;
+        font-size: 0.75rem;
+        color: var(--primary);
+        background: var(--primary-light);
+        padding: 0.15rem 0.3rem;
+        border-radius: 4px;
+        align-self: flex-start;
+    }
+
+    /* Icon Styling */
+    .component-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        /* Soft square */
+        font-size: 1.1rem;
+        width: 32px;
+        height: 32px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-delete {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid transparent;
+        background: #fee2e2;
+        /* Red-100 */
+        color: #b91c1c;
+        /* Red-700 */
+        border-radius: var(--radius);
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-top: 2rem;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .btn-delete:hover {
+        background: #ef4444;
+        /* Red-500 */
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.2);
+    }
+
+    .btn-delete::before {
+        content: "🗑️";
+        font-size: 1rem;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-4px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Scrollbar Polish */
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="studio-layout">
+    <!-- Top Header -->
+    <header class="studio-header">
+        <div class="studio-brand">
+            <div
+                style="width:24px;height:24px;background:var(--primary);border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-size:0.8rem">
+                ⚡</div>
+            <span>Workflow Studio</span>
+        </div>
+        <div class="studio-actions">
+            <!-- Global actions like Help or User Profile could go here -->
+        </div>
+    </header>
+
+    <!-- Left Sidebar: Palette -->
+    <div class="sidebar-left">
+        <div class="sidebar-section">
+            <h3>Triggers</h3>
+            <div class="component-item" onclick="addNode('trigger', 'Webhook', {event_type: 'webhook'})">
+                <div class="component-icon" style="background:var(--trigger-bg);color:var(--trigger-text)">📥</div>
+                <div class="component-info">
+                    <div class="component-title">Webhook</div>
+                    <div class="component-desc">HTTP request trigger</div>
+                </div>
+            </div>
+            <div class="component-item" onclick="addNode('trigger', 'Schedule', {cron: '0 * * * *'})">
+                <div class="component-icon" style="background:var(--trigger-bg);color:var(--trigger-text)">🕐</div>
+                <div class="component-info">
+                    <div class="component-title">Schedule</div>
+                    <div class="component-desc">Cron-based trigger</div>
+                </div>
+            </div>
+            <div class="component-item" onclick="addNode('trigger', 'DB Change', {table: '', action: 'INSERT'})">
+                <div class="component-icon" style="background:var(--trigger-bg);color:var(--trigger-text)">🗄️</div>
+                <div class="component-info">
+                    <div class="component-title">DB Change</div>
+                    <div class="component-desc">Table row trigger</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <h3>Logic</h3>
+            <div class="component-item" onclick="addNode('filter', 'Filter', {condition: {}, on_fail: 'stop'})">
+                <div class="component-icon" style="background:var(--filter-bg);color:var(--filter-text)">⚖️</div>
+                <div class="component-info">
+                    <div class="component-title">Filter</div>
+                    <div class="component-desc">Conditional check</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <h3>AI Capabilities</h3>
+            <div class="component-item" onclick="addNode('llm', 'LLM Prompt', {prompt_slug: '', variables: {}})">
+                <div class="component-icon" style="background:var(--llm-bg);color:var(--llm-text)">✨</div>
+                <div class="component-info">
+                    <div class="component-title">LLM Prompt</div>
+                    <div class="component-desc">Generate with AI</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <h3>Actions</h3>
+            <div class="component-item"
+                onclick="addNode('action', 'Slack Message', {action_type: 'slack', channel: '', message: ''})">
+                <div class="component-icon" style="background:var(--action-bg);color:var(--action-text)">💬</div>
+                <div class="component-info">
+                    <div class="component-title">Slack</div>
+                    <div class="component-desc">Send message</div>
+                </div>
+            </div>
+            <div class="component-item"
+                onclick="addNode('action', 'HTTP Request', {action_type: 'http', method: 'POST', url: ''})">
+                <div class="component-icon" style="background:var(--action-bg);color:var(--action-text)">🌐</div>
+                <div class="component-info">
+                    <div class="component-title">HTTP Request</div>
+                    <div class="component-desc">API call</div>
+                </div>
+            </div>
+            <div class="component-item"
+                onclick="addNode('action', 'MCP Tool', {action_type: 'mcp_tool', tool_name: ''})">
+                <div class="component-icon" style="background:var(--action-bg);color:var(--action-text)">🔧</div>
+                <div class="component-info">
+                    <div class="component-title">MCP Tool</div>
+                    <div class="component-desc">External tool</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Canvas -->
+    <div class="canvas-area" id="canvas">
+        <svg id="connections-svg"></svg>
+        <div class="floating-toolbar">
+            <button class="toolbar-btn" onclick="clearCanvas()">🗑️ Clear</button>
+            <button class="toolbar-btn" onclick="exportWorkflow()">📋 Export</button>
+            <button class="toolbar-btn primary" onclick="saveWorkflow()">💾 Save Workflow</button>
+        </div>
+        <div id="canvas-nodes"></div>
+    </div>
+
+    <!-- Right Sidebar: Properties -->
+    <div class="sidebar-right" id="properties-panel">
+        <div style="text-align:center;color:var(--text-muted);padding-top:40%">
+            <div style="font-size:2rem;margin-bottom:0.5rem">📋</div>
+            <p>Select a node to configure</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    const PROMPTS = {{ prompts_json| safe }};
+    const MCP_TOOLS = {{ mcp_tools_json| safe }};
+
+    let nodes = [];
+    let connections = [];
+    let selectedNodeId = null;
+    let dragOffset = { x: 0, y: 0 };
+    let draggedEl = null;
+    let connectingFrom = null;
+
+    function addNode(type, title, config = {}) {
+        const id = 'step_' + Date.now();
+        const canvas = document.getElementById('canvas');
+        const rect = canvas.getBoundingClientRect();
+        const x = 100 + (nodes.length % 3) * 220;
+        const y = 80 + Math.floor(nodes.length / 3) * 120;
+
+        const node = { id, type, title, x, y, config };
+        nodes.push(node);
+        renderNode(node);
+        selectNode(id);
+    }
+
+    function renderNode(node) {
+        const el = document.createElement('div');
+        el.className = `canvas-node animate-in ${node.type}`; // Add type class here
+        el.id = node.id;
+        el.style.left = node.x + 'px';
+        el.style.top = node.y + 'px';
+        el.onmousedown = (e) => startDrag(e, node.id);
+
+        const icons = { trigger: '⚡', filter: '⚖️', llm: '✨', action: '📤' };
+
+        el.innerHTML = `
+        <div class="node-header">
+            <div class="node-icon">${icons[node.type] || '📦'}</div>
+            <div class="node-title">${node.title}</div>
+        </div>
+        <div class="node-body">${getNodeSummary(node)}</div>
+        ${node.type !== 'trigger' ? '<div class="node-connector input" onclick="handleConnectorClick(event, \'' + node.id + '\', \'input\')"></div>' : ''}
+        <div class="node-connector output" onclick="handleConnectorClick(event, '${node.id}', 'output')"></div>
+    `;
+
+        document.getElementById('canvas-nodes').appendChild(el);
+    }
+
+    function getNodeSummary(node) {
+        const c = node.config;
+        switch (node.type) {
+            case 'trigger': return c.event_type || c.cron || 'Configure trigger';
+            case 'filter': return c.condition?.var ? `If ${c.condition.var}...` : 'Add condition';
+            case 'llm': return c.prompt_slug || 'Select prompt';
+            case 'action':
+                if (c.action_type === 'slack') return c.channel || 'Configure Slack';
+                if (c.action_type === 'http') return c.url?.substring(0, 30) || 'Configure HTTP';
+                return c.tool_name || 'Configure action';
+            default: return '';
+        }
+    }
+
+    /* Drag Logic Fix */
+    function startDrag(e, nodeId) {
+        if (e.target.classList.contains('node-connector')) return;
+        e.stopPropagation();
+        selectNode(nodeId);
+        draggedEl = document.getElementById(nodeId);
+
+        const container = document.getElementById('canvas');
+        const containerRect = container.getBoundingClientRect();
+
+        // Mouse in Container Space
+        const mouseX = e.clientX - containerRect.left + container.scrollLeft;
+        const mouseY = e.clientY - containerRect.top + container.scrollTop;
+
+        dragOffset.x = mouseX - draggedEl.offsetLeft;
+        dragOffset.y = mouseY - draggedEl.offsetTop;
+
+        document.addEventListener('mousemove', onDrag);
+        document.addEventListener('mouseup', endDrag);
+    }
+
+    function onDrag(e) {
+        if (!draggedEl) return;
+        e.preventDefault();
+
+        const container = document.getElementById('canvas');
+        const containerRect = container.getBoundingClientRect();
+
+        const mouseX = e.clientX - containerRect.left + container.scrollLeft;
+        const mouseY = e.clientY - containerRect.top + container.scrollTop;
+
+        const x = mouseX - dragOffset.x;
+        const y = mouseY - dragOffset.y;
+
+        draggedEl.style.left = x + 'px';
+        draggedEl.style.top = y + 'px';
+
+        const node = nodes.find(n => n.id === draggedEl.id);
+        if (node) { node.x = x; node.y = y; }
+        renderConnections();
+    }
+
+    function endDrag() {
+        draggedEl = null;
+        document.removeEventListener('mousemove', onDrag);
+        document.removeEventListener('mouseup', endDrag);
+    }
+
+    function handleConnectorClick(e, nodeId, type) {
+        e.stopPropagation();
+        if (type === 'output') {
+            connectingFrom = nodeId;
+            document.body.style.cursor = 'crosshair';
+        } else if (type === 'input' && connectingFrom && connectingFrom !== nodeId) {
+            // Check if connection exists
+            if (!connections.some(c => c.from === connectingFrom && c.to === nodeId)) {
+                connections.push({ from: connectingFrom, to: nodeId });
+                renderConnections();
+            }
+            connectingFrom = null;
+            document.body.style.cursor = 'default';
+        }
+    }
+
+    function renderConnections() {
+        const svg = document.getElementById('connections-svg');
+        svg.innerHTML = '';
+
+        connections.forEach(conn => {
+            const fromEl = document.getElementById(conn.from);
+            const toEl = document.getElementById(conn.to);
+            if (!fromEl || !toEl) return;
+
+            const fromRect = fromEl.getBoundingClientRect();
+            const toRect = toEl.getBoundingClientRect();
+            const canvasRect = document.getElementById('canvas').getBoundingClientRect();
+
+            // Adjust for scroll
+            // getBoundingClientRect is viewport relative. 
+            // SVG is absolute to canvas, which scrolls.
+            // Wait, SVG is child of .canvas-area? Yes.
+            // If .canvas-area scrolls, SVG scrolls with it.
+            // SVG coordinate 0,0 is .canvas-area top-left.
+            // fromRect.top is viewport relative. canvasRect.top is viewport relative.
+            // canvas.scrollTop is scroll offset.
+
+            const x1 = fromRect.left + fromRect.width / 2 - canvasRect.left + document.getElementById('canvas').scrollLeft;
+            const y1 = fromRect.top + fromRect.height / 2 - canvasRect.top + document.getElementById('canvas').scrollTop;
+
+            const x2 = toRect.left + toRect.width / 2 - canvasRect.left + document.getElementById('canvas').scrollLeft;
+            const y2 = toRect.top + toRect.height / 2 - canvasRect.top + document.getElementById('canvas').scrollTop;
+
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            const midX = (x1 + x2) / 2;
+            path.setAttribute('d', `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`);
+            path.setAttribute('class', 'connection-line');
+            svg.appendChild(path);
+        });
+    }
+
+    function selectNode(id) {
+        selectedNodeId = id;
+        document.querySelectorAll('.canvas-node').forEach(el => el.classList.remove('selected'));
+        const el = document.getElementById(id);
+        if (el) el.classList.add('selected');
+        renderPropertiesPanel();
+    }
+
+    function renderPropertiesPanel() {
+        const node = nodes.find(n => n.id === selectedNodeId);
+        const panel = document.getElementById('properties-panel');
+        if (!node) {
+            panel.innerHTML = `
+                <div style="text-align:center;color:var(--text-muted);padding-top:40%">
+                    <div style="font-size:3rem;margin-bottom:1rem;opacity:0.5">🎨</div>
+                    <p style="font-weight:500">Select a node to configure</p>
+                    <p style="font-size:0.8rem;opacity:0.8">Click on any node in the canvas</p>
+                </div>
+            `;
+            return;
+        }
+
+        let formHtml = '';
+
+        switch (node.type) {
+            case 'trigger':
+                formHtml = renderTriggerForm(node);
+                break;
+            case 'filter':
+                formHtml = renderFilterForm(node);
+                break;
+            case 'llm':
+                formHtml = renderLlmForm(node);
+                break;
+            case 'action':
+                formHtml = renderActionForm(node);
+                break;
+        }
+
+        panel.innerHTML = `
+        <div class="properties-content animate-in">
+            <div class="panel-header">
+                <span class="component-icon" style="background:var(--${node.type}-bg);color:var(--${node.type}-text);width:24px;height:24px;font-size:0.9rem">
+                    ${getNodeIcon(node.type)}
+                </span>
+                <span>${node.title}</span>
+            </div>
+            
+            <div class="prop-tabs">
+                <div class="prop-tab active" id="tab-btn-visual" onclick="switchTab('visual')">Visual</div>
+                <div class="prop-tab" id="tab-btn-json" onclick="switchTab('json')">JSON</div>
+            </div>
+
+            <div id="tab-visual">
+                <div class="form-group">
+                    <label class="form-label">Step Name</label>
+                    <input type="text" class="form-input" value="${node.title}" onchange="updateNodeTitle('${node.id}', this.value)">
+                </div>
+                ${formHtml}
+            </div>
+
+            <div id="tab-json" style="display:none">
+                <div class="form-group">
+                    <label class="form-label">Raw Config (JSON)</label>
+                    <textarea class="json-editor" oninput="updateNodeFromJson('${node.id}', this.value)">${JSON.stringify(node.config, null, 2)}</textarea>
+                </div>
+            </div>
+
+            <div style="margin-top:1rem; border-top:1px solid var(--border); padding-top:1rem">
+                <button class="btn-delete" onclick="deleteNode('${node.id}')">Delete Step</button>
+            </div>
+        </div>
+    `;
+    }
+
+    function switchTab(tab) {
+        document.querySelectorAll('.prop-tab').forEach(el => el.classList.remove('active'));
+        document.getElementById(`tab-btn-${tab}`).classList.add('active');
+
+        document.getElementById('tab-visual').style.display = tab === 'visual' ? 'block' : 'none';
+        document.getElementById('tab-json').style.display = tab === 'json' ? 'block' : 'none';
+    }
+
+    function updateNodeFromJson(nodeId, jsonStr) {
+        try {
+            const config = JSON.parse(jsonStr);
+            const node = nodes.find(n => n.id === nodeId);
+            if (node) {
+                node.config = config;
+                // Don't re-render entire panel immediately as it would lose focus/cursor provided we are editing JSON
+                // But we should update connections/graph if needed?
+                // For now, raw update is fine.
+            }
+        } catch (e) {
+            // Invalid JSON, ignore
+        }
+    }
+
+    // Schema Data
+    let schemaData = [];
+    let appSchema = [];
+
+    async function fetchSchema() {
+        try {
+            const res = await fetch('/api/automate/schema/apps/');
+            const data = await res.json();
+            appSchema = data.apps;
+            console.log('Schema loaded', appSchema);
+        } catch (e) {
+            console.error('Failed to load schema', e);
+        }
+    }
+
+    function getNodeIcon(type) {
+        return { trigger: '⚡', filter: '⚖️', llm: '✨', action: '📤' }[type] || '📦';
+    }
+
+    function renderTriggerForm(node) {
+        const c = node.config;
+        const currentApp = c.app_label || '';
+        const currentModel = c.model_name || '';
+
+        // Filter models based on selected app
+        let models = [];
+        if (currentApp) {
+            const app = appSchema.find(a => a.app_label === currentApp);
+            if (app) models = app.models;
+        }
+
+        return `
+        <div class="form-group">
+            <label class="form-label">Trigger Type</label>
+            <select class="form-select" onchange="updateConfig('${node.id}', 'event_type', this.value); renderPropertiesPanel();">
+                <option value="webhook" ${c.event_type === 'webhook' ? 'selected' : ''}>Webhook</option>
+                <option value="schedule" ${c.event_type === 'schedule' ? 'selected' : ''}>Schedule</option>
+                <option value="db_change" ${c.event_type === 'db_change' ? 'selected' : ''}>DB Change</option>
+            </select>
+        </div>
+        ${c.event_type === 'schedule' ? `
+            <div class="form-group">
+                <label class="form-label">Cron Expression</label>
+                <input type="text" class="form-input" value="${c.cron || ''}" placeholder="0 * * * *" onchange="updateConfig('${node.id}', 'cron', this.value)">
+            </div>
+        ` : ''}
+        ${c.event_type === 'db_change' ? `
+            <div class="form-group">
+                <label class="form-label">App</label>
+                <select class="form-select" onchange="onAppChange('${node.id}', this.value)">
+                    <option value="">Select App...</option>
+                    ${appSchema.map(app => `<option value="${app.app_label}" ${currentApp === app.app_label ? 'selected' : ''}>${app.verbose_name} (${app.app_label})</option>`).join('')}
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Model / Table</label>
+                <select class="form-select" ${!currentApp ? 'disabled' : ''} onchange="updateConfig('${node.id}', 'model_name', this.value); updateConfig('${node.id}', 'table', this.options[this.selectedIndex].dataset.table);">
+                    <option value="">Select Model...</option>
+                    ${models.map(m => `<option value="${m.name}" data-table="${m.db_table}" ${currentModel === m.name ? 'selected' : ''}>${m.verbose_name} (${m.name})</option>`).join('')}
+                </select>
+            </div>
+            ${currentModel ? `
+                <div class="form-group">
+                    <label class="form-label">Trigger On</label>
+                    <div style="display:flex;gap:1rem;margin-top:0.5rem">
+                         <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.85rem">
+                            <input type="checkbox" ${c.action === 'INSERT' ? 'checked' : ''} onchange="updateConfig('${node.id}', 'action', this.checked ? 'INSERT' : '')"> Created
+                         </label>
+                         <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.85rem">
+                            <input type="checkbox" ${c.action === 'UPDATE' ? 'checked' : ''} onchange="updateConfig('${node.id}', 'action', this.checked ? 'UPDATE' : '')"> Updated
+                         </label>
+                         <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.85rem">
+                            <input type="checkbox" ${c.action === 'DELETE' ? 'checked' : ''} onchange="updateConfig('${node.id}', 'action', this.checked ? 'DELETE' : '')"> Deleted
+                         </label>
+                    </div>
+                </div>
+            ` : ''}
+        ` : ''}
+    `;
+    }
+
+    function renderFilterForm(node) {
+        const c = node.config;
+        return `
+        <div class="form-group">
+            <label class="form-label">Condition Field</label>
+            <div class="var-picker">
+                <input type="text" class="form-input" value="${c.condition?.var || ''}" placeholder="event.payload.amount" 
+                    onchange="updateConfigNested('${node.id}', 'condition', 'var', this.value)">
+                <button class="var-picker-btn" onclick="toggleVarPicker(this, '${node.id}', 'condition.var')">{}</button>
+                <div class="var-dropdown">${getVarDropdownHtml()}</div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Operator</label>
+            <select class="form-select" onchange="setConditionOperator('${node.id}', this.value)">
+                <option value=">=" ${c.condition && '>=' in c.condition ? 'selected' : ''}>≥ Greater or equal</option>
+                <option value=">" ${c.condition && '>' in c.condition ? 'selected' : ''}>＞ Greater than</option>
+                <option value="<=" ${c.condition && '<=' in c.condition ? 'selected' : ''}>≤ Less or equal</option>
+                <option value="<" ${c.condition && '<' in c.condition ? 'selected' : ''}>＜ Less than</option>
+                <option value="==" ${c.condition && '==' in c.condition ? 'selected' : ''}>＝ Equals</option>
+                <option value="!=" ${c.condition && '!=' in c.condition ? 'selected' : ''}>≠ Not equals</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Compare Value</label>
+            <input type="text" class="form-input" value="${getConditionValue(c.condition) || ''}" placeholder="100" 
+                onchange="setConditionCompareValue('${node.id}', this.value)">
+        </div>
+        <div class="form-group">
+            <label class="form-label">If Not Met</label>
+            <select class="form-select" onchange="updateConfig('${node.id}', 'on_fail', this.value)">
+                <option value="stop" ${c.on_fail === 'stop' ? 'selected' : ''}>Stop Workflow</option>
+                <option value="continue" ${c.on_fail === 'continue' ? 'selected' : ''}>Continue Anyway</option>
+            </select>
+        </div>
+    `;
+    }
+
+    function renderLlmForm(node) {
+        const c = node.config;
+        const promptOptions = PROMPTS.map(p =>
+            `<option value="${p.slug}" ${c.prompt_slug === p.slug ? 'selected' : ''}>${p.name}</option>`
+        ).join('');
+
+        return `
+        <div class="form-group">
+            <label class="form-label">Prompt</label>
+            <select class="form-select" onchange="updateConfig('${node.id}', 'prompt_slug', this.value)">
+                <option value="">Select a prompt...</option>
+                ${promptOptions}
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Variables</label>
+            <div class="var-picker">
+                <textarea class="form-textarea" placeholder='{"data": "{{ event.payload }}"}'
+                    onchange="updateConfig('${node.id}', 'variables', JSON.parse(this.value || '{}'))">${JSON.stringify(c.variables || {}, null, 2)}</textarea>
+                <button class="var-picker-btn" style="top:8px;transform:none" onclick="toggleVarPicker(this, '${node.id}', 'variables')">{}</button>
+                <div class="var-dropdown">${getVarDropdownHtml()}</div>
+            </div>
+        </div>
+    `;
+    }
+
+    function renderActionForm(node) {
+        const c = node.config;
+        let actionFields = '';
+
+        if (c.action_type === 'slack') {
+            actionFields = `
+            <div class="form-group">
+                <label class="form-label">Channel</label>
+                <input type="text" class="form-input" value="${c.channel || ''}" placeholder="#alerts" 
+                    onchange="updateConfig('${node.id}', 'channel', this.value)">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Message</label>
+                <div class="var-picker">
+                    <textarea class="form-textarea" placeholder="Use {{ previous.step_id }} for previous output"
+                        onchange="updateConfig('${node.id}', 'message', this.value)">${c.message || ''}</textarea>
+                    <button class="var-picker-btn" style="top:8px;transform:none" onclick="toggleVarPicker(this, '${node.id}', 'message')">{}</button>
+                    <div class="var-dropdown">${getVarDropdownHtml()}</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Webhook URL (optional)</label>
+                <input type="text" class="form-input" value="${c.webhook_url || ''}" placeholder="https://hooks.slack.com/..." 
+                    onchange="updateConfig('${node.id}', 'webhook_url', this.value)">
+            </div>
+        `;
+        } else if (c.action_type === 'http') {
+            actionFields = `
+            <div class="form-group">
+                <label class="form-label">Method</label>
+                <select class="form-select" onchange="updateConfig('${node.id}', 'method', this.value)">
+                    <option value="GET" ${c.method === 'GET' ? 'selected' : ''}>GET</option>
+                    <option value="POST" ${c.method === 'POST' ? 'selected' : ''}>POST</option>
+                    <option value="PUT" ${c.method === 'PUT' ? 'selected' : ''}>PUT</option>
+                    <option value="DELETE" ${c.method === 'DELETE' ? 'selected' : ''}>DELETE</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">URL</label>
+                <input type="text" class="form-input" value="${c.url || ''}" placeholder="https://api.example.com/webhook" 
+                    onchange="updateConfig('${node.id}', 'url', this.value)">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Body (JSON)</label>
+                <div class="var-picker">
+                    <textarea class="form-textarea" 
+                        onchange="updateConfig('${node.id}', 'body', JSON.parse(this.value || '{}'))">${JSON.stringify(c.body || {}, null, 2)}</textarea>
+                    <button class="var-picker-btn" style="top:8px;transform:none" onclick="toggleVarPicker(this, '${node.id}', 'body')">{}</button>
+                    <div class="var-dropdown">${getVarDropdownHtml()}</div>
+                </div>
+            </div>
+        `;
+        } else if (c.action_type === 'mcp_tool') {
+            const toolOptions = MCP_TOOLS.map(t =>
+                `<option value="${t.name}" ${c.tool_name === t.name ? 'selected' : ''}>${t.name}</option>`
+            ).join('');
+            actionFields = `
+            <div class="form-group">
+                <label class="form-label">MCP Tool</label>
+                <select class="form-select" onchange="updateConfig('${node.id}', 'tool_name', this.value)">
+                    <option value="">Select a tool...</option>
+                    ${toolOptions}
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Tool Arguments (JSON)</label>
+                <textarea class="form-textarea" 
+                    onchange="updateConfig('${node.id}', 'tool_args', JSON.parse(this.value || '{}'))">${JSON.stringify(c.tool_args || {}, null, 2)}</textarea>
+            </div>
+        `;
+        }
+
+        return `
+        <div class="form-group">
+            <label class="form-label">Action Type</label>
+            <select class="form-select" onchange="updateConfig('${node.id}', 'action_type', this.value); renderPropertiesPanel()">
+                <option value="slack" ${c.action_type === 'slack' ? 'selected' : ''}>Slack Message</option>
+                <option value="http" ${c.action_type === 'http' ? 'selected' : ''}>HTTP Request</option>
+                <option value="mcp_tool" ${c.action_type === 'mcp_tool' ? 'selected' : ''}>MCP Tool</option>
+            </select>
+        </div>
+        ${actionFields}
+    `;
+    }
+
+    function getVarDropdownHtml() {
+        let items = `
+        <div class="var-item" onclick="insertVar(this, 'event.payload')"><code>{% templatetag openvariable %} event.payload {% templatetag closevariable %}</code> - Full event data</div>
+        <div class="var-item" onclick="insertVar(this, 'event.payload.id')"><code>{% templatetag openvariable %} event.payload.id {% templatetag closevariable %}</code> - Event ID</div>
+    `;
+
+        // Add previous step outputs
+        nodes.forEach(n => {
+            if (n.id !== selectedNodeId) {
+                items += `<div class="var-item" onclick="insertVar(this, 'previous.${n.id}')"><code>{% templatetag openvariable %} previous.${n.id} {% templatetag closevariable %}</code> - Output from ${n.title}</div>`;
+            }
+        });
+
+        return items;
+    }
+
+    function toggleVarPicker(btn, nodeId, field) {
+        const dropdown = btn.nextElementSibling;
+        dropdown.classList.toggle('show');
+
+        // Close on click outside
+        setTimeout(() => {
+            document.addEventListener('click', function closeDropdown(e) {
+                if (!dropdown.contains(e.target) && e.target !== btn) {
+                    dropdown.classList.remove('show');
+                    document.removeEventListener('click', closeDropdown);
+                }
+            });
+        }, 10);
+    }
+
+    function insertVar(item, varPath) {
+        const dropdown = item.parentElement;
+        const input = dropdown.previousElementSibling?.previousElementSibling;
+        if (input && (input.tagName === 'INPUT' || input.tagName === 'TEXTAREA')) {
+            const varStr = '{{ ' + varPath + ' }}';
+            const pos = input.selectionStart || input.value.length;
+            input.value = input.value.slice(0, pos) + varStr + input.value.slice(pos);
+            input.dispatchEvent(new Event('change'));
+        }
+        dropdown.classList.remove('show');
+    }
+
+    function updateNodeTitle(id, value) {
+        const node = nodes.find(n => n.id === id);
+        if (node) {
+            node.title = value;
+            const el = document.getElementById(id);
+            el.querySelector('.node-title').innerText = value;
+        }
+    }
+
+    function updateConfig(id, key, value) {
+        const node = nodes.find(n => n.id === id);
+        if (node) {
+            node.config[key] = value;
+            refreshNodeSummary(id);
+        }
+    }
+
+    function updateConfigNested(id, parentKey, childKey, value) {
+        const node = nodes.find(n => n.id === id);
+        if (node) {
+            if (!node.config[parentKey]) node.config[parentKey] = {};
+            node.config[parentKey][childKey] = value;
+            refreshNodeSummary(id);
+        }
+    }
+
+    function setConditionOperator(id, op) {
+        const node = nodes.find(n => n.id === id);
+        if (node) {
+            const oldCondition = node.config.condition || {};
+            const varVal = oldCondition.var || '';
+            const compareVal = getConditionValue(oldCondition) || 0;
+            node.config.condition = { [op]: [{ var: varVal }, compareVal] };
+            node.config.condition.var = varVal;
+        }
+    }
+
+    function setConditionCompareValue(id, val) {
+        const node = nodes.find(n => n.id === id);
+        if (node && node.config.condition) {
+            const operators = ['>=', '>', '<=', '<', '==', '!='];
+            for (const op of operators) {
+                if (node.config.condition[op]) {
+                    node.config.condition[op][1] = isNaN(val) ? val : Number(val);
+                    break;
+                }
+            }
+        }
+    }
+
+    function getConditionValue(condition) {
+        if (!condition) return '';
+        for (const op of ['>=', '>', '<=', '<', '==', '!=']) {
+            if (condition[op]) return condition[op][1];
+        }
+        return '';
+    }
+
+    function refreshNodeSummary(id) {
+        const node = nodes.find(n => n.id === id);
+        const el = document.getElementById(id);
+        if (node && el) {
+            el.querySelector('.node-body').innerText = getNodeSummary(node);
+        }
+    }
+
+    function deleteNode(id) {
+        nodes = nodes.filter(n => n.id !== id);
+        connections = connections.filter(c => c.from !== id && c.to !== id);
+        document.getElementById(id).remove();
+        renderConnections();
+        document.getElementById('properties-panel').innerHTML = '<div style="text-align:center;color:var(--text-muted);padding-top:40%"><p>Select a node to configure</p></div>';
+    }
+
+    function clearCanvas() {
+        if (!confirm('Clear all nodes?')) return;
+        nodes = [];
+        connections = [];
+        document.getElementById('canvas-nodes').innerHTML = '';
+        document.getElementById('connections-svg').innerHTML = '';
+        document.getElementById('properties-panel').innerHTML = '<div style="text-align:center;color:var(--text-muted);padding-top:40%"><p>Select a node to configure</p></div>';
+    }
+
+    // Persistence Logic
+    const urlParams = new URLSearchParams(window.location.search);
+    let currentWorkflowId = urlParams.get('id');
+
+    async function loadWorkflow() {
+        if (!currentWorkflowId) return;
+
+        try {
+            const res = await fetch(`/api/automate/workflows/${currentWorkflowId}/`);
+            if (!res.ok) throw new Error('Failed to load workflow');
+
+            const data = await res.json();
+            const graph = data.graph;
+
+            // Clear current state
+            nodes = [];
+            connections = [];
+            document.getElementById('canvas-nodes').innerHTML = '';
+
+            // Restore nodes
+            if (graph.nodes) {
+                graph.nodes.forEach(n => {
+                    const node = {
+                        id: n.id,
+                        type: n.type,
+                        title: n.name, // Map name back to title
+                        x: n.config?.x || 100, // Fallback if x/y not saved in config (should be)
+                        y: n.config?.y || 100,
+                        config: n.config || {}
+                    };
+                    // Ensure x/y are extracted if they were saved in config or alongside
+                    // The buildWorkflowGraph saved them in config? Check.
+                    // Prior implementation: 
+                    // nodes: sortedNodes.map(n => ({ id, type, name, config }))
+                    // It missed saving x/y! I need to fix save first.
+
+                    // Let's assume we fix save to include x/y in config or root.
+                    // For now, let's fix the save logic below to include metadata.
+
+                    nodes.push(node);
+                    renderNode(node);
+                });
+            }
+
+            // Restore connections
+            if (graph.edges) {
+                connections = graph.edges;
+                renderConnections();
+            }
+
+            console.log('Workflow loaded:', data.name);
+        } catch (e) {
+            console.error(e);
+            alert('Error loading workflow: ' + e.message);
+        }
+    }
+
+    function buildWorkflowGraph() {
+        return {
+            nodes: nodes.map(n => ({
+                id: n.id,
+                type: n.type,
+                name: n.title,
+                config: { ...n.config, x: n.x, y: n.y } // Save UI position in config
+            })),
+            edges: connections.map(c => ({ from: c.from, to: c.to }))
+        };
+    }
+
+    async function saveWorkflow() {
+        const graph = buildWorkflowGraph();
+        const name = prompt('Workflow name:', 'My Workflow'); // TODO: Pre-fill name if known
+        if (!name) return;
+
+        try {
+            const method = currentWorkflowId ? 'PUT' : 'POST';
+            const url = currentWorkflowId ? `/api/automate/workflows/${currentWorkflowId}/` : '/api/automate/workflows/';
+
+            const res = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    name: name,
+                    graph: graph
+                })
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                alert('Workflow saved!');
+                if (!currentWorkflowId) {
+                    currentWorkflowId = data.id;
+                    // Update URL without reload
+                    const newUrl = new URL(window.location);
+                    newUrl.searchParams.set('id', data.id);
+                    window.history.pushState({}, '', newUrl);
+                }
+            } else {
+                const err = await res.json();
+                alert('Error: ' + (err.error || res.statusText));
+            }
+        } catch (e) {
+            alert('Save failed: ' + e.message);
+        }
+    }
+
+    // Click on canvas to deselect
+    document.getElementById('canvas').addEventListener('click', function (e) {
+        if (e.target.id === 'canvas' || e.target.id === 'canvas-nodes' || e.target.classList.contains('canvas-area')) {
+            selectedNodeId = null;
+            document.querySelectorAll('.canvas-node').forEach(el => el.classList.remove('selected'));
+            document.getElementById('properties-panel').innerHTML = '<div style="text-align:center;color:var(--text-muted);padding-top:40%"><div style="font-size:3rem;margin-bottom:1rem;opacity:0.5">🎨</div><p>Select a node to configure</p></div>';
+            if (connectingFrom) {
+                connectingFrom = null;
+                document.body.style.cursor = 'default';
+            }
+        }
+    });
+
+    function onAppChange(nodeId, appLabel) {
+        updateConfig(nodeId, 'app_label', appLabel);
+
+        // Auto-select first model
+        if (appLabel) {
+            const app = appSchema.find(a => a.app_label === appLabel);
+            if (app && app.models.length > 0) {
+                const firstModel = app.models[0];
+                updateConfig(nodeId, 'model_name', firstModel.name);
+                updateConfig(nodeId, 'table', firstModel.db_table);
+                // Default action
+                updateConfig(nodeId, 'action', 'INSERT');
+            } else {
+                updateConfig(nodeId, 'model_name', '');
+                updateConfig(nodeId, 'table', '');
+            }
+        } else {
+            updateConfig(nodeId, 'model_name', '');
+            updateConfig(nodeId, 'table', '');
+        }
+        renderPropertiesPanel();
+    }
+
+    // Init
+    loadWorkflow();
+    fetchSchema();
+</script>
+{% endblock %}
