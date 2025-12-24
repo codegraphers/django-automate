@@ -1,10 +1,13 @@
 from __future__ import annotations
+
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, Optional
+from typing import Any
+
 
 @dataclass(frozen=True)
 class ToolDefinition:
     name: str
     func: Callable[..., Any]
-    schema: Dict[str, Any]
-    timeout_s: Optional[int] = None
+    schema: dict[str, Any]
+    timeout_s: int | None = None

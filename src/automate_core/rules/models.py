@@ -1,6 +1,7 @@
-import uuid
 from django.db import models
+
 from ..workflows.models import Automation
+
 
 class RuleSpec(models.Model):
     automation = models.ForeignKey(Automation, related_name="rules", on_delete=models.CASCADE)

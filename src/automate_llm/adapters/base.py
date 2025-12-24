@@ -1,9 +1,11 @@
 from __future__ import annotations
-from abc import ABC, abstractmethod
-from typing import Any, Dict, Iterator, Optional
 
-from ..types import ChatRequest, ChatResponse, CostEstimate
+from abc import ABC, abstractmethod
+from collections.abc import Iterator
+
 from ..errors import LLMError
+from ..types import ChatRequest, ChatResponse, CostEstimate
+
 
 class ProviderAdapter(ABC):
     """
@@ -14,7 +16,7 @@ class ProviderAdapter(ABC):
     """
     code: str  # e.g. "openai"
 
-    def __init__(self, *, base_url: Optional[str] = None, headers: Optional[Dict[str, str]] = None) -> None:
+    def __init__(self, *, base_url: str | None = None, headers: dict[str, str] | None = None) -> None:
         self.base_url = base_url
         self.headers = headers or {}
 
@@ -30,7 +32,7 @@ class ProviderAdapter(ABC):
         raise NotImplementedError
 
     @property
-    def capabilities(self) -> Dict[str, bool]:
+    def capabilities(self) -> dict[str, bool]:
         """Feature flags: supports_streaming, supports_tools, etc."""
         return {}
 

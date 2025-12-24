@@ -1,5 +1,6 @@
 from django.apps import AppConfig
 
+
 class AutomateLLMConfig(AppConfig):
     name = "automate_llm" # Matching the actual package name in src
     label = "automate_llm"

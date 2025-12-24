@@ -1,10 +1,9 @@
 from __future__ import annotations
-from typing import Any, Dict, List
+
 import logging
 
-from ..types import ChatRequest, ChatResponse, CostEstimate, Usage
 from ..errors import LLMError, LLMErrorCode
-from ..pricing import ModelPricing
+from ..types import ChatRequest, ChatResponse, CostEstimate, Usage
 from .base import ProviderAdapter
 
 logger = logging.getLogger(__name__)
@@ -13,7 +12,7 @@ class GeminiAdapter(ProviderAdapter):
     code = "google" # or gemini
 
     @property
-    def capabilities(self) -> Dict[str, bool]:
+    def capabilities(self) -> dict[str, bool]:
         return {
             "supports_streaming": False,
             "supports_tools": False, # Simple impl for now
@@ -28,13 +27,13 @@ class GeminiAdapter(ProviderAdapter):
 
         genai.configure(api_key=api_key)
         model = genai.GenerativeModel(req.model)
-        
+
         # Convert messages
         # Gemini expects history list + last message
         # Simplified: Just grab last user message
-        
+
         last_msg = req.messages[-1].content
-        
+
         try:
             # Generate
             # Note: generation_config could handle temp/max_tokens
@@ -42,9 +41,9 @@ class GeminiAdapter(ProviderAdapter):
                 temperature=req.temperature,
                 max_output_tokens=req.max_tokens
             )
-            
+
             resp = model.generate_content(last_msg, generation_config=generation_config)
-            
+
             return ChatResponse(
                 content=resp.text,
                 role="model",

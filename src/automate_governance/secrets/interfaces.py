@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Mapping, Optional
+from collections.abc import Mapping
 
 from .refs import SecretRef
 
@@ -30,7 +30,7 @@ class SecretsBackend(ABC):
         """Whether backend can resolve explicit versions."""
         return False
 
-    def rotate(self, namespace: str, name: str, *, new_value: str) -> Optional[str]:
+    def rotate(self, namespace: str, name: str, *, new_value: str) -> str | None:
         """
         Optional rotation hook. Returns new version identifier if applicable.
         Most deployments will rotate via backend tooling; keep this optional.

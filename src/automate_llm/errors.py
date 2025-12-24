@@ -1,7 +1,9 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any
+
 
 class LLMErrorCode(str, Enum):
     POLICY_VIOLATION = "LLM_POLICY_VIOLATION"
@@ -18,10 +20,10 @@ class LLMError(Exception):
     code: LLMErrorCode
     message_safe: str
     retryable: bool = False
-    details_safe: Optional[Dict[str, Any]] = None
-    provider: Optional[str] = None
+    details_safe: dict[str, Any] | None = None
+    provider: str | None = None
 
-    def to_error_dict(self) -> Dict[str, Any]:
+    def to_error_dict(self) -> dict[str, Any]:
         return {
             "code": self.code.value,
             "message": self.message_safe,

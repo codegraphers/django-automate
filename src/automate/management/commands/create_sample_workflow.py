@@ -4,16 +4,16 @@ Management command to create a sample workflow for testing.
 Usage:
     python manage.py create_sample_workflow
 """
+
 from django.core.management.base import BaseCommand
-import json
 
 
 class Command(BaseCommand):
     help = "Create a sample workflow for testing the execution system"
-    
+
     def handle(self, *args, **options):
-        from automate.models import Automation, TriggerSpec, Rule, Workflow, Prompt, PromptVersion
-        
+        from automate.models import Automation, Prompt, PromptVersion, Rule, TriggerSpec, Workflow
+
         # 1. Create or get test automation
         automation, created = Automation.objects.get_or_create(
             slug="order-notification",
@@ -23,12 +23,12 @@ class Command(BaseCommand):
                 "environment": "default"
             }
         )
-        
+
         if created:
             self.stdout.write(f"Created automation: {automation.name}")
         else:
             self.stdout.write(f"Using existing automation: {automation.name}")
-        
+
         # 2. Add trigger
         trigger, _ = TriggerSpec.objects.get_or_create(
             automation=automation,
@@ -39,7 +39,7 @@ class Command(BaseCommand):
             }
         )
         self.stdout.write(f"  Trigger: {trigger.type}")
-        
+
         # 3. Add rule (amount >= 100)
         rule, _ = Rule.objects.get_or_create(
             automation=automation,
@@ -49,8 +49,8 @@ class Command(BaseCommand):
                 "enabled": True
             }
         )
-        self.stdout.write(f"  Rule: amount >= 100")
-        
+        self.stdout.write("  Rule: amount >= 100")
+
         # 4. Create a simple summary prompt
         prompt, _ = Prompt.objects.get_or_create(
             slug="order_summarizer",
@@ -59,7 +59,7 @@ class Command(BaseCommand):
                 "description": "Summarizes an order for notifications"
             }
         )
-        
+
         PromptVersion.objects.update_or_create(
             prompt=prompt,
             version=1,
@@ -76,8 +76,8 @@ Items: {{ event.items | tojson }}
 Keep it brief and professional."""
             }
         )
-        self.stdout.write(f"  Prompt: order_summarizer (v1)")
-        
+        self.stdout.write("  Prompt: order_summarizer (v1)")
+
         # 5. Create workflow with steps
         workflow_graph = {
             "nodes": [
@@ -124,7 +124,7 @@ Keep it brief and professional."""
                 "name": "High Value Order → LLM → Slack"
             }
         }
-        
+
         workflow, created = Workflow.objects.update_or_create(
             automation=automation,
             version=1,
@@ -133,9 +133,9 @@ Keep it brief and professional."""
                 "is_live": True
             }
         )
-        
+
         self.stdout.write(f"  Workflow: v{workflow.version} ({'created' if created else 'updated'})")
-        
+
         # Summary
         self.stdout.write("")
         self.stdout.write(self.style.SUCCESS("✅ Sample workflow created!"))
@@ -156,7 +156,7 @@ Keep it brief and professional."""
         self.stdout.write("  )")
         self.stdout.write("  ")
         self.stdout.write("  execution = Execution.objects.create(")
-        self.stdout.write(f"      event=event,")
+        self.stdout.write("      event=event,")
         self.stdout.write(f"      automation_id='{automation.id}',")
         self.stdout.write("      workflow_version=1,")
         self.stdout.write("      status='queued'")

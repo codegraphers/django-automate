@@ -1,24 +1,26 @@
 from __future__ import annotations
-from typing import Any, Dict, List, Optional
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from typing import Any
+
 
 @dataclass
 class HookResult:
     allowed: bool
-    modified_payload: Optional[Any] = None
-    rejection_reason: Optional[str] = None
+    modified_payload: Any | None = None
+    rejection_reason: str | None = None
 
 class SafetyHook(ABC):
     @abstractmethod
-    def run(self, ctx: Dict[str, Any], payload: Any) -> HookResult:
+    def run(self, ctx: dict[str, Any], payload: Any) -> HookResult:
         pass
 
 class SafetyPipeline:
-    def __init__(self, hooks: List[SafetyHook]) -> None:
+    def __init__(self, hooks: list[SafetyHook]) -> None:
         self.hooks = hooks
 
-    def process(self, ctx: Dict[str, Any], payload: Any) -> HookResult:
+    def process(self, ctx: dict[str, Any], payload: Any) -> HookResult:
         current_payload = payload
         for hook in self.hooks:
             res = hook.run(ctx, current_payload)

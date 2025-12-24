@@ -1,7 +1,9 @@
 from __future__ import annotations
-from typing import Any, Dict, List, Set
+
+from typing import Any
 
 from .engine import RuleNode
+
 
 class RuleCompiler:
     """
@@ -9,13 +11,13 @@ class RuleCompiler:
     Example: {"==": [{"var": "event.type"}, "order.created"]}
     -> index_terms: ["event.type=order.created"]
     """
-    
-    def extract_index_terms(self, rule: RuleNode) -> List[str]:
-        terms: Set[str] = set()
+
+    def extract_index_terms(self, rule: RuleNode) -> list[str]:
+        terms: set[str] = set()
         self._visit(rule, terms)
         return sorted(list(terms))
 
-    def _visit(self, node: RuleNode, terms: Set[str]) -> None:
+    def _visit(self, node: RuleNode, terms: set[str]) -> None:
         if not isinstance(node, dict):
             return
 

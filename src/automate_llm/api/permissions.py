@@ -1,5 +1,6 @@
 from rest_framework.permissions import BasePermission
 
+
 class DjangoPerm(BasePermission):
     perm: str = ""
 

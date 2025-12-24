@@ -1,20 +1,23 @@
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
+
+
+class OutboxStatusChoices(models.TextChoices):
+    PENDING = "PENDING", _("Pending")
+    RUNNING = "RUNNING", _("Running")
+    RETRY = "RETRY", _("Retry")
+    DLQ = "DLQ", _("Dead Letter Queue")
+    DONE = "DONE", _("Done")
+    CANCELLED = "CANCELLED", _("Cancelled")
 
 class OutboxItem(models.Model):
-    STATUS_CHOICES = [
-        ("PENDING", "Pending"),
-        ("RUNNING", "Running"),
-        ("RETRY", "Retry"),
-        ("DLQ", "Dead Letter Queue"),
-        ("DONE", "Done"),
-        ("CANCELLED", "Cancelled"),
-    ]
+    STATUS_CHOICES = OutboxStatusChoices.choices # Backward compat alias
 
     tenant_id = models.CharField(max_length=64, db_index=True)
-    status = models.CharField(max_length=32, choices=STATUS_CHOICES, default="PENDING")
+    status = models.CharField(max_length=32, choices=OutboxStatusChoices.choices, default=OutboxStatusChoices.PENDING)
     kind = models.CharField(max_length=64)  # "event", "step", "webhook"
-    
+
     payload = models.JSONField(default=dict)
 
     idempotency_key = models.CharField(max_length=128, null=True, blank=True)
@@ -29,7 +32,7 @@ class OutboxItem(models.Model):
 
     last_error_code = models.CharField(max_length=128, null=True, blank=True)
     last_error_message = models.TextField(null=True, blank=True)
-    
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

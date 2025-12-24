@@ -1,21 +1,22 @@
 from __future__ import annotations
-from typing import Any, Dict, List, Optional
-import json
 
-from ..errors import LLMError, LLMErrorCode
-from ..validation import OutputValidator
-from ..redaction import RedactionEngine
-from .types import ToolDefinition
+from typing import Any
+
 from automate_connectors.errors import ConnectorError
+
+from ..redaction import RedactionEngine
+from ..validation import OutputValidator
+from .types import ToolDefinition
+
 
 class ToolRegistry:
     def __init__(self) -> None:
-        self._tools: Dict[str, ToolDefinition] = {}
+        self._tools: dict[str, ToolDefinition] = {}
 
     def register(self, tool: ToolDefinition) -> None:
         self._tools[tool.name] = tool
 
-    def get(self, name: str) -> Optional[ToolDefinition]:
+    def get(self, name: str) -> ToolDefinition | None:
         return self._tools.get(name)
 
 class ToolExecutor:
@@ -24,16 +25,16 @@ class ToolExecutor:
     Pipeline: Check Registry -> Validate Args -> Execute -> Validate Output -> Redact.
     """
     def __init__(
-        self, 
-        registry: ToolRegistry, 
-        redaction: Optional[RedactionEngine] = None,
-        validator: Optional[OutputValidator] = None
+        self,
+        registry: ToolRegistry,
+        redaction: RedactionEngine | None = None,
+        validator: OutputValidator | None = None
     ) -> None:
         self.registry = registry
         self.redaction = redaction or RedactionEngine()
         self.validator = validator or OutputValidator()
 
-    def execute(self, name: str, arguments: Dict[str, Any]) -> Any:
+    def execute(self, name: str, arguments: dict[str, Any]) -> Any:
         # 1. Lookup
         tool = self.registry.get(name)
         if not tool:
@@ -43,19 +44,19 @@ class ToolExecutor:
 
         # 2. Argument Validation (against tool.schema)
         # TODO: Implement strict jsonschema check here
-        
+
         try:
             # 3. Execution
             raw_result = tool.func(**arguments)
-            
+
             # 4. Result Validation (against tool output schema if exists)
             # This is optional but recommended
-            
+
             # 5. Redaction
             # Ensure no PII/Secrets leak back into context window unnecessarily
             # (unless the model needs the secret, which is rare. Better to keep it opaque)
             safe_result = self.redaction.redact_payload(raw_result)
-            
+
             return safe_result
 
         except ConnectorError as ce:

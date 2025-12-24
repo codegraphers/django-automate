@@ -1,4 +1,3 @@
-from typing import Dict, Tuple
 
 # Simple hardcoded pricing table for MVP
 # In production, fetch from DB or external service
@@ -17,7 +16,7 @@ class CostTracker:
             # Fallback for unknown models (safe default 0 or high?)
             # Log warning
             return 0.0
-            
+
         rate_in, rate_out = pricing
         cost = (input_tokens / 1000 * rate_in) + (output_tokens / 1000 * rate_out)
         return round(cost, 6)

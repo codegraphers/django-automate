@@ -1,9 +1,12 @@
-import pytest
 import threading
+
+import pytest
 from django.db import connections
-from automate.models import Event, Outbox, OutboxStatusChoices, Automation, TriggerSpec, TriggerTypeChoices
-from automate.ingestion import EventIngestionService
+
 from automate.dispatcher import Dispatcher
+from automate.ingestion import EventIngestionService
+from automate.models import Automation, Outbox, OutboxStatusChoices, TriggerSpec, TriggerTypeChoices
+
 
 @pytest.mark.django_db(transaction=True)
 def test_outbox_concurrency():
@@ -12,14 +15,14 @@ def test_outbox_concurrency():
     """
     # Setup
     auto = Automation.objects.create(name="Concurrency Test", slug="concurrency-test")
-    TriggerSpec.objects.create(automation=auto, type=TriggerTypeChoices.MANUAL, config={})
-    
+    TriggerSpec.objects.create(automation=auto, type=TriggerTypeChoices.MANUAL, filter_config={})
+
     # Ingest 50 events to ensure collision checking
     for i in range(50):
         EventIngestionService.ingest_event("manual", "test", {"i": i})
-    
+
     assert Outbox.objects.count() == 50
-    
+
     # Define Worker
     def worker(wid):
         # Clean connections for thread
@@ -36,16 +39,16 @@ def test_outbox_concurrency():
                 # Or simplistic check.
                 break
         connections.close_all()
-        
+
     t1 = threading.Thread(target=worker, args=("worker-1",))
     t2 = threading.Thread(target=worker, args=("worker-2",))
-    
+
     t1.start()
     t2.start()
     t1.join()
     t2.join()
-    
+
     # Assertions
-    assert Outbox.objects.filter(status=OutboxStatusChoices.PROCESSED).count() == 50
+    assert Outbox.objects.filter(status=OutboxStatusChoices.DONE).count() == 50
     assert Outbox.objects.filter(status=OutboxStatusChoices.LOCKED).count() == 0
     assert Outbox.objects.filter(status=OutboxStatusChoices.PENDING).count() == 0

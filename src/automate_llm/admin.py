@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 from .governance.models import LLMRequest
 
 
@@ -9,7 +10,7 @@ class LLMRequestAdmin(admin.ModelAdmin):
     search_fields = ["prompt_slug", "error_message", "output_content"]
     readonly_fields = ["created_at", "input_payload", "output_content"]
     date_hierarchy = "created_at"
-    
+
     fieldsets = [
         ("Request Info", {
             "fields": ["provider", "model", "prompt_slug", "purpose", "tenant_id"]

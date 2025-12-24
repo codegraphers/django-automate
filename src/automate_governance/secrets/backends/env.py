@@ -1,9 +1,10 @@
 from __future__ import annotations
+
 import os
 
+from ..errors import SecretNotFound, SecretPermissionDenied
 from ..interfaces import SecretsBackend
 from ..refs import SecretRef
-from ..errors import SecretNotFound, SecretPermissionDenied
 
 
 class EnvBackend(SecretsBackend):

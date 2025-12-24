@@ -1,4 +1,5 @@
 from pathlib import Path
+
 from dotenv import load_dotenv
 
 # Load .env file
@@ -21,7 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     'automate',
     'automate_core',
     'automate_governance',

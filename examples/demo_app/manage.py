@@ -3,15 +3,16 @@ import os
 import sys
 from pathlib import Path
 
+
 def main():
     """Run administrative tasks."""
-    
+
     # Add package source to path for easy dev
     curr_dir = Path(__file__).resolve().parent
     sys.path.append(str(curr_dir.parent / "packages" / "django_automate" / "src"))
 
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'example_project.settings')
-    
+
     # Add the package source to sys.path so we can run without installing
     # This simulates "editable" install
     BASE_DIR = Path(__file__).resolve().parent

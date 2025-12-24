@@ -1,6 +1,8 @@
-from typing import Any, Dict
-from .models import AuditLogEntry
+from typing import Any
+
 from .context import get_trace_id
+from .models import AuditLogEntry
+
 
 def log_audit_event(
     *,
@@ -8,7 +10,7 @@ def log_audit_event(
     action: str,
     obj_type: str = "",
     obj_id: str = "",
-    details: Dict[str, Any] = None,
+    details: dict[str, Any] = None,
 ) -> AuditLogEntry:
     """
     Write an audit log entry.

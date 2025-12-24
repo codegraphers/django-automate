@@ -1,5 +1,3 @@
-from django.conf import settings
-from django.db import models
 
 class DataChatRegistry:
     _registry = {} # { Model: ConfigDict }
@@ -11,16 +9,16 @@ class DataChatRegistry:
         """
         meta = model_class._meta
         table_name = meta.db_table
-        
+
         # Calculate allowed fields
         all_fields = [f.name for f in meta.get_fields() if not f.is_relation and not f.many_to_many]
-        
+
         allowed_fields = []
         if include_fields:
             allowed_fields = include_fields
         else:
             allowed_fields = all_fields
-            
+
         if exclude_fields:
             allowed_fields = [f for f in allowed_fields if f not in exclude_fields]
 
@@ -39,10 +37,10 @@ class DataChatRegistry:
         """
         # 1. Start with Registry
         tables = cls._registry.copy()
-        
+
         # 2. Merge with Settings (if enabled)
         # TODO: Implement settings merge logic
-        
+
         return tables
 
 # Decorator shortcut

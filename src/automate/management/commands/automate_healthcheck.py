@@ -1,6 +1,8 @@
 from django.core.management.base import BaseCommand
-from automate.models import Outbox, OutboxStatusChoices
+
 from automate.dlq import DeadLetter
+from automate.models import Outbox, OutboxStatusChoices
+
 
 class Command(BaseCommand):
     help = "Healthcheck stats"
@@ -10,7 +12,7 @@ class Command(BaseCommand):
         failed = Outbox.objects.filter(status=OutboxStatusChoices.FAILED).count()
         dead = Outbox.objects.filter(status=OutboxStatusChoices.DEAD).count()
         dlq = DeadLetter.objects.count()
-        
+
         self.stdout.write(f"Outbox Pending: {pending}")
         self.stdout.write(f"Outbox Failed: {failed}")
         self.stdout.write(f"Outbox Dead: {dead}")

@@ -1,26 +1,29 @@
 from django.core.management.base import BaseCommand
+
 from automate.models import Automation, TriggerSpec, Workflow
+
 
 class Command(BaseCommand):
     help = "Seeds the database with sample automations."
 
     def handle(self, *args, **options):
         self.stdout.write("Seeding Automations...")
-        
+
         # 1. Welcome Automation
         a1, _ = Automation.objects.get_or_create(
             slug="welcome-user",
-            defaults={"name": "Welcome New User", "environment": "dev"}
+            defaults={"name": "Welcome New User", "tenant_id": "default"}
         )
-        
+
+        from automate.models import TriggerTypeChoices
         TriggerSpec.objects.get_or_create(
             automation=a1,
-            type="model",
+            type=TriggerTypeChoices.MODEL_SIGNAL,
             defaults={
-                "config": {"model": "auth.User", "event": "created"}
+                "filter_config": {"model": "auth.User", "event": "created"}
             }
         )
-        
+
         Workflow.objects.get_or_create(
             automation=a1,
             version=1,

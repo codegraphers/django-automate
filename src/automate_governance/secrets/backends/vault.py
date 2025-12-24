@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+from ..errors import SecretBackendUnavailable
 from ..interfaces import SecretsBackend
 from ..refs import SecretRef
-from ..errors import SecretBackendUnavailable, SecretNotFound
 
 
 class VaultBackend(SecretsBackend):

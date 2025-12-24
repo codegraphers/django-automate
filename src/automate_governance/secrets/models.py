@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class ConnectionProfile(models.Model):
     kind = models.CharField(max_length=64)      # "stripe", "openai", "slack"
     name = models.CharField(max_length=128)
@@ -9,7 +10,7 @@ class ConnectionProfile(models.Model):
 
     is_active = models.BooleanField(default=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     # Optional tenant logic (to be integrated properly later)
     tenant_id = models.CharField(max_length=64, db_index=True)
 

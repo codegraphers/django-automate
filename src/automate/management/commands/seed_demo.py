@@ -1,19 +1,22 @@
 from django.core.management.base import BaseCommand
-from automate.models import Automation, TriggerSpec, Workflow, TriggerTypeChoices
+
+from automate.models import Automation, TriggerSpec, TriggerTypeChoices, Workflow
+
 
 class Command(BaseCommand):
     help = "Seeds a demo automation"
 
     def handle(self, *args, **options):
         self.stdout.write("Seeding demo data...")
-        
+
+        # 1. Automation
         # 1. Automation
         auto, created = Automation.objects.get_or_create(
             name="Demo Workflow",
             defaults={
                 "slug": "demo-workflow",
-                "enabled": True,
-                "environment": "dev"
+                "tenant_id": "demo",
+                "is_active": True
             }
         )
         if not created:
@@ -24,10 +27,10 @@ class Command(BaseCommand):
         TriggerSpec.objects.create(
             automation=auto,
             type=TriggerTypeChoices.MANUAL,
-            config={},
-            enabled=True
+            filter_config={},
+            is_active=True
         )
-        
+
         # 3. Workflow
         Workflow.objects.create(
             automation=auto,

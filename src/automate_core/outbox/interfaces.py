@@ -1,6 +1,6 @@
 from __future__ import annotations
+
 from abc import ABC, abstractmethod
-from typing import List, Optional
 from datetime import datetime
 
 from .models import OutboxItem
@@ -13,7 +13,7 @@ class OutboxStore(ABC):
     """
 
     @abstractmethod
-    def claim_batch(self, owner: str, limit: int, now: datetime) -> List[OutboxItem]:
+    def claim_batch(self, owner: str, limit: int, now: datetime) -> list[OutboxItem]:
         """
         Claim up to `limit` pending/retry items for `owner`.
         Must set status='RUNNING', lease_owner=owner, lease_expires_at=now+lease_duration.

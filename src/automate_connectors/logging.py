@@ -1,8 +1,10 @@
 from __future__ import annotations
+
+import functools
 import logging
 import time
-import functools
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -15,11 +17,11 @@ def trace_connector_execution(func: Callable[..., Any]) -> Callable[..., Any]:
         start_ts = time.time()
         connector_code = getattr(self, "code", "unknown")
         trace_id = ctx.get("trace_id", "unknown")
-        
+
         try:
             result = func(self, action, input, ctx, *args, **kwargs)
             duration_ms = (time.time() - start_ts) * 1000
-            
+
             logger.info(
                 "Connector Execution Success",
                 extra={
@@ -34,7 +36,7 @@ def trace_connector_execution(func: Callable[..., Any]) -> Callable[..., Any]:
         except Exception as e:
             duration_ms = (time.time() - start_ts) * 1000
             error_code = getattr(e, "code", "INTERNAL_ERROR")
-            
+
             logger.error(
                 "Connector Execution Failed",
                 extra={
@@ -48,5 +50,5 @@ def trace_connector_execution(func: Callable[..., Any]) -> Callable[..., Any]:
                 }
             )
             raise
-            
+
     return wrapper

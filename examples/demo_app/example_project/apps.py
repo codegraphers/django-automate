@@ -1,5 +1,6 @@
 from django.apps import AppConfig
 
+
 class ExampleProjectConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'example_project'
@@ -7,12 +8,13 @@ class ExampleProjectConfig(AppConfig):
     def ready(self):
         # Register models for Data Chat
         try:
-            from django.contrib.auth.models import User, Group
+            from django.contrib.auth.models import Group, User
+
             from automate_datachat.registry import DataChatRegistry
-            
+
             # Auth models
             DataChatRegistry.register(
-                User, 
+                User,
                 include_fields=["id", "username", "email", "date_joined", "is_staff", "is_active", "last_login"],
                 tags=["auth"]
             )
@@ -21,13 +23,21 @@ class ExampleProjectConfig(AppConfig):
                 include_fields=["id", "name"],
                 tags=["auth"]
             )
-            
+
             # Automate models
             from automate.models import (
-                Automation, LLMProvider, LLMModelConfig, Prompt, PromptVersion,
-                Execution, ExecutionStep, Event, ConnectionProfile, BudgetPolicy
+                Automation,
+                BudgetPolicy,
+                ConnectionProfile,
+                Event,
+                Execution,
+                ExecutionStep,
+                LLMModelConfig,
+                LLMProvider,
+                Prompt,
+                PromptVersion,
             )
-            
+
             DataChatRegistry.register(
                 LLMProvider,
                 include_fields=["slug", "name", "base_url", "api_key_env_var"],
@@ -68,7 +78,7 @@ class ExampleProjectConfig(AppConfig):
                 include_fields=["id", "name", "max_monthly_usd", "enabled"],
                 tags=["governance"]
             )
-            
+
             # LLM Request logs
             from automate_llm.governance.models import LLMRequest
             DataChatRegistry.register(
@@ -76,9 +86,9 @@ class ExampleProjectConfig(AppConfig):
                 include_fields=["id", "provider", "model", "prompt_slug", "purpose", "status", "input_tokens", "output_tokens", "latency_ms", "cost_usd", "created_at"],
                 tags=["llm", "logs"]
             )
-            
+
             # DataChat models
-            from automate_datachat.models import DataChatSession, DataChatMessage
+            from automate_datachat.models import DataChatMessage, DataChatSession
             DataChatRegistry.register(
                 DataChatSession,
                 include_fields=["id", "user_id", "session_key", "created_at", "updated_at"],
@@ -89,20 +99,20 @@ class ExampleProjectConfig(AppConfig):
                 include_fields=["id", "session_id", "role", "content", "sql", "created_at", "llm_request_id"],
                 tags=["datachat"]
             )
-            
+
         except ImportError as e:
             print(f"DataChat registry error: {e}")
-        
+
         # Seed Data Chat prompts with improved templates
         try:
             from automate.models import Prompt, PromptVersion
-            
+
             # SQL Generator Prompt - IMPROVED
             sql_prompt, created = Prompt.objects.get_or_create(
                 slug="datachat_sql_generator",
                 defaults={"name": "Data Chat SQL Generator", "description": "Generates SQL from natural language questions"}
             )
-            
+
             # Always update to version 4 with session context support
             version, v_created = PromptVersion.objects.update_or_create(
                 prompt=sql_prompt,
@@ -169,7 +179,7 @@ Q: "What tables do you have?" → I can help with user data, system settings, an
 User: {{ question }}"""
                 }
             )
-            
+
             # Summarizer Prompt
             sum_prompt, created = Prompt.objects.get_or_create(
                 slug="datachat_summarizer",

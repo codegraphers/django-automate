@@ -1,6 +1,7 @@
 from __future__ import annotations
-import os
-from typing import Any, Dict
+
+from typing import Any
+
 from django.conf import settings
 
 # Default configuration
@@ -30,10 +31,10 @@ class ConfigLoader:
     @classmethod
     def get(cls, path: str, default: Any = None) -> Any:
         keys = path.split(".")
-        
+
         # 1. Start with settings.AUTOMATE
         current = getattr(settings, "AUTOMATE", {})
-        
+
         # Traverse
         found = True
         for k in keys:
@@ -45,7 +46,7 @@ class ConfigLoader:
             else:
                 found = False
                 break
-        
+
         if found and current is not None:
              return current
 
@@ -58,8 +59,8 @@ class ConfigLoader:
                 if current is None:
                     found = False
                     break
-        
+
         if found and current is not None:
             return current
-            
+
         return default

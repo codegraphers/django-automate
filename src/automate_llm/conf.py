@@ -1,8 +1,8 @@
-from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
+
 from django.conf import settings
 
-DEFAULTS: Dict[str, Any] = {
+DEFAULTS: dict[str, Any] = {
     "DEFAULT_PROVIDER_PROFILE": "llm:default",
     "DEFAULT_MODEL": "gpt-4.1-mini",
     "TIMEOUT_S": 60,
@@ -19,15 +19,15 @@ DEFAULTS: Dict[str, Any] = {
     "DB_OPT": {"enable_json_indexes_if_supported": True, "enable_gin_if_postgres": True},
 }
 
-def llm_settings() -> Dict[str, Any]:
+def llm_settings() -> dict[str, Any]:
     root = getattr(settings, "DJANGO_AUTOMATE", {}) or {}
     llm = root.get("LLM", {}) or {}
     merged = {**DEFAULTS, **llm}
-    
+
     # shallow merge for nested dicts
     for k in ("RETRY", "BUDGETS", "POLICY", "DB_OPT"):
         merged[k] = {**DEFAULTS.get(k, {}), **llm.get(k, {})}
-    
+
     # nested redaction/output_contract
     merged["POLICY"]["redaction"] = {**DEFAULTS["POLICY"]["redaction"], **merged["POLICY"].get("redaction", {})}
     merged["POLICY"]["output_contract"] = {**DEFAULTS["POLICY"]["output_contract"], **merged["POLICY"].get("output_contract", {})}

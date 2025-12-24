@@ -1,25 +1,27 @@
 from __future__ import annotations
-from typing import Any, Dict, Optional, List
 
-from ..registry import get_adapter_cls
+from typing import Any
+
 from ..errors import LLMError, LLMErrorCode
 from ..policy import LLMPolicyEngine
 from ..redaction import RedactionEngine
-from ..types import ChatRequest, ChatResponse, CostEstimate
-from ..validation import OutputValidator
-from ..tools import ToolExecutor, ToolRegistry
+from ..registry import get_adapter_cls
 from ..safety import SafetyPipeline
+from ..tools import ToolExecutor, ToolRegistry
+from ..types import ChatRequest, ChatResponse
+from ..validation import OutputValidator
+
 
 class RunExecutor:
     def __init__(
         self,
         *,
-        policy_engine: Optional[LLMPolicyEngine] = None,
-        redaction: Optional[RedactionEngine] = None,
-        tool_registry: Optional[ToolRegistry] = None,
-        output_validator: Optional[OutputValidator] = None,
-        pre_send_pipeline: Optional[SafetyPipeline] = None,
-        post_receive_pipeline: Optional[SafetyPipeline] = None,
+        policy_engine: LLMPolicyEngine | None = None,
+        redaction: RedactionEngine | None = None,
+        tool_registry: ToolRegistry | None = None,
+        output_validator: OutputValidator | None = None,
+        pre_send_pipeline: SafetyPipeline | None = None,
+        post_receive_pipeline: SafetyPipeline | None = None,
     ) -> None:
         self.policy_engine = policy_engine or LLMPolicyEngine()
         self.redaction = redaction or RedactionEngine()
@@ -35,11 +37,11 @@ class RunExecutor:
         api_key: str,
         req: ChatRequest,
         effective_policy: Any,
-        adapter_cfg: Dict[str, Any],
+        adapter_cfg: dict[str, Any],
     ) -> ChatResponse:
         adapter_cls = get_adapter_cls(provider_code)
         adapter = adapter_cls(
-            base_url=adapter_cfg.get("base_url"), 
+            base_url=adapter_cfg.get("base_url"),
             headers=adapter_cfg.get("headers")
         )
 
@@ -63,17 +65,17 @@ class RunExecutor:
         try:
             # 3. Execution
             resp = adapter.chat(req, api_key=api_key)
-            
+
             # 4. Post-Receive Safety Hooks
             if self.post_receive_pipeline:
                 res = self.post_receive_pipeline.process({"req": req, "resp": resp}, resp)
                 if not res.allowed:
                     raise LLMError(LLMErrorCode.POLICY_VIOLATION, f"Post-receive safety check failed: {res.rejection_reason}")
-            
+
             # 5. Output Validation (Structural)
             # Check schema if one was implied by the request (e.g. response_format)
             # For now, just validating internal consistency
-            
+
             # 6. Tool Validation (if tools used in response)
             if resp.tool_calls:
                  # Check against allowlist in policy/registry

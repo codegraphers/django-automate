@@ -1,17 +1,14 @@
 import logging
 import traceback
-import json
-import uuid
-from django.utils import timezone
-from django.db import transaction
 
+from django.utils import timezone
+
+from ..chaos import ChaosModule
+from ..context import set_current_correlation_id, set_current_tenant
 from ..services.leases import LeaseManager
 from ..services.side_effects import SideEffectManager
-from ..chaos import ChaosModule
-from ..context import set_current_tenant, set_current_correlation_id, TenantContext
-
-from .models import Execution, StepRun, ExecutionStatusChoices
-from ..workflows.models import Workflow, Automation
+from ..workflows.models import Workflow
+from .models import Execution, ExecutionStatusChoices, StepRun
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +33,7 @@ class ExecutionEngine:
         Idempotent: Can be called multiple times for the same execution.
         """
         # 0. Context & locking check
-        # We need to fetch basic info first to set context? 
+        # We need to fetch basic info first to set context?
         # Ideally we load the execution first.
         try:
             execution = Execution.objects.get(id=execution_id)
@@ -47,7 +44,7 @@ class ExecutionEngine:
         # Set Context
         set_current_tenant(execution.tenant_id)
         set_current_correlation_id(str(execution.correlation_id))
-        
+
         # 1. Acquire Lease (D1)
         if not self.leases.acquire_execution(execution_id):
             logger.warning(f"Could not acquire lease for {execution_id}. Locked by another worker?")
@@ -58,7 +55,7 @@ class ExecutionEngine:
         try:
             # Refresh data after lock
             execution.refresh_from_db()
-            
+
             # 2. Chaos Hook (Start) - D4
             ChaosModule.check_and_raise("execution:start", {"execution_id": execution_id})
 
@@ -70,22 +67,22 @@ class ExecutionEngine:
             # In a real system, we'd cache this or fetch from Workflow model
             # For now, simplistic traversal stub.
             workflow = Workflow.objects.filter(
-                automation=execution.automation, 
+                automation=execution.automation,
                 version=execution.workflow_version
             ).first()
-            
+
             if not workflow:
                 self._fail_execution(execution, "Workflow version not found")
                 return
 
             graph = workflow.graph # Expected: {"nodes": [...], "edges": [...]}
-            
+
             # 4. Determine Next Steps
             # Simple linear execution for MVP? Or finding pending steps?
             # Let's find pending steps based on `execution.steps`.
-            
+
             runnable_nodes = self._get_runnable_nodes(execution, graph)
-            
+
             if not runnable_nodes:
                 # If no running/pending steps and we ran something, maybe we are done?
                 # Check if all end nodes are done.
@@ -96,23 +93,23 @@ class ExecutionEngine:
             # 5. Execute Steps
             for node in runnable_nodes:
                 self._execute_step(execution, node)
-                
+
             # 6. Check Completion immediately
             if self._check_completion(execution, graph):
                 self._complete_execution(execution)
-                
+
         except Exception as e:
             logger.error(f"Engine Crash for {execution_id}: {traceback.format_exc()}")
             self._handle_crash(execution, e)
         finally:
             # 6. Release Lease (or let it expire?)
-            # SRE Practice: Release if done, otherwise keep if long-running? 
+            # SRE Practice: Release if done, otherwise keep if long-running?
             # Usually release so others can pick up next retry or step.
             self.leases.release_execution(execution_id)
 
     def _execute_step(self, execution: Execution, node: dict):
         node_key = node["id"]
-        
+
         # 1. Idempotency / Step Record
         step_run, created = StepRun.objects.get_or_create(
             execution=execution,
@@ -122,12 +119,12 @@ class ExecutionEngine:
                 "input_data": {}, # Resolve inputs here
             }
         )
-        
+
         if step_run.status == ExecutionStatusChoices.SUCCESS:
             return # Already done
-            
+
         logger.info(f"Running step {node_key}")
-        
+
         try:
             # Chaos Hook (Pre-Step)
             ChaosModule.check_and_raise("step:pre", {"node_key": node_key})
@@ -139,21 +136,21 @@ class ExecutionEngine:
             # se_key = self.side_effects.compute_key(execution.id, node_key, action, params)
             # cached = self.side_effects.check(execution.tenant_id, se_key)
             # if cached: return cached...
-            
+
             # SIMULATION OF WORK
             # ... call provider ...
-            
+
             # Chaos Hook (Provider Call)
             ChaosModule.check_and_raise("provider:call", {"node_key": node_key})
-            
+
             output = {"result": "ok", "mock": True}
-            
+
             # 3. Record Success
             step_run.status = ExecutionStatusChoices.SUCCESS
             step_run.output_data = output
             step_run.finished_at = timezone.now()
             step_run.save()
-            
+
             # Chaos Hook (Post-Step)
             ChaosModule.check_and_raise("step:post", {"node_key": node_key})
 
@@ -170,10 +167,10 @@ class ExecutionEngine:
         # This graph traversal logic is complex, simplifying for MVP structure.
         nodes = graph.get("nodes", [])
         if not nodes: return []
-        
+
         # Check existing steps
         existing_keys = set(execution.steps.values_list("node_key", flat=True))
-        
+
         # Return nodes not yet run (Linear assumption for MVP)
         for node in nodes:
             if node["id"] not in existing_keys:
@@ -203,12 +200,12 @@ class ExecutionEngine:
         D3: Robust Retries & DLQ Logic
         """
         import traceback
-        
+
         # Max constant for now (could be dynamic policy)
         MAX_RETRIES = 5
-        
+
         execution.attempt += 1
-        
+
         if execution.attempt > MAX_RETRIES:
             # DLQ / Permanent Fail
             logger.error(f"Execution {execution.id} exceeded max retries ({MAX_RETRIES}). Moving to FAILED (DLQ candidate).")
@@ -225,25 +222,25 @@ class ExecutionEngine:
         backoff_seconds = (2 ** (execution.attempt - 1)) * 10
         jitter = random.randint(1, 5)
         delay = backoff_seconds + jitter
-        
+
         next_attempt = timezone.now() + timezone.timedelta(seconds=delay)
-        
+
         logger.warning(f"Execution {execution.id} crashed. Retrying in {delay}s (Attempt {execution.attempt})")
-        
+
         # We don't have a "next_attempt_at" field on Execution (only on OutboxItem).
         # But we do have `lease_expires_at`.
-        # We can simulate "sleeping" by setting the lease to expire in `delay`? 
+        # We can simulate "sleeping" by setting the lease to expire in `delay`?
         # No, that invites stealing.
         # Efficient way: Set status=QUEUED, but we need a way to delay pick up.
         # Alternatively, create an OutboxItem "execution.resume" with `next_attempt_at` set.
-        
+
         # SRE Approach: Use Outbox to schedule the retry reliably.
         from ..outbox.models import OutboxItem
-        
+
         execution.status = ExecutionStatusChoices.QUEUED
         execution.context["last_error"] = str(exception)
         execution.save()
-        
+
         OutboxItem.objects.create(
             tenant_id=execution.tenant_id,
             kind="execution_queued",

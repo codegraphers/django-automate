@@ -9,13 +9,14 @@ Provides admin interfaces for:
 Includes "Test Query" functionality for endpoints.
 """
 import json
-from django.contrib import admin
-from django.utils.html import format_html
-from django.urls import path, reverse
-from django.shortcuts import render, get_object_or_404
-from django.http import JsonResponse
 
-from .models import KnowledgeSource, RAGEndpoint, RAGQueryLog, EmbeddingModel
+from django.contrib import admin
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, render
+from django.urls import path, reverse
+from django.utils.html import format_html
+
+from .models import EmbeddingModel, KnowledgeSource, RAGEndpoint, RAGQueryLog
 
 
 @admin.register(EmbeddingModel)
@@ -25,7 +26,7 @@ class EmbeddingModelAdmin(admin.ModelAdmin):
     search_fields = ['name', 'key']
     readonly_fields = ['id', 'created_at', 'updated_at']
     prepopulated_fields = {'key': ('name',)}
-    
+
     fieldsets = (
         (None, {
             'fields': ('name', 'key', 'provider', 'is_default')
@@ -44,7 +45,7 @@ class KnowledgeSourceAdmin(admin.ModelAdmin):
     search_fields = ['name', 'slug']
     readonly_fields = ['id', 'created_at', 'updated_at']
     prepopulated_fields = {'slug': ('name',)}
-    
+
     fieldsets = (
         (None, {
             'fields': ('name', 'slug', 'provider_key', 'status')
@@ -61,7 +62,7 @@ class KnowledgeSourceAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
-    
+
     def save_model(self, request, obj, form, change):
         if not change:
             obj.created_by = request.user.username
@@ -75,7 +76,7 @@ class RAGEndpointAdmin(admin.ModelAdmin):
     search_fields = ['name', 'slug']
     readonly_fields = ['id', 'created_at', 'updated_at', 'api_url_display']
     prepopulated_fields = {'slug': ('name',)}
-    
+
     fieldsets = (
         (None, {
             'fields': ('name', 'slug', 'source', 'status')
@@ -96,24 +97,24 @@ class RAGEndpointAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
-    
+
     def source_link(self, obj):
         url = reverse('admin:rag_knowledgesource_change', args=[obj.source.id])
         return format_html('<a href="{}">{}</a>', url, obj.source.name)
     source_link.short_description = 'Source'
-    
+
     def api_url_display(self, obj):
         return format_html(
             '<code style="background:#f1f5f9;padding:4px 8px;border-radius:4px">{}</code>',
             obj.api_url
         )
     api_url_display.short_description = 'API URL'
-    
+
     def query_count(self, obj):
         count = obj.query_logs.count()
         return format_html('<span style="color:#666">{}</span>', count)
     query_count.short_description = 'Queries'
-    
+
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
@@ -124,23 +125,24 @@ class RAGEndpointAdmin(admin.ModelAdmin):
             ),
         ]
         return custom_urls + urls
-    
+
     def test_query_view(self, request, object_id):
         """Test query view for RAG endpoints."""
         endpoint = get_object_or_404(RAGEndpoint, pk=object_id)
-        
+
         if request.method == 'POST':
             # Execute test query
             import time
             import uuid
-            from rag.providers.registry import get_retrieval_provider
+
             from rag.providers.base import QueryContext
-            
+            from rag.providers.registry import get_retrieval_provider
+
             try:
                 data = json.loads(request.body)
                 query = data.get('query', '')
                 top_k = data.get('top_k', 5)
-                
+
                 ctx = QueryContext(
                     trace_id=str(uuid.uuid4()),
                     user=request.user.username,
@@ -149,25 +151,25 @@ class RAGEndpointAdmin(admin.ModelAdmin):
                     credentials_ref=endpoint.source.credentials_ref,
                     retrieval_config=endpoint.retrieval_config
                 )
-                
+
                 provider = get_retrieval_provider(endpoint.retrieval_provider_key)
                 start = time.time()
                 result = provider.query(query=query, filters={}, top_k=top_k, ctx=ctx)
                 latency = int((time.time() - start) * 1000)
-                
+
                 return JsonResponse({
                     'success': True,
                     'results': result.results,
                     'latency_ms': latency,
                     'trace_id': ctx.trace_id
                 })
-                
+
             except Exception as e:
                 return JsonResponse({
                     'success': False,
                     'error': str(e)
                 }, status=500)
-        
+
         # GET - render test query page
         context = {
             **self.admin_site.each_context(request),
@@ -176,7 +178,7 @@ class RAGEndpointAdmin(admin.ModelAdmin):
             'opts': self.model._meta,
         }
         return render(request, 'admin/rag/ragendpoint/test_query.html', context)
-    
+
     def change_view(self, request, object_id, form_url='', extra_context=None):
         extra_context = extra_context or {}
         extra_context['show_test_query'] = True
@@ -192,25 +194,25 @@ class RAGQueryLogAdmin(admin.ModelAdmin):
     list_display = ['request_id_short', 'endpoint_link', 'user', 'latency_ms', 'result_count', 'created_at']
     list_filter = ['endpoint', 'created_at']
     search_fields = ['request_id', 'user']
-    readonly_fields = ['id', 'request_id', 'endpoint', 'user', 'query_hash', 'latency_ms', 
+    readonly_fields = ['id', 'request_id', 'endpoint', 'user', 'query_hash', 'latency_ms',
                        'results_meta', 'policy_decisions', 'error', 'created_at']
     date_hierarchy = 'created_at'
-    
+
     def has_add_permission(self, request):
         return False
-    
+
     def has_change_permission(self, request, obj=None):
         return False
-    
+
     def request_id_short(self, obj):
         return str(obj.request_id)[:8]
     request_id_short.short_description = 'Request ID'
-    
+
     def endpoint_link(self, obj):
         url = reverse('admin:rag_ragendpoint_change', args=[obj.endpoint.id])
         return format_html('<a href="{}">{}</a>', url, obj.endpoint.slug)
     endpoint_link.short_description = 'Endpoint'
-    
+
     def result_count(self, obj):
         count = obj.results_meta.get('count', 0)
         return count

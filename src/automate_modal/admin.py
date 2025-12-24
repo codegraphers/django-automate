@@ -1,19 +1,20 @@
 from django.contrib import admin
+from django.db import models
+from django.shortcuts import get_object_or_404, render
 from django.urls import path
 from django.utils.html import format_html
-from django.shortcuts import render, get_object_or_404
-from django.db import models
-from import_export.admin import ImportExportModelAdmin
 from django_json_widget.widgets import JSONEditorWidget
+from import_export.admin import ImportExportModelAdmin
 
-from .models import ModalProviderConfig, ModalEndpoint, ModalJob, ModalArtifact, ModalAuditEvent
+from .models import ModalArtifact, ModalAuditEvent, ModalEndpoint, ModalJob, ModalProviderConfig
+
 
 @admin.register(ModalProviderConfig)
 class ModalProviderConfigAdmin(ImportExportModelAdmin):
     list_display = ('name', 'provider_key', 'enabled', 'created_at')
     list_filter = ('enabled', 'provider_key')
     search_fields = ('name',)
-    
+
     formfield_overrides = {
         models.JSONField: {'widget': JSONEditorWidget},
     }
@@ -24,14 +25,14 @@ class ModalEndpointAdmin(ImportExportModelAdmin):
     list_filter = ('enabled', 'provider_config')
     search_fields = ('name', 'slug')
     readonly_fields = ('id', 'created_at', 'updated_at')
-    
+
     # Enable autocomplete for provider_config (assuming it has search_fields)
     autocomplete_fields = ['provider_config']
-    
+
     formfield_overrides = {
         models.JSONField: {'widget': JSONEditorWidget},
     }
-    
+
     def test_console_link(self, obj):
         return format_html('<a href="test-console/" class="button">Test Console</a>')
     test_console_link.short_description = "Actions"
@@ -57,16 +58,16 @@ class ModalJobAdmin(ImportExportModelAdmin):
     list_filter = ('state', 'task_type', 'endpoint', 'created_at')
     search_fields = ('job_id', 'correlation_id', 'endpoint__slug')
     readonly_fields = ('job_id', 'correlation_id', 'scheduled_at', 'started_at', 'finished_at', 'result_summary', 'error_redacted')
-    
+
     # Autocomplete for endpoint
     autocomplete_fields = ['endpoint']
-    
+
     date_hierarchy = 'created_at'
-    
+
     formfield_overrides = {
         models.JSONField: {'widget': JSONEditorWidget},
     }
-    
+
     def duration_display(self, obj):
         if obj.started_at and obj.finished_at:
             return obj.finished_at - obj.started_at
@@ -79,9 +80,9 @@ class ModalArtifactAdmin(ImportExportModelAdmin):
     list_filter = ('kind', 'created_at')
     search_fields = ('uri', 'job__job_id')
     readonly_fields = ('uri', 'size_bytes', 'sha256', 'meta')
-    
+
     autocomplete_fields = ['job']
-    
+
     def job_link(self, obj):
         if obj.job:
             return format_html('<a href="../../modaljob/{}/change/">{}</a>', obj.job.id, obj.job.job_id)
@@ -94,11 +95,11 @@ class ModalAuditEventAdmin(ImportExportModelAdmin):
     list_filter = ('action', 'target_type', 'created_at')
     search_fields = ('actor_id', 'target_id', 'correlation_id', 'request_id')
     readonly_fields = ('actor_id', 'action', 'target_type', 'target_id', 'correlation_id', 'request_id', 'meta')
-    
+
     date_hierarchy = 'created_at'
-    
+
     def has_add_permission(self, request):
         return False
-    
+
     def has_change_permission(self, request, obj=None):
         return False

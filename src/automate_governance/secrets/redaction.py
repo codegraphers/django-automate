@@ -1,5 +1,7 @@
 from __future__ import annotations
-from typing import Any, Iterable, Mapping
+
+from collections.abc import Iterable, Mapping
+from typing import Any
 
 DEFAULT_SENSITIVE_KEYS = {
     "api_key", "token", "secret", "password", "authorization", "cookie",

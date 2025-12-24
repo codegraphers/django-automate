@@ -1,16 +1,16 @@
-from typing import Any, Dict, List
-import copy
+from typing import Any
+
 
 class JsonSanitizer:
     """
     Sanitizes n8n workflow JSON by removing credential identifiers and Auth headers.
     """
-    
+
     # Simple recursive key cleaner
     KEYS_TO_SCRUB = {"credentials", "credential_id", "client_secret", "access_token", "api_key"}
     HEADERS_TO_SCRUB = {"authorization", "x-api-key"}
 
-    def sanitize(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    def sanitize(self, data: dict[str, Any]) -> dict[str, Any]:
         return self._walk(data)
 
     def _walk(self, node: Any) -> Any:
@@ -29,7 +29,7 @@ class JsonSanitizer:
             return [self._walk(x) for x in node]
         return node
 
-    def _sanitize_headers(self, headers: Dict[str, Any]) -> Dict[str, Any]:
+    def _sanitize_headers(self, headers: dict[str, Any]) -> dict[str, Any]:
         if not isinstance(headers, dict): return headers
         clean = {}
         for k, v in headers.items():

@@ -1,8 +1,9 @@
 from __future__ import annotations
-from abc import ABC, abstractmethod
+
 import time
-from typing import Optional
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
+
 
 @dataclass
 class RateLimitState:
@@ -36,11 +37,11 @@ class InMemoryRateLimiter(RateLimiter):
         now = time.time()
         tokens = self._tokens.get(key, self.burst)
         last_ts = self._last_update.get(key, now)
-        
+
         # Refill
         delta = now - last_ts
         tokens = min(self.burst, tokens + delta * self.rate)
-        
+
         if tokens >= cost:
             self._tokens[key] = tokens - cost
             self._last_update[key] = now

@@ -1,19 +1,21 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from .conf import llm_settings
 from .errors import LLMError, LLMErrorCode
-from .types import ChatRequest, ToolSpec, CostEstimate
+from .types import ChatRequest, CostEstimate, ToolSpec
+
 
 @dataclass(frozen=True)
 class EffectivePolicy:
     provider: str
     model: str
     timeout_s: int
-    retry: Dict[str, Any]
-    budgets: Dict[str, Any]
-    policy: Dict[str, Any]
+    retry: dict[str, Any]
+    budgets: dict[str, Any]
+    policy: dict[str, Any]
 
 class LLMPolicyEngine:
     """
@@ -26,20 +28,20 @@ class LLMPolicyEngine:
         *,
         provider: str,
         model: str,
-        provider_profile_cfg: Dict[str, Any],
-        prompt_defaults: Dict[str, Any],
-        request_overrides: Dict[str, Any],
+        provider_profile_cfg: dict[str, Any],
+        prompt_defaults: dict[str, Any],
+        request_overrides: dict[str, Any],
     ) -> EffectivePolicy:
         base = llm_settings()
-        
+
         # Policy Merge Strategy:
         # 1. Base Settings
         # 2. Provider Profile (from DB/Settings)
         # 3. Prompt Defaults (from compiled prompt)
         # 4. Request Overrides (runtime)
-        
+
         # Helper for dict merging
-        def merge_d(k: str) -> Dict[str, Any]:
+        def merge_d(k: str) -> dict[str, Any]:
             b = base.get(k, {}) or {}
             pp = provider_profile_cfg.get(k, {}) or {}
             pd = prompt_defaults.get(k, {}) or {}
@@ -49,7 +51,7 @@ class LLMPolicyEngine:
         merged_retry = merge_d("RETRY")
         merged_budgets = merge_d("BUDGETS")
         merged_policy = merge_d("POLICY")
-        
+
         timeout = int(provider_profile_cfg.get("timeout_s", base["TIMEOUT_S"]))
 
         return EffectivePolicy(
@@ -61,7 +63,7 @@ class LLMPolicyEngine:
             policy=merged_policy,
         )
 
-    def enforce_request(self, req: ChatRequest, eff: EffectivePolicy, tools: List[ToolSpec]) -> None:
+    def enforce_request(self, req: ChatRequest, eff: EffectivePolicy, tools: list[ToolSpec]) -> None:
         allow_models = eff.policy.get("model_allowlist") or []
         if allow_models and req.model not in allow_models:
             raise LLMError(

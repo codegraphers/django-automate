@@ -1,7 +1,8 @@
-import logging
 import json
-import time
+import logging
+
 from .context import get_trace_id
+
 
 class JsonFormatter(logging.Formatter):
     """
@@ -9,7 +10,7 @@ class JsonFormatter(logging.Formatter):
     """
     def format(self, record):
         trace_id = get_trace_id()
-        
+
         log_record = {
             "timestamp": self.formatTime(record, self.datefmt),
             "level": record.levelname,
@@ -19,11 +20,11 @@ class JsonFormatter(logging.Formatter):
             "path": record.pathname,
             "line": record.lineno,
         }
-        
+
         # Merge extra fields if present
         if hasattr(record, "extra_data") and isinstance(record.extra_data, dict):
             log_record.update(record.extra_data)
-        
+
         # Handle exceptions
         if record.exc_info:
             log_record["exception"] = self.formatException(record.exc_info)

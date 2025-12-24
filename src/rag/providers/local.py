@@ -11,14 +11,15 @@ Configured in KnowledgeSource.config:
 }
 """
 import logging
-from typing import Dict, Any, List
+from typing import Any
 
-from .base import RetrievalProvider, RetrievalResult, HealthStatus, QueryContext
-from rag.models import EmbeddingModel
 from rag.embeddings.openai import OpenAIEmbeddings
+from rag.models import EmbeddingModel
+from rag.security.secrets import resolve_secret_ref
 from rag.vector_stores.milvus import MilvusStore
 from rag.vector_stores.pgvector import PGVectorStore
-from rag.security.secrets import resolve_secret_ref
+
+from .base import HealthStatus, QueryContext, RetrievalResult
 
 logger = logging.getLogger(__name__)
 
@@ -28,19 +29,19 @@ class LocalRetrievalProvider:
     1. Embeds query using EmbeddingModel
     2. Searches configured VectorStore
     """
-    
+
     key = "local_index"
     name = "Local Index (Milvus/PGVector)"
-    
+
     def query(
         self,
         *,
         query: str,
-        filters: Dict[str, Any],
+        filters: dict[str, Any],
         top_k: int,
         ctx: QueryContext
     ) -> RetrievalResult:
-        
+
         # 1. Get Embedding Model
         model_key = ctx.source_config.get("embedding_model")
         if not model_key:
@@ -48,10 +49,10 @@ class LocalRetrievalProvider:
             model = EmbeddingModel.objects.filter(is_default=True).first()
         else:
             model = EmbeddingModel.objects.filter(key=model_key).first()
-            
+
         if not model:
             raise ValueError(f"No valid embedding model found (key={model_key})")
-            
+
         # Initialize Embedder
         # TODO: Factory pattern for other providers
         api_key = resolve_secret_ref(model.credentials_ref)
@@ -60,28 +61,28 @@ class LocalRetrievalProvider:
             model=model.config.get("model_name", "text-embedding-ada-002"),
             api_base=model.config.get("api_base")
         )
-        
+
         # 2. Embed Query
         vector = embedder.embed_query(query)
-        
+
         # 3. Get Vector Store
         store_type = ctx.source_config.get("vector_store", "milvus")
         if store_type == "milvus":
             uri = ctx.source_config.get("milvus_uri") or resolve_secret_ref(ctx.source_config.get("milvus_uri_ref"))
             token = resolve_secret_ref(ctx.source_config.get("milvus_token_ref", ""))
             collection = ctx.source_config.get("collection_name", "default")
-            
+
             store = MilvusStore(uri=uri, token=token, collection_name=collection)
-            
+
         elif store_type == "pgvector":
             table = ctx.source_config.get("table_name", "rag_vectors")
             store = PGVectorStore(table_name=table)
         else:
             raise ValueError(f"Unknown vector store type: {store_type}")
-            
+
         # 4. Execute Search
         results = store.search(embedding=vector, top_k=top_k, filters=filters)
-        
+
         # 5. Format Results
         return RetrievalResult(
             results=[{
@@ -94,7 +95,7 @@ class LocalRetrievalProvider:
             trace_id=ctx.trace_id,
             total_count=len(results)
         )
-    
+
     def health(self, *, ctx: QueryContext) -> HealthStatus:
         # Check vector store health
         try:
@@ -109,13 +110,13 @@ class LocalRetrievalProvider:
                   health = store.health()
              else:
                  return HealthStatus(healthy=False, message="Unknown store config")
-                 
+
              return HealthStatus(healthy=health["healthy"], message=health["message"])
-             
+
         except Exception as e:
             return HealthStatus(healthy=False, message=str(e))
-            
-    def validate_config(self, config: Dict[str, Any]) -> List[str]:
+
+    def validate_config(self, config: dict[str, Any]) -> list[str]:
         errors = []
         if not config.get("vector_store"):
             errors.append("vector_store is required")

@@ -1,20 +1,24 @@
 from __future__ import annotations
-from typing import Any, Dict, Type
+
+from typing import Any
+
 import pytest
+
 from .adapters.base import ConnectorAdapter
 from .errors import ConnectorError, ConnectorErrorCode
+
 
 class ConnectorContractHarness:
     """
     Standard test suite for any ConnectorAdapter.
     """
-    
+
     @pytest.fixture
-    def adapter_cls(self) -> Type[ConnectorAdapter]:
+    def adapter_cls(self) -> type[ConnectorAdapter]:
         raise NotImplementedError("Must provide adapter_cls")
 
     @pytest.fixture
-    def valid_config(self) -> Dict[str, Any]:
+    def valid_config(self) -> dict[str, Any]:
         return {}
 
     def test_capabilities_schema(self, adapter_cls):

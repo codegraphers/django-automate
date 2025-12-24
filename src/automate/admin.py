@@ -1,18 +1,30 @@
+
 from django.contrib import admin
-from django.utils.html import format_html
+from django.db import models, transaction
 from django.urls import path
 from django_json_widget.widgets import JSONEditorWidget
-from django.db import models, transaction
+
 from .models import (
-    Automation, TriggerSpec, Rule, Workflow,
-    Event, Outbox, Execution, ExecutionStep,
-    LLMProvider, LLMModelConfig, Prompt, PromptVersion,
-    Template, ConnectionProfile, PromptRelease, BudgetPolicy,
-    MCPServer, MCPTool
+    Automation,
+    BudgetPolicy,
+    ConnectionProfile,
+    Event,
+    Execution,
+    ExecutionStep,
+    LLMModelConfig,
+    LLMProvider,
+    MCPServer,
+    MCPTool,
+    Outbox,
+    Prompt,
+    PromptRelease,
+    PromptVersion,
+    Rule,
+    Template,
+    TriggerSpec,
+    Workflow,
 )
 
-import json
-from django.shortcuts import render, get_object_or_404
 
 class TriggerSpecInline(admin.StackedInline):
     model = TriggerSpec
@@ -42,7 +54,7 @@ class ExecutionStepInline(admin.TabularInline):
     # Canonical StepRun: node_key, status, started_at
     readonly_fields = ["node_key", "status", "started_at"]
     can_delete = False
-    
+
     def has_add_permission(self, request, obj=None):
         return False
 
@@ -53,7 +65,7 @@ class ExecutionStepAdmin(admin.ModelAdmin):
     list_filter = ["status", "started_at"]
     search_fields = ["execution__id", "node_key"]
     readonly_fields = ["execution", "input_data", "output_data", "error_data", "provider_meta"]
-    
+
     def has_add_permission(self, request):
         return False
 
@@ -69,8 +81,8 @@ class AutomationAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super().get_urls()
-        from .views.wizard import AutomationWizardView
         from .views.prompt_eval import PromptEvalView, prompt_test_api
+        from .views.wizard import AutomationWizardView
         custom_urls = [
             path("wizard/", self.admin_site.admin_view(AutomationWizardView().as_view), name="automation_wizard"),
             path("prompt-eval/", self.admin_site.admin_view(PromptEvalView.as_view()), name="prompt_eval"),
@@ -87,7 +99,7 @@ class EventAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.JSONField: {'widget': JSONEditorWidget},
     }
-    
+
     def has_add_permission(self, request):
         return False
 
@@ -105,9 +117,10 @@ class ExecutionAdmin(admin.ModelAdmin):
 
     @admin.action(description="Replay selected executions (Safe)")
     def replay_execution(self, request, queryset):
-        from automate_core.outbox.models import OutboxItem
         from django.utils import timezone
-        
+
+        from automate_core.outbox.models import OutboxItem
+
         success_count = 0
         with transaction.atomic():
             for execution in queryset:
@@ -120,9 +133,9 @@ class ExecutionAdmin(admin.ModelAdmin):
                     del execution.context["error"]
                 if "last_error" in execution.context:
                     del execution.context["last_error"]
-                    
+
                 execution.save()
-                
+
                 # 2. Enqueue in Outbox (Reliability)
                 OutboxItem.objects.create(
                     tenant_id=execution.tenant_id,
@@ -133,7 +146,7 @@ class ExecutionAdmin(admin.ModelAdmin):
                     created_at=timezone.now()
                 )
                 success_count += 1
-            
+
         self.message_user(request, f"Reliably re-queued {success_count} executions via Outbox.")
 
 @admin.register(PromptRelease)
@@ -199,7 +212,7 @@ class ConnectionProfileAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.JSONField: {'widget': JSONEditorWidget},
     }
-    
+
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         form.base_fields["encrypted_secrets"].help_text = (
@@ -210,9 +223,13 @@ class ConnectionProfileAdmin(admin.ModelAdmin):
 
 @admin.register(Outbox)
 class OutboxAdmin(admin.ModelAdmin):
-    list_display = ["id", "event_id", "status", "created_at"]
+    list_display = ["id", "event_id_display", "status", "created_at"]
     list_filter = ["status"]
     ordering = ["created_at"]
+
+    def event_id_display(self, obj):
+        return obj.payload.get("event_id", "-")
+    event_id_display.short_description = "Event ID"
 
 
 # ============================================================================
@@ -225,7 +242,7 @@ class MCPToolInline(admin.TabularInline):
     readonly_fields = ["name", "description", "call_count", "last_called", "discovered_at"]
     fields = ["enabled", "name", "description", "call_count"]
     can_delete = False
-    
+
     def has_add_permission(self, request, obj=None):
         return False
 
@@ -239,7 +256,7 @@ class MCPServerAdmin(admin.ModelAdmin):
     readonly_fields = ["last_synced", "last_error", "created_at", "updated_at"]
     inlines = [MCPToolInline]
     actions = ["sync_tools"]
-    
+
     fieldsets = [
         (None, {
             "fields": ["name", "slug", "description", "enabled"]
@@ -256,18 +273,18 @@ class MCPServerAdmin(admin.ModelAdmin):
             "classes": ["collapse"]
         }),
     ]
-    
+
     def tool_count(self, obj):
         return obj.tools.filter(enabled=True).count()
     tool_count.short_description = "Active Tools"
-    
+
     @admin.action(description="Sync tools from selected servers")
     def sync_tools(self, request, queryset):
-        from automate_llm.mcp_client import sync_mcp_tools, MCPClientError
-        
+        from automate_llm.mcp_client import MCPClientError, sync_mcp_tools
+
         success = 0
         errors = []
-        
+
         for server in queryset:
             try:
                 created, updated = sync_mcp_tools(server)
@@ -275,7 +292,7 @@ class MCPServerAdmin(admin.ModelAdmin):
                 self.message_user(request, f"{server.name}: {created} new, {updated} updated tools")
             except MCPClientError as e:
                 errors.append(f"{server.name}: {str(e)}")
-        
+
         if errors:
             self.message_user(request, f"Errors: {'; '.join(errors)}", level="error")
 

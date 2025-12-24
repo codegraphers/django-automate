@@ -1,5 +1,7 @@
 from __future__ import annotations
-from typing import Any, Callable, Dict
+
+from collections.abc import Callable
+from typing import Any
 
 OperatorFunc = Callable[[Any, Any], bool]
 
@@ -8,7 +10,7 @@ class OperatorRegistry:
     Allowlist of safe operators for JSONLogic-like rules.
     Prevents arbitrary code execution by restricting available ops.
     """
-    _ops: Dict[str, OperatorFunc] = {}
+    _ops: dict[str, OperatorFunc] = {}
 
     @classmethod
     def register(cls, name: str, func: OperatorFunc) -> None:

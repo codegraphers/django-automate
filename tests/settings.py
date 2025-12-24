@@ -13,9 +13,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     'automate',
     'automate_core',
+    'automate_connectors',
     'automate_governance',
     'automate_llm',
     'automate_modal',

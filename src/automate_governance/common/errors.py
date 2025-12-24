@@ -1,6 +1,6 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass(frozen=True)
@@ -11,7 +11,7 @@ class ErrorInfo:
     """
     code: str
     message: str
-    detail: Optional[str] = None
+    detail: str | None = None
     retryable: bool = False
 
 

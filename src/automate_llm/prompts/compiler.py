@@ -1,34 +1,35 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from ..registry import get_renderer_cls
-from ..types import ChatRequest, CompiledPrompt, ToolSpec, ChatMessage
-from ..errors import LLMError, LLMErrorCode
+from ..types import ChatMessage, ChatRequest, CompiledPrompt, ToolSpec
+
 
 @dataclass(frozen=True)
 class PromptVersionSnapshot:
     prompt_key: str
     version: str
     template_type: str
-    messages_json: Optional[Any] = None
-    template: Optional[str] = None
-    input_schema_json: Optional[Dict[str, Any]] = None
-    output_schema_json: Optional[Dict[str, Any]] = None
-    default_params_json: Optional[Dict[str, Any]] = None
-    tool_specs_json: Optional[List[Dict[str, Any]]] = None
-    policy_hints_json: Optional[Dict[str, Any]] = None
+    messages_json: Any | None = None
+    template: str | None = None
+    input_schema_json: dict[str, Any] | None = None
+    output_schema_json: dict[str, Any] | None = None
+    default_params_json: dict[str, Any] | None = None
+    tool_specs_json: list[dict[str, Any]] | None = None
+    policy_hints_json: dict[str, Any] | None = None
 
 class PromptCompiler:
     def __init__(self) -> None:
         pass
 
-    def validate_inputs(self, schema: Optional[Dict[str, Any]], inputs: Dict[str, Any]) -> None:
+    def validate_inputs(self, schema: dict[str, Any] | None, inputs: dict[str, Any]) -> None:
         # TODO: JSON schema validation (fast + safe error messages)
         return
 
-    def build_tools(self, tool_specs_json: Optional[List[Dict[str, Any]]]) -> List[ToolSpec]:
-        tools: List[ToolSpec] = []
+    def build_tools(self, tool_specs_json: list[dict[str, Any]] | None) -> list[ToolSpec]:
+        tools: list[ToolSpec] = []
         for t in (tool_specs_json or []):
             tools.append(
                 ToolSpec(
@@ -45,9 +46,9 @@ class PromptCompiler:
         provider: str,
         model: str,
         prompt_ver: PromptVersionSnapshot,
-        inputs: Dict[str, Any],
+        inputs: dict[str, Any],
         timeout_s: int,
-        trace_id: Optional[str],
+        trace_id: str | None,
     ) -> CompiledPrompt:
         self.validate_inputs(prompt_ver.input_schema_json, inputs)
 
@@ -55,12 +56,12 @@ class PromptCompiler:
         renderer = renderer_cls()
 
         template_payload = prompt_ver.messages_json if prompt_ver.template_type == "chat_messages" else prompt_ver.template
-        
+
         # Determine messages from renderer
         rendered_output = renderer.render(template=template_payload, inputs=inputs)
-        
+
         # Ensure it's a list of ChatMessage
-        messages: List[ChatMessage] = []
+        messages: list[ChatMessage] = []
         if isinstance(rendered_output, list):
              messages = rendered_output # Assume type is correct for now
         else:

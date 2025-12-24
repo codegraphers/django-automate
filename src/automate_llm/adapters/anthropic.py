@@ -1,11 +1,10 @@
 from __future__ import annotations
-from typing import Any, Dict, List, Optional
-import json
+
 import logging
 
-from ..types import ChatRequest, ChatResponse, CostEstimate, ChatMessage, ToolCall, Usage
 from ..errors import LLMError, LLMErrorCode
 from ..pricing import ModelPricing
+from ..types import ChatRequest, ChatResponse, CostEstimate, ToolCall, Usage
 from .base import ProviderAdapter
 
 logger = logging.getLogger(__name__)
@@ -14,7 +13,7 @@ class AnthropicAdapter(ProviderAdapter):
     code = "anthropic"
 
     @property
-    def capabilities(self) -> Dict[str, bool]:
+    def capabilities(self) -> dict[str, bool]:
         return {
             "supports_streaming": False, # Todo
             "supports_tools": True,
@@ -28,7 +27,7 @@ class AnthropicAdapter(ProviderAdapter):
             raise LLMError(LLMErrorCode.INTERNAL_ERROR, "anthropic package not installed")
 
         client = anthropic.Anthropic(api_key=api_key)
-        
+
         # Convert messages
         system_prompt = None
         messages = []
@@ -53,10 +52,10 @@ class AnthropicAdapter(ProviderAdapter):
 
         try:
             resp = client.messages.create(**params)
-            
+
             content_text = ""
             tool_calls = []
-            
+
             for block in resp.content:
                 if block.type == "text":
                     content_text += block.text
@@ -66,7 +65,7 @@ class AnthropicAdapter(ProviderAdapter):
                         name=block.name,
                         arguments=block.input # Anthropic returns dict natively
                     ))
-            
+
             return ChatResponse(
                 content=content_text,
                 role=resp.role,
@@ -87,8 +86,8 @@ class AnthropicAdapter(ProviderAdapter):
         # Rough token count estimate (chars / 4)
         input_chars = sum(len(m.content) for m in req.messages)
         input_tokens = int(input_chars / 3.5)
-        
-        cost = (input_tokens / 1000) * pricing.input_price_per_1k 
+
+        cost = (input_tokens / 1000) * pricing.input_price_per_1k
         # Output unknown, assume max? or 0 for base cost
         return CostEstimate(total_cost_usd=cost, currency="USD", details={"input_estimate": input_tokens})
 

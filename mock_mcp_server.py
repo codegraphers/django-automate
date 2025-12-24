@@ -9,9 +9,8 @@ This exposes:
 - GET /tools - Returns list of available tools
 - POST /execute - Executes a tool
 """
-from http.server import HTTPServer, BaseHTTPRequestHandler
 import json
-
+from http.server import BaseHTTPRequestHandler, HTTPServer
 
 MOCK_TOOLS = [
     {
@@ -51,7 +50,7 @@ MOCK_TOOLS = [
 
 
 class MCPHandler(BaseHTTPRequestHandler):
-    
+
     def do_OPTIONS(self):
         """Handle CORS preflight."""
         self.send_response(200)
@@ -59,7 +58,7 @@ class MCPHandler(BaseHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
         self.end_headers()
-    
+
     def do_GET(self):
         """Handle GET requests."""
         if self.path == "/tools":
@@ -71,17 +70,17 @@ class MCPHandler(BaseHTTPRequestHandler):
         else:
             self.send_response(404)
             self.end_headers()
-    
+
     def do_POST(self):
         """Handle POST requests."""
         if self.path == "/execute":
             content_length = int(self.headers.get("Content-Length", 0))
             body = self.rfile.read(content_length)
             data = json.loads(body) if body else {}
-            
+
             tool_name = data.get("tool", "")
             args = data.get("arguments", {})
-            
+
             # Mock responses for each tool
             result = {}
             if tool_name == "get_weather":
@@ -117,7 +116,7 @@ class MCPHandler(BaseHTTPRequestHandler):
                 }
             else:
                 result = {"success": False, "error": f"Unknown tool: {tool_name}"}
-            
+
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
             self.send_header("Access-Control-Allow-Origin", "*")
@@ -126,7 +125,7 @@ class MCPHandler(BaseHTTPRequestHandler):
         else:
             self.send_response(404)
             self.end_headers()
-    
+
     def log_message(self, format, *args):
         """Custom logging."""
         print(f"[MCP] {self.address_string()} - {format % args}")
@@ -136,8 +135,8 @@ if __name__ == "__main__":
     port = 8003
     server = HTTPServer(("0.0.0.0", port), MCPHandler)
     print(f"🔧 Mock MCP Server running on http://localhost:{port}")
-    print(f"   GET  /tools   - Discover available tools")
-    print(f"   POST /execute - Execute a tool")
+    print("   GET  /tools   - Discover available tools")
+    print("   POST /execute - Execute a tool")
     print()
     try:
         server.serve_forever()

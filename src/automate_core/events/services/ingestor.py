@@ -1,14 +1,15 @@
-import logging
-import uuid
 import hashlib
 import json
-from datetime import timedelta
-from django.db import transaction, IntegrityError
+import logging
+import uuid
+
+from django.db import IntegrityError, transaction
 from django.utils import timezone
-from ..models import Event
-from ...workflows.models import Trigger
+
 from ...executions.models import Execution, ExecutionStatusChoices
 from ...outbox.models import OutboxItem
+from ...workflows.models import Trigger
+from ..models import Event
 
 logger = logging.getLogger(__name__)
 
@@ -21,25 +22,25 @@ class EventIngestor:
     - strict matching logic
     """
 
-    def ingest(self, 
-               tenant_id: str, 
-               event_type: str, 
-               source: str, 
-               payload: dict, 
+    def ingest(self,
+               tenant_id: str,
+               event_type: str,
+               source: str,
+               payload: dict,
                idempotency_key: str = None,
                context: dict = None) -> Event:
-        
+
         # 1. Normalize
         correlation_id = context.get("correlation_id") if context else str(uuid.uuid4())
         if not context:
             context = {}
         context["correlation_id"] = correlation_id
-        
+
         payload_hash = hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()
-        
+
         # 2. Idempotency Check (Pre-DB)
         # We rely on DB constraint, but can check optimization here if needed.
-        
+
         try:
             with transaction.atomic():
                 # 3. Create Event (Source of Truth)
@@ -54,7 +55,7 @@ class EventIngestor:
                     occurred_at=timezone.now(),
                     status="dispatched"
                 )
-                
+
                 # 4. Strictly Match Triggers
                 # Find all ACTIVE triggers matching this type
                 # TODO: Implement complex filtering (Rule Engine match)
@@ -64,14 +65,14 @@ class EventIngestor:
                     is_active=True,
                     event_type=event_type # Exact match or implement pattern match logic
                 ).select_related("automation")
-                
+
                 dispatch_count = 0
-                
+
                 for trigger in triggers:
                     # 4b. Apply detailed filter config (JSONLogic)
                     if not self._matches_filter(trigger, payload):
                         continue
-                        
+
                     # 5. Create Execution
                     execution = Execution.objects.create(
                         tenant_id=tenant_id,
@@ -83,7 +84,7 @@ class EventIngestor:
                         correlation_id=correlation_id,
                         context=context
                     )
-                    
+
                     # 6. Create Outbox Item (The Reliability Promise)
                     OutboxItem.objects.create(
                         tenant_id=tenant_id,
@@ -93,7 +94,7 @@ class EventIngestor:
                         priority=trigger.priority
                     )
                     dispatch_count += 1
-                
+
                 logger.info(f"Ingested event {event.id}: Dispatched {dispatch_count} executions.")
                 return event
 
@@ -109,7 +110,7 @@ class EventIngestor:
         """
         if not trigger.filter_config:
             return True
-        
+
         # TODO: Implement robust JSONLogic evaluation
         # For now, minimal key-value match
         for k, v in trigger.filter_config.items():

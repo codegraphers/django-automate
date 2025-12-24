@@ -1,7 +1,9 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any
+
 
 class ConnectorErrorCode(str, Enum):
     AUTH_FAILED = "AUTH_FAILED"
@@ -20,10 +22,10 @@ class ConnectorError(Exception):
     code: ConnectorErrorCode
     message_safe: str
     retryable: bool = False
-    details_safe: Optional[Dict[str, Any]] = None
-    connector_code: Optional[str] = None
-    
-    def to_dict(self) -> Dict[str, Any]:
+    details_safe: dict[str, Any] | None = None
+    connector_code: str | None = None
+
+    def to_dict(self) -> dict[str, Any]:
         return {
             "code": self.code.value,
             "message": self.message_safe,

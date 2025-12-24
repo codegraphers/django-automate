@@ -1,10 +1,11 @@
 from rest_framework import serializers
 
+
 class ModalRunRequestSerializer(serializers.Serializer):
     task_type = serializers.CharField(required=True)
     input = serializers.DictField(required=True)
     params = serializers.DictField(required=False, default=dict)
-    
+
 class ModalArtifactSerializer(serializers.Serializer):
     kind = serializers.CharField()
     uri = serializers.CharField()

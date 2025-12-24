@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 
 @dataclass
 class TenantHealth:
@@ -12,7 +14,7 @@ class ThroughputController:
     Manages per-tenant rate limits and backpressure.
     Stub implementation for now; enforces Max Inflight only.
     """
-    
+
     def __init__(self, max_inflight: int = 200, qps: int = 10):
         self.max_inflight = max_inflight
         self.qps = qps
@@ -20,7 +22,7 @@ class ThroughputController:
     def can_claim(self, tenant_id: str, current_inflight_count: int) -> bool:
         if current_inflight_count >= self.max_inflight:
             return False
-            
+
         # TODO: Check Token Bucket for QPS
         # TODO: Check Circuit Breaker (is_paused?)
         return True

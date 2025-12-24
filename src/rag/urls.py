@@ -6,6 +6,7 @@ Routes:
 - /api/rag/{slug}/health - GET - Check endpoint health
 """
 from django.urls import path
+
 from .api import query
 
 app_name = 'rag'

@@ -1,5 +1,3 @@
-import os
-import sys
 import django
 from django.conf import settings
 
@@ -22,11 +20,12 @@ if not settings.configured:
 
 # 2. Setup DB
 from django.core.management import call_command
+
 print("⚡ Initializing Database...")
 call_command('migrate', verbosity=0)
 
 # 3. Create Demo Data
-from automate_modal.models import ModalProviderConfig, ModalEndpoint
+from automate_modal.models import ModalEndpoint, ModalProviderConfig
 from automate_modal.providers.echo import EchoProvider
 
 print("⚡ Creating Configuration...")

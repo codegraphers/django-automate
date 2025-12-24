@@ -1,6 +1,8 @@
 import pytest
+
 from automate.registry import registry
 from automate_connectors.adapters.base import ConnectorAdapter as BaseConnector
+
 
 @pytest.mark.django_db
 def test_all_connectors_adhere_to_contract():
@@ -13,23 +15,25 @@ def test_all_connectors_adhere_to_contract():
 
     for slug, cls in connectors.items():
         print(f"Testing contract for {slug}...")
-        
+
         instance = cls()
         assert isinstance(instance, BaseConnector)
-        
+
         # 1. Check Properties
         assert instance.slug == slug
         assert isinstance(instance.name, str)
-        
+
         # 2. Check Redaction Contract
         sensitive_payload = {"token": "secret123", "data": "ok"}
         redacted = instance.redact(sensitive_payload)
         assert redacted["token"] == "***REDACTED***"
         assert redacted["data"] == "ok"
-        
+
         # 3. Check Validation Contract
-        # Should return boolean
-        assert isinstance(instance.validate_config({}), bool)
-        
+        from automate_connectors.adapters.base import ValidationResult
+        val_res = instance.validate_config({})
+        assert isinstance(val_res, ValidationResult)
+        assert isinstance(val_res.ok, bool)
+
         # 4. Check Config Schema existence
         assert isinstance(instance.config_schema, dict)

@@ -1,4 +1,5 @@
-from typing import List, Dict, Any
+from typing import Any
+
 
 class ConversationMemory:
     """
@@ -12,10 +13,10 @@ class ConversationMemory:
     SESSION_KEY = "automate_datachat_history"
     MAX_TURNS = 10
 
-    def __init__(self, session: Dict):
+    def __init__(self, session: dict):
         self.session = session
 
-    def get_history(self) -> List[Dict[str, Any]]:
+    def get_history(self) -> list[dict[str, Any]]:
         return self.session.get(self.SESSION_KEY, [])
 
     def add_user_message(self, content: str):
@@ -23,7 +24,7 @@ class ConversationMemory:
         history.append({"role": "user", "content": content})
         self._save(history)
 
-    def add_assistant_message(self, content: str, sql: str = None, data: Any = None, chart: Dict = None):
+    def add_assistant_message(self, content: str, sql: str = None, data: Any = None, chart: dict = None):
         history = self.get_history()
         msg = {
             "role": "assistant",
@@ -31,14 +32,14 @@ class ConversationMemory:
         }
         if sql:
             msg["sql"] = sql
-        # We generally don't store full data rows in session due to size, 
+        # We generally don't store full data rows in session due to size,
         # but for context "what was the last result" we might need a summary or the last SQL.
         # For now, let's NOT store 'data' in session unless it's small.
         # We WILL store 'sql' which serves as the "data pointer" for the LLM context.
-        
+
         if chart:
             msg["chart"] = chart
-            
+
         history.append(msg)
         self._save(history)
 
@@ -57,11 +58,11 @@ class ConversationMemory:
             buffer.append(f"{role}: {content}")
         return "\n".join(buffer)
 
-    def _save(self, history: List[Dict]):
+    def _save(self, history: list[dict]):
         # Enforce max length
         if len(history) > self.MAX_TURNS * 2: # 2 messages per turn roughly
             history = history[-(self.MAX_TURNS*2):]
-        
+
         self.session[self.SESSION_KEY] = history
         self.session.modified = True
 

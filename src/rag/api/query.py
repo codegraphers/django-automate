@@ -6,19 +6,19 @@ Provides the retrieval API:
 - GET /api/rag/{slug}/health - Check endpoint health
 """
 import json
+import logging
 import time
 import uuid
-import logging
 from functools import wraps
 
 from django.http import JsonResponse
-from django.views.decorators.http import require_http_methods
-from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 
 from rag.models import RAGEndpoint, RAGQueryLog
-from rag.providers.registry import get_retrieval_provider
 from rag.providers.base import QueryContext
+from rag.providers.registry import get_retrieval_provider
 from rag.security.access import check_access_policy, get_policy_decisions
 
 logger = logging.getLogger(__name__)
@@ -34,7 +34,7 @@ def api_auth_required(view_func):
         # Check session auth
         if request.user and request.user.is_authenticated:
             return view_func(request, *args, **kwargs)
-        
+
         # Check API key header
         api_key = request.headers.get("X-API-Key") or request.headers.get("Authorization")
         if api_key:
@@ -45,12 +45,12 @@ def api_auth_required(view_func):
             # Attach a pseudo-user for logging
             request.api_key_user = f"api_key:{api_key[:8]}..."
             return view_func(request, *args, **kwargs)
-        
+
         return JsonResponse(
             {"error": "Authentication required"},
             status=401
         )
-    
+
     return wrapper
 
 
@@ -88,18 +88,18 @@ def query_endpoint(request, slug):
     """
     trace_id = str(uuid.uuid4())
     start_time = time.time()
-    
+
     try:
         # Get endpoint
         endpoint = get_object_or_404(RAGEndpoint, slug=slug)
-        
+
         # Check status
         if endpoint.status != 'active':
             return JsonResponse(
                 {"error": f"Endpoint is {endpoint.status}", "trace_id": trace_id},
                 status=503
             )
-        
+
         # Parse request
         try:
             data = json.loads(request.body)
@@ -108,22 +108,22 @@ def query_endpoint(request, slug):
                 {"error": "Invalid JSON body", "trace_id": trace_id},
                 status=400
             )
-        
+
         query = data.get("query", "").strip()
         if not query:
             return JsonResponse(
                 {"error": "Query is required", "trace_id": trace_id},
                 status=400
             )
-        
+
         filters = data.get("filters", {})
         top_k = data.get("top_k", endpoint.get_default_top_k())
-        
+
         # Check access policy
         user = request.user if request.user.is_authenticated else None
         allowed = check_access_policy(endpoint.access_policy, user)
         policy_decisions = get_policy_decisions(endpoint.access_policy, user, allowed)
-        
+
         if not allowed:
             # Log denied access
             RAGQueryLog.log_query(
@@ -138,7 +138,7 @@ def query_endpoint(request, slug):
                 {"error": "Access denied", "trace_id": trace_id},
                 status=403
             )
-        
+
         # Build query context
         ctx = QueryContext(
             trace_id=trace_id,
@@ -148,7 +148,7 @@ def query_endpoint(request, slug):
             credentials_ref=endpoint.source.credentials_ref,
             retrieval_config=endpoint.retrieval_config
         )
-        
+
         # Get provider and execute query
         provider = get_retrieval_provider(endpoint.retrieval_provider_key)
         result = provider.query(
@@ -157,9 +157,9 @@ def query_endpoint(request, slug):
             top_k=top_k,
             ctx=ctx
         )
-        
+
         latency_ms = int((time.time() - start_time) * 1000)
-        
+
         # Log successful query
         RAGQueryLog.log_query(
             endpoint=endpoint,
@@ -173,18 +173,18 @@ def query_endpoint(request, slug):
             },
             policy_decisions=policy_decisions
         )
-        
+
         return JsonResponse({
             "results": result.results,
             "trace_id": trace_id,
             "latency_ms": latency_ms,
             "total_count": result.total_count
         })
-        
+
     except Exception as e:
         latency_ms = int((time.time() - start_time) * 1000)
         logger.exception(f"RAG query failed: {e}")
-        
+
         # Log error (but not the query for privacy)
         try:
             endpoint = RAGEndpoint.objects.filter(slug=slug).first()
@@ -198,7 +198,7 @@ def query_endpoint(request, slug):
                 )
         except Exception:
             pass
-        
+
         return JsonResponse(
             {"error": "Internal error", "trace_id": trace_id},
             status=500
@@ -223,7 +223,7 @@ def health_endpoint(request, slug):
     """
     try:
         endpoint = get_object_or_404(RAGEndpoint, slug=slug)
-        
+
         # Build context
         ctx = QueryContext(
             trace_id=str(uuid.uuid4()),
@@ -233,11 +233,11 @@ def health_endpoint(request, slug):
             credentials_ref=endpoint.source.credentials_ref,
             retrieval_config=endpoint.retrieval_config
         )
-        
+
         # Get provider health
         provider = get_retrieval_provider(endpoint.retrieval_provider_key)
         status = provider.health(ctx=ctx)
-        
+
         return JsonResponse({
             "healthy": status.healthy,
             "message": status.message,
@@ -245,7 +245,7 @@ def health_endpoint(request, slug):
             "provider": endpoint.retrieval_provider_key,
             "status": endpoint.status
         })
-        
+
     except Exception as e:
         logger.exception(f"Health check failed: {e}")
         return JsonResponse({

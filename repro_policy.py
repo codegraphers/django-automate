@@ -1,5 +1,5 @@
+
 from automate_datachat.sqlpolicy import SQLPolicy
-import sqlglot
 
 try:
     policy = SQLPolicy(allowed_tables=["auth_user"], max_rows=1000)

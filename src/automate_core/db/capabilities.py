@@ -1,10 +1,11 @@
 from django.db import connection
 
+
 class DbCapabilities:
     """
     Detects features of the underlying database to enable optimizations.
     """
-    
+
     @property
     def supports_skip_locked(self) -> bool:
         vendor = connection.vendor

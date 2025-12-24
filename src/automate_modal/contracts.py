@@ -9,9 +9,11 @@ Defines the stable interfaces for:
 - Platform Services
 """
 from __future__ import annotations
+
+from collections.abc import Iterable
 from dataclasses import dataclass, field
-from typing import Any, Dict, Iterable, List, Optional, Protocol, runtime_checkable
-from enum import Enum
+from typing import Any, Protocol, runtime_checkable
+
 
 class ModalTaskType:
     """Standardized task types."""
@@ -33,22 +35,22 @@ class ArtifactRef:
     mime: str
     size_bytes: int
     sha256: str = ""
-    meta: Dict[str, Any] = field(default_factory=dict)
+    meta: dict[str, Any] = field(default_factory=dict)
 
 @dataclass
 class ModalResult:
     """Unified output for all modal tasks."""
     task_type: str
-    outputs: Dict[str, Any] = field(default_factory=dict) # small payload (text snippets, metadata)
-    artifacts: List[ArtifactRef] = field(default_factory=list) # heavy payload references
-    usage: Dict[str, Any] = field(default_factory=dict)   # tokens/seconds/cost
-    raw_provider_meta: Dict[str, Any] = field(default_factory=dict)  # safe subset only
+    outputs: dict[str, Any] = field(default_factory=dict) # small payload (text snippets, metadata)
+    artifacts: list[ArtifactRef] = field(default_factory=list) # heavy payload references
+    usage: dict[str, Any] = field(default_factory=dict)   # tokens/seconds/cost
+    raw_provider_meta: dict[str, Any] = field(default_factory=dict)  # safe subset only
 
 @dataclass
 class StreamEvent:
     """Unified event for streaming responses and job progress."""
     type: str                       # "token", "audio_chunk", "progress", "artifact", "final", "error"
-    data: Dict[str, Any]
+    data: dict[str, Any]
     ts: float
 
 # --- Platform Services Protocols ---
@@ -68,10 +70,10 @@ class BlobStore(Protocol):
 @runtime_checkable
 class JobQueue(Protocol):
     """Abstract job queue for async execution."""
-    def enqueue(self, job_name: str, payload: Dict[str, Any], *, priority: int = 5, delay_s: int = 0) -> str:
+    def enqueue(self, job_name: str, payload: dict[str, Any], *, priority: int = 5, delay_s: int = 0) -> str:
         """Enqueue a job and return job_id."""
         ...
-    
+
     def cancel(self, job_id: str) -> None:
         """Cancel a pending job."""
         ...
@@ -81,9 +83,9 @@ class ExecutionCtx:
     """Context passed to every capability execution."""
     request_id: str
     correlation_id: str
-    actor_id: Optional[str]
-    tenant_id: Optional[str]
-    policy: Dict[str, Any]         # RBAC decisions, budgets, constraints
+    actor_id: str | None
+    tenant_id: str | None
+    policy: dict[str, Any]         # RBAC decisions, budgets, constraints
     secrets: SecretsResolver       # resolves SecretRef
     blob: BlobStore                # store/retrieve files
     logger: Any
@@ -95,16 +97,16 @@ class ExecutionCtx:
 class Capability(Protocol):
     """A specific unit of work (e.g. OpenAI Chat, ElevenLabs TTS)."""
     task_type: str
-    
-    def validate(self, req: Dict[str, Any]) -> None:
+
+    def validate(self, req: dict[str, Any]) -> None:
         """Validate request payload schema. Raise ValueError if invalid."""
         ...
-        
-    def run(self, req: Dict[str, Any], ctx: ExecutionCtx) -> ModalResult:
+
+    def run(self, req: dict[str, Any], ctx: ExecutionCtx) -> ModalResult:
         """Execute the task synchronously."""
         ...
-        
-    def stream(self, req: Dict[str, Any], ctx: ExecutionCtx) -> Iterable[StreamEvent]:
+
+    def stream(self, req: dict[str, Any], ctx: ExecutionCtx) -> Iterable[StreamEvent]:
         """
         Optional. Return an iterator of events.
         If not implemented, platform may emulate or fallback.

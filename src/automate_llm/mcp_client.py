@@ -8,10 +8,10 @@ Supports multiple server schemas:
 - MCP SSE: Server-Sent Events based (future)
 - LangChain Tools: /api/tools + /api/invoke (future)
 """
-import httpx
 import os
-from typing import Optional
 from enum import Enum
+
+import httpx
 from django.utils import timezone
 
 
@@ -68,32 +68,32 @@ class MCPClient:
         # Execute a tool
         result = client.execute_tool("get_products", {"limit": 10})
     """
-    
+
     def __init__(self, server: "MCPServer"):
         self.server = server
         self.base_url = server.endpoint_url.rstrip("/")
         self.timeout = httpx.Timeout(30.0, connect=10.0)
-        self._detected_schema: Optional[ServerSchema] = None
-    
+        self._detected_schema: ServerSchema | None = None
+
     def _get_auth_headers(self) -> dict:
         """Build authentication headers based on server config."""
         if self.server.auth_type == "none":
             return {}
-        
+
         # Resolve secret
         secret = self.server.auth_secret_ref or ""
         if secret.startswith("env:"):
             env_var = secret[4:]
             secret = os.environ.get(env_var, "")
-        
+
         if self.server.auth_type == "bearer":
             return {"Authorization": f"Bearer {secret}"}
         elif self.server.auth_type == "api_key":
             header_name = self.server.auth_header_name or "X-API-Key"
             return {header_name: secret}
-        
+
         return {}
-    
+
     def detect_schema(self) -> ServerSchema:
         """
         Detect the server's schema by probing known endpoints.
@@ -103,10 +103,10 @@ class MCPClient:
         """
         if self._detected_schema:
             return self._detected_schema
-        
+
         with httpx.Client(timeout=self.timeout) as client:
             headers = self._get_auth_headers()
-            
+
             for endpoint, schema, check in SCHEMA_PROBES:
                 try:
                     response = client.get(f"{self.base_url}{endpoint}", headers=headers)
@@ -115,10 +115,10 @@ class MCPClient:
                         return schema
                 except Exception:
                     continue
-        
+
         self._detected_schema = ServerSchema.UNKNOWN
         return ServerSchema.UNKNOWN
-    
+
     def discover_tools(self) -> list[dict]:
         """
         Fetch available tools from the MCP server.
@@ -132,11 +132,11 @@ class MCPClient:
             MCPClientError: If discovery fails.
         """
         schema = self.detect_schema()
-        
+
         try:
             with httpx.Client(timeout=self.timeout) as client:
                 headers = self._get_auth_headers()
-                
+
                 if schema == ServerSchema.STANDARD_MCP:
                     return self._discover_standard(client, headers, "/tools")
                 elif schema == ServerSchema.MCP_V2:
@@ -147,18 +147,18 @@ class MCPClient:
                     return self._discover_from_openapi(client, headers)
                 else:
                     raise MCPClientError(f"Could not detect server schema for {self.base_url}")
-                    
+
         except MCPClientError:
             raise
         except Exception as e:
             raise MCPClientError(f"Discovery failed: {str(e)}")
-    
+
     def _discover_standard(self, client: httpx.Client, headers: dict, endpoint: str) -> list[dict]:
         """Discover tools from a standard /tools-style endpoint."""
         response = client.get(f"{self.base_url}{endpoint}", headers=headers)
         response.raise_for_status()
         data = response.json()
-        
+
         # Handle multiple response formats
         if isinstance(data, dict):
             # { "tools": [...] } or { "data": [...] }
@@ -175,7 +175,7 @@ class MCPClient:
             return data
         else:
             raise MCPClientError(f"Unexpected response format: {type(data)}")
-    
+
     def _discover_from_openapi(self, client: httpx.Client, headers: dict) -> list[dict]:
         """
         Discover tools from an OpenAPI specification.
@@ -185,39 +185,39 @@ class MCPClient:
         response = client.get(f"{self.base_url}/openapi.json", headers=headers)
         response.raise_for_status()
         openapi = response.json()
-        
+
         tools = []
         paths = openapi.get("paths", {})
         schemas = openapi.get("components", {}).get("schemas", {})
-        
+
         # Skip these common non-tool endpoints
         skip_endpoints = {
-            "docs", "redoc", "openapi.json", "healthz", "health", 
+            "docs", "redoc", "openapi.json", "healthz", "health",
             "ready", "readyz", "livez", "metrics", "favicon.ico"
         }
-        
+
         for path, methods in paths.items():
             # Only consider POST endpoints as tools
             if "post" not in methods:
                 continue
-            
+
             post = methods["post"]
             tool_name = path.strip("/")
-            
+
             # Skip internal/meta endpoints
             if tool_name.startswith("_") or tool_name.lower() in skip_endpoints:
                 continue
-            
+
             # Skip if nested path (usually not a tool)
             if "/" in tool_name and not tool_name.startswith("api/"):
                 continue
-            
+
             # Extract input schema from request body
             input_schema = {"type": "object", "properties": {}}
             request_body = post.get("requestBody", {})
             content = request_body.get("content", {}).get("application/json", {})
             schema_def = content.get("schema", {})
-            
+
             # Handle $ref
             if "$ref" in schema_def:
                 schema_name = schema_def["$ref"].split("/")[-1]
@@ -225,15 +225,15 @@ class MCPClient:
                     input_schema = schemas[schema_name]
             elif schema_def:
                 input_schema = schema_def
-            
+
             tools.append({
                 "name": tool_name,
                 "description": post.get("description", post.get("summary", "")),
                 "inputSchema": input_schema
             })
-        
+
         return tools
-    
+
     def execute_tool(self, tool_name: str, args: dict) -> dict:
         """
         Execute a tool on the MCP server.
@@ -251,14 +251,14 @@ class MCPClient:
             MCPClientError: If execution fails.
         """
         schema = self.detect_schema()
-        
+
         try:
             with httpx.Client(timeout=self.timeout) as client:
                 headers = {
                     **self._get_auth_headers(),
                     "Content-Type": "application/json"
                 }
-                
+
                 if schema == ServerSchema.STANDARD_MCP:
                     return self._execute_standard(client, headers, "/execute", tool_name, args)
                 elif schema == ServerSchema.MCP_V2:
@@ -270,7 +270,7 @@ class MCPClient:
                 else:
                     # Try all execution patterns as fallback
                     return self._execute_with_fallbacks(client, headers, tool_name, args)
-                    
+
         except MCPClientError:
             raise
         except httpx.HTTPStatusError as e:
@@ -279,8 +279,8 @@ class MCPClient:
             raise MCPClientError(f"Connection error: {str(e)}")
         except Exception as e:
             raise MCPClientError(f"Execution failed: {str(e)}")
-    
-    def _execute_standard(self, client: httpx.Client, headers: dict, endpoint: str, 
+
+    def _execute_standard(self, client: httpx.Client, headers: dict, endpoint: str,
                           tool_name: str, args: dict) -> dict:
         """Execute via standard /execute endpoint."""
         response = client.post(
@@ -290,8 +290,8 @@ class MCPClient:
         )
         response.raise_for_status()
         return response.json()
-    
-    def _execute_langchain(self, client: httpx.Client, headers: dict, 
+
+    def _execute_langchain(self, client: httpx.Client, headers: dict,
                            tool_name: str, args: dict) -> dict:
         """Execute via LangChain /api/invoke endpoint."""
         response = client.post(
@@ -301,8 +301,8 @@ class MCPClient:
         )
         response.raise_for_status()
         return response.json()
-    
-    def _execute_openapi(self, client: httpx.Client, headers: dict, 
+
+    def _execute_openapi(self, client: httpx.Client, headers: dict,
                          tool_name: str, args: dict) -> dict:
         """Execute via OpenAPI-style direct POST to /{tool_name}."""
         response = client.post(
@@ -312,8 +312,8 @@ class MCPClient:
         )
         response.raise_for_status()
         return response.json()
-    
-    def _execute_with_fallbacks(self, client: httpx.Client, headers: dict, 
+
+    def _execute_with_fallbacks(self, client: httpx.Client, headers: dict,
                                  tool_name: str, args: dict) -> dict:
         """Try multiple execution patterns as fallback."""
         patterns = [
@@ -322,7 +322,7 @@ class MCPClient:
             (f"{self.base_url}/api/invoke", {"tool": tool_name, "input": args}),
             (f"{self.base_url}/{tool_name}", args),
         ]
-        
+
         last_error = None
         for url, payload in patterns:
             try:
@@ -334,7 +334,7 @@ class MCPClient:
             except Exception as e:
                 last_error = e
                 continue
-        
+
         raise MCPClientError(f"All execution patterns failed. Last error: {last_error}")
 
 
@@ -349,17 +349,17 @@ def sync_mcp_tools(server: "MCPServer") -> tuple[int, int, str]:
         Tuple of (created_count, updated_count, detected_schema).
     """
     from automate.models import MCPTool
-    
+
     client = MCPClient(server)
-    
+
     try:
         # Detect and store schema
         schema = client.detect_schema()
         tools = client.discover_tools()
-        
+
         created = 0
         updated = 0
-        
+
         for tool_def in tools:
             tool, is_new = MCPTool.objects.update_or_create(
                 server=server,
@@ -373,14 +373,14 @@ def sync_mcp_tools(server: "MCPServer") -> tuple[int, int, str]:
                 created += 1
             else:
                 updated += 1
-        
+
         # Update server sync status
         server.last_synced = timezone.now()
         server.last_error = ""
         server.save(update_fields=["last_synced", "last_error"])
-        
+
         return created, updated, schema.value
-        
+
     except MCPClientError as e:
         server.last_error = str(e)
         server.save(update_fields=["last_error"])

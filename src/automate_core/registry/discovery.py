@@ -1,6 +1,7 @@
 from __future__ import annotations
+
 import sys
-from typing import Type
+
 from .base import Registry, T
 
 if sys.version_info < (3, 10):

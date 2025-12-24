@@ -1,6 +1,8 @@
 from django.core.management.base import BaseCommand
+
 from automate.dlq import DeadLetter
 from automate.outbox import OutboxStatusChoices
+
 
 class Command(BaseCommand):
     help = "Replay dead letters"

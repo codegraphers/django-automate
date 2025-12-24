@@ -1,12 +1,12 @@
 from __future__ import annotations
-from dataclasses import dataclass
-from typing import Any, Dict, Iterable, List, Optional
-import re
 
-from .conf import llm_settings
-# Reuse the robust redaction from governance layer if available 
+import re
+from dataclasses import dataclass
+from typing import Any
+
+# Reuse the robust redaction from governance layer if available
 # but implement the user's specific logic here as requested
-from automate_governance.secrets.redaction import redact_obj as gov_redact_obj
+from .conf import llm_settings
 
 _SECRETREF_RE = re.compile(r"secretref://[A-Za-z0-9._/\-]+")
 
@@ -16,9 +16,9 @@ def redact_obj(obj: Any, *, max_field_len: int = 2000) -> Any:
     This uses the governance redaction logic but adds secretref masking.
     """
     # First pass: standard governance redaction (keys like api_key, etc)
-    # Note: gov_redact_obj might not support max_field_len the same way, 
+    # Note: gov_redact_obj might not support max_field_len the same way,
     # so we implement the specific requirements here or chain them.
-    
+
     if obj is None:
         return None
     if isinstance(obj, str):
@@ -33,7 +33,7 @@ def redact_obj(obj: Any, *, max_field_len: int = 2000) -> Any:
     if isinstance(obj, list):
         return [redact_obj(x, max_field_len=max_field_len) for x in obj]
     if isinstance(obj, dict):
-        out: Dict[str, Any] = {}
+        out: dict[str, Any] = {}
         for k, v in obj.items():
             key = str(k)
             # Basic heuristics
@@ -42,7 +42,7 @@ def redact_obj(obj: Any, *, max_field_len: int = 2000) -> Any:
             else:
                 out[key] = redact_obj(v, max_field_len=max_field_len)
         return out
-        
+
     return str(obj)[:max_field_len] + "…"
 
 @dataclass

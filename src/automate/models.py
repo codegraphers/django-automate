@@ -1,8 +1,8 @@
 import uuid
+
 from django.db import models
-from django.utils.translation import gettext_lazy as _
-from django.conf import settings
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 # =============================================================================
 # CORE SHIM LAYER (Area C Refactor)
@@ -15,11 +15,18 @@ from automate_core.models import (
     Automation,
     Workflow,
     Trigger,
-    Trigger as TriggerSpec, # Alias for old name
-    RuleSpec as Rule,        # Alias for old name
+    Trigger as TriggerSpec, # Alias
+    TriggerTypeChoices,     # Enum
+    RuleSpec as Rule,        # Alias
     Event,
+    OutboxItem as Outbox,    # Alias
     Execution,
-    StepRun as ExecutionStep # Alias for old name
+    StepRun as ExecutionStep,
+    Artifact,
+    Policy,
+    # Enums
+    ExecutionStatusChoices,
+    OutboxStatusChoices
 )
 
 # Re-export choices if needed for compat (though explicit import is better)
@@ -35,7 +42,7 @@ class LLMProvider(models.Model):
     name = models.CharField(max_length=100)
     base_url = models.URLField(blank=True, null=True)
     api_key_env_var = models.CharField(max_length=100, default="OPENAI_API_KEY")
-    
+
     def __str__(self):
         return self.name
 
@@ -43,16 +50,16 @@ class LLMModelConfig(models.Model):
     provider = models.ForeignKey(LLMProvider, on_delete=models.CASCADE)
     name = models.CharField(max_length=100) # e.g. gpt-4
     is_default = models.BooleanField(default=False, db_index=True)
-    
+
     # Default params
     temperature = models.FloatField(default=0.7)
     max_tokens = models.IntegerField(default=1000)
-    
+
     @classmethod
     def get_default(cls):
         """Returns the default model config, or the first one if none marked default."""
         return cls.objects.filter(is_default=True).first() or cls.objects.first()
-    
+
     def __str__(self):
         default_marker = " (default)" if self.is_default else ""
         return f"{self.provider.slug}/{self.name}{default_marker}"
@@ -62,14 +69,14 @@ class Prompt(models.Model):
     slug = models.SlugField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
-    
+
     def __str__(self):
         return self.name
 
 class PromptVersion(models.Model):
     prompt = models.ForeignKey(Prompt, related_name="versions", on_delete=models.CASCADE)
     version = models.IntegerField(default=1)
-    
+
     status = models.CharField(
         max_length=20,
         choices=[
@@ -80,18 +87,18 @@ class PromptVersion(models.Model):
         ],
         default="draft"
     )
-    
+
     system_template = models.TextField(blank=True)
     user_template = models.TextField()
-    
+
     input_schema = models.JSONField(default=dict, blank=True)
     output_schema = models.JSONField(default=dict, blank=True)
-    
+
     # P0: First-class model config
     default_model_config = models.ForeignKey(LLMModelConfig, null=True, blank=True, on_delete=models.SET_NULL, help_text="Default model to use for this prompt version")
-    
+
     created_at = models.DateTimeField(auto_now_add=True)
-    
+
     class Meta:
         unique_together = ("prompt", "version")
         ordering = ["-version"]
@@ -99,8 +106,6 @@ class PromptVersion(models.Model):
 # Workflow moved to automate_core
 # from automate_core.models import Workflow (already imported above)
 
-from .outbox import Outbox, OutboxStatusChoices
-from .dlq import DeadLetter
 
 class ConnectionProfile(models.Model):
     """
@@ -111,19 +116,19 @@ class ConnectionProfile(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True)
     connector_slug = models.CharField(max_length=255)
-    
+
     # Environment Scope
-    environment = models.CharField(max_length=50, default="prod") 
-    
+    environment = models.CharField(max_length=50, default="prod")
+
     # Non-secret config
     config = models.JSONField(default=dict, blank=True)
-    
+
     # Secrets (Encrypted in real world, suppressed in logs)
     encrypted_secrets = models.JSONField(default=dict, blank=True)
-    
+
     enabled = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    
+
     def __str__(self):
         return f"{self.name} ({self.connector_slug})"
 
@@ -139,16 +144,16 @@ class PromptRelease(models.Model):
     Track E Requirement.
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    
+
     prompt_version = models.ForeignKey("PromptVersion", on_delete=models.CASCADE)
     environment = models.CharField(max_length=50, choices=[("dev", "Dev"), ("staging", "Staging"), ("prod", "Prod")])
-    
+
     # P0: Environment-specific model override
     model_config = models.ForeignKey(LLMModelConfig, null=True, blank=True, on_delete=models.SET_NULL, help_text="Override model for this environment")
-    
+
     deployed_at = models.DateTimeField(auto_now_add=True)
     deployed_by = models.CharField(max_length=255, null=True) # User reference
-    
+
     class Meta:
         unique_together = ["prompt_version", "environment"]
 
@@ -158,18 +163,18 @@ class BudgetPolicy(models.Model):
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
-    
+
     scope = models.CharField(max_length=50, default="global") # global, user, automation
-    
+
     # Limits
     max_tokens_per_day = models.IntegerField(default=100000)
     max_cost_per_day_usd = models.DecimalField(max_digits=10, decimal_places=4, default=10.00)
-    
+
     current_usage_tokens = models.IntegerField(default=0)
     current_usage_cost = models.DecimalField(max_digits=10, decimal_places=4, default=0.00)
-    
-    reset_at = models.DateTimeField(default=timezone.now) 
-    
+
+    reset_at = models.DateTimeField(default=timezone.now)
+
     def __str__(self):
         return f"{self.name} (Policy)"
 
@@ -186,18 +191,18 @@ class Template(models.Model):
         ("jinja", "Jinja2 Text"),
         ("json", "JSON Payload")
     ])
-    
+
     # The actual template content
     content = models.TextField(help_text="Jinja2 supported. Use {{ event.payload.id }} etc.")
-    
+
     # Schema for variables expected in this template (optional, for validation)
     input_schema = models.JSONField(default=dict, blank=True)
-    
+
     version = models.IntegerField(default=1)
-    
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     def __str__(self):
         return f"{self.name} (v{self.version})"
 
@@ -222,19 +227,19 @@ class MCPServer(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100, help_text="Display name for this MCP server")
     slug = models.SlugField(unique=True, help_text="Unique identifier (e.g., 'shopify-mcp')")
-    
+
     # Connection
     endpoint_url = models.URLField(help_text="Base URL of the MCP server (e.g., http://localhost:3000)")
-    
+
     # Authentication
     auth_type = models.CharField(
-        max_length=20, 
-        choices=MCPAuthTypeChoices.choices, 
+        max_length=20,
+        choices=MCPAuthTypeChoices.choices,
         default=MCPAuthTypeChoices.NONE,
         help_text="How to authenticate with this server"
     )
     auth_secret_ref = models.CharField(
-        max_length=255, 
+        max_length=255,
         blank=True,
         help_text="Secret reference (e.g., 'env:MCP_SHOPIFY_TOKEN' or raw token)"
     )
@@ -243,22 +248,22 @@ class MCPServer(models.Model):
         default="Authorization",
         help_text="Header name for API key auth (e.g., 'X-API-Key')"
     )
-    
+
     # Status
     enabled = models.BooleanField(default=True, db_index=True)
     last_synced = models.DateTimeField(null=True, blank=True, help_text="Last time tools were synced")
     last_error = models.TextField(blank=True, help_text="Last sync error if any")
-    
+
     # Metadata
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     class Meta:
         verbose_name = "MCP Server"
         verbose_name_plural = "MCP Servers"
         ordering = ["name"]
-    
+
     def __str__(self):
         status = "✓" if self.enabled else "✗"
         return f"{status} {self.name} ({self.slug})"
@@ -273,28 +278,28 @@ class MCPTool(models.Model):
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     server = models.ForeignKey(MCPServer, on_delete=models.CASCADE, related_name="tools")
-    
+
     # Tool definition (from MCP discovery)
     name = models.CharField(max_length=100, help_text="Tool function name")
     description = models.TextField(help_text="What this tool does")
     input_schema = models.JSONField(default=dict, help_text="JSON Schema for tool parameters")
-    
+
     # Control
     enabled = models.BooleanField(default=True, db_index=True, help_text="Can disable specific tools")
-    
+
     # Stats
     call_count = models.IntegerField(default=0, help_text="Number of times this tool was called")
     last_called = models.DateTimeField(null=True, blank=True)
-    
+
     # Cache
     discovered_at = models.DateTimeField(auto_now_add=True)
-    
+
     class Meta:
         verbose_name = "MCP Tool"
         verbose_name_plural = "MCP Tools"
         unique_together = [["server", "name"]]
         ordering = ["server", "name"]
-    
+
     def __str__(self):
         return f"{self.server.slug}/{self.name}"
 

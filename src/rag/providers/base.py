@@ -6,18 +6,18 @@ Defines the protocol/contracts for:
 - SourceProvider: Document fetching (Phase 2)
 - IndexProvider: Indexing operations (Phase 2)
 """
-from typing import Protocol, List, Dict, Any, Optional, runtime_checkable
 from dataclasses import dataclass, field
+from typing import Any, Protocol, runtime_checkable
 
 
 @dataclass
 class RetrievalResult:
     """Standard result from a retrieval query."""
-    results: List[Dict[str, Any]]  # [{text, score, source_id, metadata}]
+    results: list[dict[str, Any]]  # [{text, score, source_id, metadata}]
     latency_ms: int = 0
     trace_id: str = ""
     total_count: int = 0  # Total matches (before top_k)
-    
+
     def to_dict(self):
         return {
             "results": self.results,
@@ -32,8 +32,8 @@ class HealthStatus:
     """Health check result."""
     healthy: bool
     message: str = ""
-    details: Dict[str, Any] = field(default_factory=dict)
-    
+    details: dict[str, Any] = field(default_factory=dict)
+
     def to_dict(self):
         return {
             "healthy": self.healthy,
@@ -48,9 +48,9 @@ class QueryContext:
     trace_id: str
     user: str
     endpoint_slug: str
-    source_config: Dict[str, Any]
+    source_config: dict[str, Any]
     credentials_ref: str
-    retrieval_config: Dict[str, Any]
+    retrieval_config: dict[str, Any]
 
 
 @runtime_checkable
@@ -63,15 +63,15 @@ class RetrievalProvider(Protocol):
     - query(): Execute a retrieval query
     - health(): Check provider health
     """
-    
+
     key: str
     name: str
-    
+
     def query(
-        self, 
-        *, 
-        query: str, 
-        filters: Dict[str, Any],
+        self,
+        *,
+        query: str,
+        filters: dict[str, Any],
         top_k: int,
         ctx: QueryContext
     ) -> RetrievalResult:
@@ -88,7 +88,7 @@ class RetrievalProvider(Protocol):
             RetrievalResult with matching documents
         """
         ...
-    
+
     def health(self, *, ctx: QueryContext) -> HealthStatus:
         """
         Check provider health.
@@ -97,8 +97,8 @@ class RetrievalProvider(Protocol):
             HealthStatus indicating if provider is operational
         """
         ...
-    
-    def validate_config(self, config: Dict[str, Any]) -> List[str]:
+
+    def validate_config(self, config: dict[str, Any]) -> list[str]:
         """
         Validate provider-specific configuration.
         
@@ -115,22 +115,22 @@ class SourceProvider(Protocol):
     """Protocol for document source providers (Phase 2)."""
     key: str
     name: str
-    
-    def list_documents(self, *, ctx: Any, cursor: Optional[str] = None) -> Any:
+
+    def list_documents(self, *, ctx: Any, cursor: str | None = None) -> Any:
         ...
-    
+
     def fetch_document(self, *, ctx: Any, doc_id: str) -> Any:
         ...
 
 
-@runtime_checkable  
+@runtime_checkable
 class IndexProvider(Protocol):
     """Protocol for index providers (Phase 2)."""
     key: str
     name: str
-    
-    def index_documents(self, *, ctx: Any, documents: List[Any]) -> Any:
+
+    def index_documents(self, *, ctx: Any, documents: list[Any]) -> Any:
         ...
-    
-    def delete_documents(self, *, ctx: Any, doc_ids: List[str]) -> Any:
+
+    def delete_documents(self, *, ctx: Any, doc_ids: list[str]) -> Any:
         ...

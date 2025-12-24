@@ -1,31 +1,32 @@
 from __future__ import annotations
-from typing import Any, Dict, Optional
+
+from typing import Any
 
 from ..conf import llm_settings
 from ..errors import LLMError, LLMErrorCode
 from ..policy import LLMPolicyEngine
-from ..redaction import RedactionEngine
 from ..prompts.compiler import PromptCompiler, PromptVersionSnapshot
+from ..redaction import RedactionEngine
 from .executor import RunExecutor
 from .store import RunStore
 
 # Secrets Integration
 # Avoid top-level model imports to prevent AppRegistryNotReady during startup
-SecretResolver = None 
+SecretResolver = None
 ConnectionProfile = None
 
-_DEFAULT_STORE: Optional[RunStore] = None
+_DEFAULT_STORE: RunStore | None = None
 
 class RunService:
     def __init__(
         self,
         *,
         store: RunStore,
-        compiler: Optional[PromptCompiler] = None,
-        executor: Optional[RunExecutor] = None,
-        policy: Optional[LLMPolicyEngine] = None,
-        redaction: Optional[RedactionEngine] = None,
-        secret_resolver: Optional[Any] = None
+        compiler: PromptCompiler | None = None,
+        executor: RunExecutor | None = None,
+        policy: LLMPolicyEngine | None = None,
+        redaction: RedactionEngine | None = None,
+        secret_resolver: Any | None = None
     ) -> None:
         self.store = store
         self.compiler = compiler or PromptCompiler()
@@ -46,15 +47,15 @@ class RunService:
     def create_run(
         self,
         *,
-        prompt_ver: Optional[PromptVersionSnapshot],
-        raw_messages: Optional[Any],
-        inputs: Optional[Dict[str, Any]],
+        prompt_ver: PromptVersionSnapshot | None,
+        raw_messages: Any | None,
+        inputs: dict[str, Any] | None,
         provider_profile: str,
-        request_overrides: Dict[str, Any],
-        trace_id: Optional[str],
-        idempotency_key: Optional[str],
+        request_overrides: dict[str, Any],
+        trace_id: str | None,
+        idempotency_key: str | None,
         mode: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         payload = {
             "prompt_key": prompt_ver.prompt_key if prompt_ver else None,
             "prompt_version": prompt_ver.version if prompt_ver else None,
@@ -76,23 +77,23 @@ class RunService:
         run_id: int,
         provider_profile: str, # passed from create_run context usually
         model: str,
-        prompt_ver: Optional[PromptVersionSnapshot],
-        inputs: Optional[Dict[str, Any]],
-        raw_messages: Optional[Any],
-        request_overrides: Dict[str, Any],
-        trace_id: Optional[str],
-    ) -> Dict[str, Any]:
+        prompt_ver: PromptVersionSnapshot | None,
+        inputs: dict[str, Any] | None,
+        raw_messages: Any | None,
+        request_overrides: dict[str, Any],
+        trace_id: str | None,
+    ) -> dict[str, Any]:
         self.store.mark_running(run_id)
 
         try:
             # 1. Resolve Provider Profile & Secrets
             # Convention: provider_profile string match a ConnectionProfile.name in DB
             # If not found, fall back to settings or error.
-            
+
             provider_code = "openai" # Default fallback
             api_key = ""
             provider_cfg = {}
-            
+
             # Lazy import model to avoid AppRegistryNotReady
             try:
                 from automate_governance.models import ConnectionProfile as ConnProfileModel
@@ -111,8 +112,8 @@ class RunService:
                     provider_code = provider_cfg.get("provider", "openai")
                 except ConnProfileModel.DoesNotExist:
                      # Check settings.LLM.PROVIDERS for static config (legacy/dev mode)
-                     pass 
-            
+                     pass
+
             # Simple fallback for skeleton if no DB profile found (e.g. initial dev)
             if not api_key:
                  # Attempt to load from settings directly (e.g. AUTOMATE.LLM.PROFILES)

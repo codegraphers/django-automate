@@ -4,7 +4,6 @@ RAG Provider Registry
 Central registry for retrieval providers.
 Providers register themselves on app startup.
 """
-from typing import Dict, Type, Optional
 import logging
 
 from .base import RetrievalProvider
@@ -12,7 +11,7 @@ from .base import RetrievalProvider
 logger = logging.getLogger(__name__)
 
 # Global registry
-_providers: Dict[str, RetrievalProvider] = {}
+_providers: dict[str, RetrievalProvider] = {}
 
 
 def register_provider(provider: RetrievalProvider) -> None:
@@ -36,7 +35,7 @@ def get_retrieval_provider(key: str) -> RetrievalProvider:
     return _providers[key]
 
 
-def list_providers() -> Dict[str, RetrievalProvider]:
+def list_providers() -> dict[str, RetrievalProvider]:
     """List all registered providers."""
     return dict(_providers)
 
@@ -48,9 +47,9 @@ def autodiscover() -> None:
     """
     # Import built-in providers to trigger registration
     from . import external, local
-    
+
     # Register providers
     register_provider(external.ExternalRetrievalProvider())
     register_provider(local.LocalRetrievalProvider())
-    
+
     logger.info(f"RAG provider autodiscovery complete. Registered: {list(_providers.keys())}")

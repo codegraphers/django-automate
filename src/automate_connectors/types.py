@@ -1,13 +1,15 @@
 from __future__ import annotations
+
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any
+
 
 @dataclass(frozen=True)
 class ActionSpec:
     name: str
     description: str
-    input_schema: Dict[str, Any]  # JSON Schema
-    output_schema: Optional[Dict[str, Any]] = None # JSON Schema
+    input_schema: dict[str, Any]  # JSON Schema
+    output_schema: dict[str, Any] | None = None # JSON Schema
     side_effects: bool = False
     idempotent: bool = False
 
@@ -15,7 +17,7 @@ class ActionSpec:
 class ConnectorResult:
     status: str = "success" # success, failed
     data: Any = None # Structured result
-    meta: Dict[str, Any] = field(default_factory=dict) # pagination tokens, usage info
+    meta: dict[str, Any] = field(default_factory=dict) # pagination tokens, usage info
 
 @dataclass(frozen=True)
 class ConnectorCapabilities:

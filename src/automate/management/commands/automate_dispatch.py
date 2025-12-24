@@ -1,6 +1,9 @@
-from django.core.management.base import BaseCommand
-from automate.dispatcher import Dispatcher
 import time
+
+from django.core.management.base import BaseCommand
+
+from automate.dispatcher import Dispatcher
+
 
 class Command(BaseCommand):
     help = "Run the dispatcher loop"
@@ -11,7 +14,7 @@ class Command(BaseCommand):
         while True:
             try:
                 dispatcher.dispatch_batch()
-                time.sleep(1) 
+                time.sleep(1)
             except KeyboardInterrupt:
                 self.stdout.write("Stopping...")
                 break

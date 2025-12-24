@@ -1,8 +1,7 @@
-import subprocess
-import time
-import sys
-import signal
 import os
+import subprocess
+import sys
+import time
 
 # Configuration
 DJANGO_PORT = 8000
@@ -10,38 +9,38 @@ MKDOCS_PORT = 8001
 HOST = "127.0.0.1"
 
 def main():
-    print(f"🚀 Starting Django Automate Dev Environment...")
-    
+    print("🚀 Starting Django Automate Dev Environment...")
+
     # Define commands
     django_cmd = [sys.executable, "example_project/manage.py", "runserver", f"{HOST}:{DJANGO_PORT}"]
     mkdocs_cmd = ["mkdocs", "serve", "-a", f"{HOST}:{MKDOCS_PORT}"]
-    
+
     # Environment variables
     env = os.environ.copy()
     env["PYTHONUNBUFFERED"] = "1"
 
     processes = []
-    
+
     try:
         # Start Django
-        print(f"   -> Launching Django...")
+        print("   -> Launching Django...")
         p_django = subprocess.Popen(django_cmd, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
         processes.append(p_django)
-        
+
         # Start MkDocs
-        print(f"   -> Launching MkDocs...")
+        print("   -> Launching MkDocs...")
         p_mkdocs = subprocess.Popen(mkdocs_cmd, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
         processes.append(p_mkdocs)
-        
+
         # Give them a moment to start
         time.sleep(3)
-        
+
         # Check for immediate failures
         if p_django.poll() is not None:
             print("❌ Django failed to start:")
             print(p_django.stderr.read().decode())
             return
-            
+
         if p_mkdocs.poll() is not None:
             print("❌ MkDocs failed to start:")
             print(p_mkdocs.stderr.read().decode())
@@ -54,11 +53,11 @@ def main():
         print(f"📚 Documentation: http://{HOST}:{MKDOCS_PORT}/")
         print("-" * 30)
         print("Press Ctrl+C to stop all services.")
-        
+
         # Keep alive
         while True:
             time.sleep(1)
-            
+
     except KeyboardInterrupt:
         print("\n\n🛑 Stopping services...")
     finally:

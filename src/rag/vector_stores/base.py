@@ -3,8 +3,9 @@ Base Vector Store Protocol
 
 Defines the interface for vector databases.
 """
-from typing import List, Protocol, Dict, Any, Optional
 from dataclasses import dataclass
+from typing import Any, Protocol
+
 
 @dataclass
 class SearchResult:
@@ -12,20 +13,20 @@ class SearchResult:
     text: str
     score: float
     source_id: str
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 class VectorStore(Protocol):
     """Protocol for vector stores."""
-    
+
     def search(
-        self, 
-        embedding: List[float], 
-        top_k: int, 
-        filters: Optional[Dict[str, Any]] = None
-    ) -> List[SearchResult]:
+        self,
+        embedding: list[float],
+        top_k: int,
+        filters: dict[str, Any] | None = None
+    ) -> list[SearchResult]:
         """Search similar vectors."""
         ...
-        
-    def health(self) -> Dict[str, Any]:
+
+    def health(self) -> dict[str, Any]:
         """Check store health."""
         ...

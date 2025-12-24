@@ -1,8 +1,11 @@
 from __future__ import annotations
-import requests
+
 import ipaddress
+from typing import Any
 from urllib.parse import urlparse
-from typing import Any, Dict, Optional
+
+import requests
+
 
 class HttpFetchTool:
     """
@@ -10,7 +13,7 @@ class HttpFetchTool:
     Blocks private IPs, loopback, metadata services.
     """
     name = "http.fetch"
-    
+
     def __init__(self, allow_private: bool = False):
         self.allow_private = allow_private
 
@@ -19,7 +22,7 @@ class HttpFetchTool:
             parsed = urlparse(url)
             if parsed.scheme not in ("http", "https"):
                 return False
-            
+
             # Resolve hostname
             # (Note: simpler check, in prod use separate DNS resolver to avoid TOCTOU)
             # host = parsed.hostname
@@ -27,7 +30,7 @@ class HttpFetchTool:
             #    ips = socket.getaddrinfo(host, None)
             # except:
             #    return False
-            
+
             # For now, just simplistic IP check if it looks like an IP
             try:
                 ip = ipaddress.ip_address(parsed.hostname)
@@ -36,12 +39,12 @@ class HttpFetchTool:
             except ValueError:
                 # Hostname, proceed (DNS rebinding risk exists without advanced resolver)
                 pass
-                
+
             return True
         except Exception:
             return False
 
-    def run(self, url: str, method: str = "GET", headers: Optional[Dict[str, str]] = None, body: Optional[str] = None, timeout_s: int = 5) -> Dict[str, Any]:
+    def run(self, url: str, method: str = "GET", headers: dict[str, str] | None = None, body: str | None = None, timeout_s: int = 5) -> dict[str, Any]:
         if not self._is_safe_url(url):
              return {"error": "URL blocked by SSRF policy", "status": "blocked"}
 
@@ -57,7 +60,7 @@ class HttpFetchTool:
              # Enforce size limit?
              if len(resp.content) > 1024 * 1024:
                   return {"error": "Response too large", "status": "blocked"}
-                  
+
              return {
                  "status": resp.status_code,
                  "text": resp.text[:2000], # Truncate for LLM

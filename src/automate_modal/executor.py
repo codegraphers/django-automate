@@ -1,8 +1,9 @@
-from typing import Dict, Any, List
 import logging
+from typing import Any
+
 from automate.step_executors.base import BaseStepExecutor, StepContext, StepResult, register_step_executor
+from automate_modal.contracts import ArtifactRef, ModalResult
 from automate_modal.engine import engine
-from automate_modal.contracts import ModalResult, ArtifactRef, ExecutionCtx
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +18,7 @@ class ModalExecuteStep(BaseStepExecutor):
         input: Dict (the payload)
         wait_for_completion: bool (default True, if False submits async job)
     """
-    
+
     def validate_config(self) -> bool:
         return "endpoint" in self.config and "task_type" in self.config
 
@@ -25,13 +26,13 @@ class ModalExecuteStep(BaseStepExecutor):
         try:
             endpoint_slug = self._resolve_template(self.config.get("endpoint"), context)
             task_type = self._resolve_template(self.config.get("task_type"), context)
-            
+
             # Resolve input structure recursively
             raw_input = self.config.get("input", {})
             input_payload = self._resolve_nested(raw_input, context)
-            
+
             wait = self.config.get("wait_for_completion", True)
-            
+
             if wait:
                 # Synchronous Execution
                 result: ModalResult = engine.execute(
@@ -40,10 +41,10 @@ class ModalExecuteStep(BaseStepExecutor):
                     req=input_payload,
                     actor_id=f"workflow:{context.execution_id}"
                 )
-                
+
                 # Convert artifacts to dicts for JSON serialization safety in workflow context
                 artifacts_data = [self._artifact_to_dict(a) for a in result.artifacts]
-                
+
                 return StepResult(
                     success=True,
                     output={
@@ -61,13 +62,13 @@ class ModalExecuteStep(BaseStepExecutor):
                     req=input_payload,
                     actor_id=f"workflow:{context.execution_id}"
                 )
-                
+
                 return StepResult(
                     success=True,
                     output={"job_id": job_id, "status": "queued"},
                     metadata={"mode": "async"}
                 )
-                
+
         except Exception as e:
             logger.exception("Modal execution failed")
             return StepResult(
@@ -85,7 +86,7 @@ class ModalExecuteStep(BaseStepExecutor):
             return self._resolve_template(data, context)
         return data
 
-    def _artifact_to_dict(self, artifact: ArtifactRef) -> Dict:
+    def _artifact_to_dict(self, artifact: ArtifactRef) -> dict:
         return {
             "kind": artifact.kind,
             "uri": artifact.uri,

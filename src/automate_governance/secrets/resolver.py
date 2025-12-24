@@ -2,11 +2,10 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass
-from typing import Dict, Optional
 
+from .errors import SecretBackendNotConfigured, SecretsError
 from .interfaces import SecretsBackend
 from .refs import SecretRef, parse_secretref
-from .errors import SecretBackendNotConfigured, SecretsError
 
 
 @dataclass
@@ -25,13 +24,13 @@ class SecretResolver:
     - TTL is backend-configured.
     """
 
-    def __init__(self, backends: Dict[str, SecretsBackend], *, fail_closed: bool = True, default_ttl: int = 30):
+    def __init__(self, backends: dict[str, SecretsBackend], *, fail_closed: bool = True, default_ttl: int = 30):
         self._backends = backends
         self._fail_closed = fail_closed
         self._default_ttl = default_ttl
-        self._cache: Dict[str, ResolvedSecret] = {}
+        self._cache: dict[str, ResolvedSecret] = {}
 
-    def resolve_value(self, ref_or_str: str | SecretRef, *, ttl_seconds: Optional[int] = None) -> str:
+    def resolve_value(self, ref_or_str: str | SecretRef, *, ttl_seconds: int | None = None) -> str:
         ref = ref_or_str if isinstance(ref_or_str, SecretRef) else parse_secretref(ref_or_str)
         backend = self._backends.get(ref.backend)
         if not backend:

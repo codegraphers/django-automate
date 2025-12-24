@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import parse_qs, urlparse
 
 from .errors import SecretRefParseError
 
@@ -23,7 +22,7 @@ class SecretRef:
     backend: str
     namespace: str
     name: str
-    version: Optional[str] = None
+    version: str | None = None
 
     @property
     def key(self) -> str:

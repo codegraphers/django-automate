@@ -3,10 +3,10 @@ Base Step Executor
 
 All workflow step executors inherit from this base class.
 """
-from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional
-from dataclasses import dataclass
 import logging
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -16,19 +16,19 @@ class StepContext:
     """Context passed to each step executor."""
     execution_id: str
     step_index: int
-    previous_outputs: Dict[str, Any]  # {step_id: output}
-    event_payload: Dict[str, Any]
-    automation_config: Dict[str, Any]
-    
+    previous_outputs: dict[str, Any]  # {step_id: output}
+    event_payload: dict[str, Any]
+    automation_config: dict[str, Any]
+
 
 @dataclass
 class StepResult:
     """Result from executing a step."""
     success: bool
     output: Any
-    error: Optional[str] = None
-    duration_ms: Optional[int] = None
-    metadata: Optional[Dict[str, Any]] = None
+    error: str | None = None
+    duration_ms: int | None = None
+    metadata: dict[str, Any] | None = None
 
 
 class BaseStepExecutor(ABC):
@@ -37,16 +37,16 @@ class BaseStepExecutor(ABC):
     
     Each step type (LLM, Action, Filter, etc.) implements this interface.
     """
-    
+
     step_type: str = "base"
-    
-    def __init__(self, config: Dict[str, Any]):
+
+    def __init__(self, config: dict[str, Any]):
         """
         Args:
             config: Step configuration from the workflow definition
         """
         self.config = config
-    
+
     @abstractmethod
     def execute(self, context: StepContext) -> StepResult:
         """
@@ -59,11 +59,11 @@ class BaseStepExecutor(ABC):
             StepResult with success status, output, and optional error
         """
         pass
-    
+
     def validate_config(self) -> bool:
         """Validate step configuration. Override in subclasses."""
         return True
-    
+
     def _resolve_template(self, template: str, context: StepContext) -> str:
         """
         Resolve Jinja2 template variables in config values.
@@ -75,14 +75,15 @@ class BaseStepExecutor(ABC):
         """
         if not template or not isinstance(template, str):
             return template
-            
+
         if "{{" not in template:
             return template
-            
+
         try:
-            from jinja2 import Template
             import os
-            
+
+            from jinja2 import Template
+
             tpl = Template(template)
             return tpl.render(
                 event={"payload": context.event_payload},
@@ -95,7 +96,7 @@ class BaseStepExecutor(ABC):
 
 
 # Step type registry
-_step_executors: Dict[str, type] = {}
+_step_executors: dict[str, type] = {}
 
 
 def register_step_executor(step_type: str):
@@ -107,7 +108,7 @@ def register_step_executor(step_type: str):
     return decorator
 
 
-def get_step_executor(step_type: str, config: Dict[str, Any]) -> Optional[BaseStepExecutor]:
+def get_step_executor(step_type: str, config: dict[str, Any]) -> BaseStepExecutor | None:
     """Get an executor instance for the given step type."""
     executor_cls = _step_executors.get(step_type)
     if executor_cls:

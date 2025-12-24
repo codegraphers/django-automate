@@ -1,6 +1,7 @@
 import sqlglot
 from sqlglot import exp
 
+
 class SQLPolicyException(Exception):
     pass
 
@@ -27,7 +28,7 @@ class SQLPolicy:
         for table in expression.find_all(exp.Table):
             if table.name not in self.allowed_tables:
                 raise SQLPolicyException(f"Access denied to table: {table.name}")
-        
+
         # 3. Enforce LIMIT
         limit_node = expression.args.get("limit")
         should_enforce_max = False
@@ -39,7 +40,7 @@ class SQLPolicy:
             try:
                 # limit_node.this is usually a Literal expression for the number
                 limit_val_expr = limit_node.this
-                
+
                 # Check if it's a simple number literal
                 if isinstance(limit_val_expr, exp.Literal) and limit_val_expr.is_int:
                     current_limit = int(limit_val_expr.this)
@@ -51,7 +52,7 @@ class SQLPolicy:
             except Exception:
                  # Fallback -> overwrite
                  should_enforce_max = True
-        
+
         if should_enforce_max:
              # Use the builder API which handles replacement correctly
              expression = expression.limit(self.max_rows)

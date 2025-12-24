@@ -9,10 +9,8 @@ Resolves secret references in various formats:
 
 All credentials in RAG should use SecretRef, never raw secrets.
 """
-import os
 import logging
-from typing import Optional
-from functools import lru_cache
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +20,7 @@ class SecretRefError(Exception):
     pass
 
 
-def resolve_secret_ref(ref: str) -> Optional[str]:
+def resolve_secret_ref(ref: str) -> str | None:
     """
     Resolve a secret reference to its actual value.
     
@@ -42,23 +40,23 @@ def resolve_secret_ref(ref: str) -> Optional[str]:
     """
     if not ref:
         return None
-    
+
     if not isinstance(ref, str):
         raise SecretRefError(f"SecretRef must be a string, got {type(ref)}")
-    
+
     # Parse the URI scheme
     if "://" not in ref:
         raise SecretRefError(f"Invalid SecretRef format: {ref}. Expected scheme://value")
-    
+
     scheme, value = ref.split("://", 1)
     scheme = scheme.lower()
-    
+
     if scheme == "env":
         return _resolve_env(value)
     elif scheme == "db":
         return _resolve_db(value)
     elif scheme == "raw":
-        logger.warning(f"Using raw:// secret - NOT recommended for production")
+        logger.warning("Using raw:// secret - NOT recommended for production")
         return value
     elif scheme == "vault":
         return _resolve_vault(value)
@@ -66,7 +64,7 @@ def resolve_secret_ref(ref: str) -> Optional[str]:
         raise SecretRefError(f"Unknown SecretRef scheme: {scheme}")
 
 
-def _resolve_env(var_name: str) -> Optional[str]:
+def _resolve_env(var_name: str) -> str | None:
     """Resolve from environment variable."""
     value = os.environ.get(var_name)
     if value is None:
@@ -74,7 +72,7 @@ def _resolve_env(var_name: str) -> Optional[str]:
     return value
 
 
-def _resolve_db(name: str) -> Optional[str]:
+def _resolve_db(name: str) -> str | None:
     """Resolve from database SecretStore."""
     try:
         # Try to use automate's SecretStore if available
@@ -92,7 +90,7 @@ def _resolve_db(name: str) -> Optional[str]:
         return None
 
 
-def _resolve_vault(path: str) -> Optional[str]:
+def _resolve_vault(path: str) -> str | None:
     """Resolve from HashiCorp Vault (future implementation)."""
     # TODO: Implement Vault integration
     logger.warning(f"Vault integration not yet implemented: {path}")
@@ -112,8 +110,8 @@ def redact_secret(value: str, show_chars: int = 4) -> str:
     """
     if not value:
         return "[empty]"
-    
+
     if len(value) <= show_chars:
         return "*" * len(value)
-    
+
     return "*" * (len(value) - show_chars) + value[-show_chars:]

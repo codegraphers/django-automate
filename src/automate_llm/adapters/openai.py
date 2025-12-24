@@ -1,9 +1,9 @@
 from __future__ import annotations
-from typing import Any
 
-from .base import ProviderAdapter
-from ..types import ChatRequest, ChatResponse, Usage, CostEstimate
 from ..errors import LLMError, LLMErrorCode
+from ..types import ChatRequest, ChatResponse, CostEstimate
+from .base import ProviderAdapter
+
 
 class OpenAIAdapter(ProviderAdapter):
     code = "openai"

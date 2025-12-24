@@ -1,6 +1,8 @@
-from django.db import connection, transaction
-from .sqlpolicy import SQLPolicy
+from django.db import connection
+
 from .registry import DataChatRegistry
+from .sqlpolicy import SQLPolicy
+
 
 class QueryExecutor:
     def __init__(self):
@@ -12,16 +14,16 @@ class QueryExecutor:
         """
         # 1. Validate Policy (Redundant safety check)
         final_sql = policy.validate_and_optimize(sql)
-        
+
         # 2. Execute
         with connection.cursor() as cursor:
             # TODO: Set statement timeout in Postgres
-            # cursor.execute("SET statement_timeout = 5000;") 
-            
+            # cursor.execute("SET statement_timeout = 5000;")
+
             cursor.execute(final_sql)
             columns = [col[0] for col in cursor.description]
             results = cursor.fetchall()
-            
+
             return [dict(zip(columns, row)) for row in results]
 
 class SchemaIntrospector:
@@ -35,5 +37,5 @@ class SchemaIntrospector:
         for table_name, config in tables.items():
             fields = ", ".join(config["fields"])
             lines.append(f"CREATE TABLE {table_name} ({fields});")
-            
+
         return "\n".join(lines)

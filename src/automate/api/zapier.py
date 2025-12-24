@@ -1,10 +1,12 @@
 import json
 from uuid import uuid4
+
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST, require_GET
-from ..models import TriggerSpec, Automation, Event
+from django.views.decorators.http import require_GET, require_POST
+
 from .auth import require_api_key
+
 
 @require_GET
 @require_api_key
@@ -40,16 +42,16 @@ def subscribe(request):
     # P0.5: Validate Callback URL (SSRF)
     # We use the hardened HttpFetchTool from automate_llm to validate the URL
     from automate_llm.tools.http import HttpFetchTool
-    
+
     validator = HttpFetchTool()
     if not validator._is_safe_url(target_url):
          return JsonResponse({"error": "Invalid Target URL: Blocked by SSRF Policy"}, status=400)
 
     # P0.5: Unsubscribe Token / ID
     sub_id = str(uuid4())
-    
+
     # Store subscription (Mock for beta MVP, should use TriggerSpec/Model)
-    
+
     return JsonResponse({"id": sub_id, "status": "subscribed"})
 
 @csrf_exempt

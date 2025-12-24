@@ -6,13 +6,14 @@ Usage:
     python manage.py run_executions --limit=50   # Run up to 50 pending
     python manage.py run_executions --daemon     # Run continuously
 """
-from django.core.management.base import BaseCommand
 import time
+
+from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
     help = "Run pending workflow executions"
-    
+
     def add_arguments(self, parser):
         parser.add_argument(
             "--limit",
@@ -31,34 +32,34 @@ class Command(BaseCommand):
             default=5,
             help="Seconds between polls when in daemon mode"
         )
-    
+
     def handle(self, *args, **options):
         from automate.step_executors.workflow_executor import run_pending_executions
-        
+
         limit = options["limit"]
         daemon = options.get("daemon")
         poll_interval = options.get("poll_interval", 5)
-        
+
         if daemon:
             self.stdout.write(self.style.SUCCESS(f"Starting execution daemon (poll every {poll_interval}s)..."))
             self.stdout.write("Press Ctrl+C to stop\n")
-            
+
             try:
                 while True:
                     results = run_pending_executions(limit=limit)
-                    
+
                     if results["success"] or results["failed"]:
                         self.stdout.write(
                             f"Processed: {results['success']} success, {results['failed']} failed"
                         )
-                    
+
                     time.sleep(poll_interval)
-                    
+
             except KeyboardInterrupt:
                 self.stdout.write("\nDaemon stopped.")
         else:
             results = run_pending_executions(limit=limit)
-            
+
             self.stdout.write(
                 self.style.SUCCESS(
                     f"Completed: {results['success']} success, {results['failed']} failed"

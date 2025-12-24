@@ -1,5 +1,4 @@
 import logging
-from typing import Dict, Any, Type, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -8,7 +7,7 @@ class Registry:
     Central registry for pluggable components (Connectors, Triggers, Providers).
     """
     _instance = None
-    
+
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(Registry, cls).__new__(cls)
@@ -17,14 +16,14 @@ class Registry:
             cls._instance.llm_providers = {}
         return cls._instance
 
-    def register_connector(self, slug: str, connector_cls: Type):
+    def register_connector(self, slug: str, connector_cls: type):
         """Register a connector class."""
         if slug in self.connectors:
             logger.warning(f"Connector {slug} already registered. Overwriting.")
         self.connectors[slug] = connector_cls
         logger.debug(f"Registered connector: {slug}")
 
-    def get_connector(self, slug: str) -> Optional[Type]:
+    def get_connector(self, slug: str) -> type | None:
         return self.connectors.get(slug)
 
     def register_trigger(self, slug: str, trigger_handler):

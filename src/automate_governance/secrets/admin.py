@@ -1,13 +1,9 @@
 from django.contrib import admin
-from django.utils.html import format_html
-from django.urls import path
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
-from django.utils import timezone
+from django.urls import path
+from django.utils.html import format_html
 
 from .models import ConnectionProfile, StoredSecret
-from .refs import parse_secretref, SecretRef
-from .errors import SecretsError
 
 
 @admin.register(ConnectionProfile)
@@ -39,8 +35,8 @@ class ConnectionProfileAdmin(admin.ModelAdmin):
         # Ideally, we inject this from settings or a service container.
         # For now, we mock/stub the interaction or rely on a global getter.
         # from automate_governance.bootstrap import get_resolver
-        # resolver = get_resolver() 
-        
+        # resolver = get_resolver()
+
         # Skeleton implementation
         return JsonResponse({"status": "not_implemented_yet", "message": "Resolver injection pending"})
 

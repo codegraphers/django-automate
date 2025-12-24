@@ -1,8 +1,9 @@
 import hashlib
 import json
 import logging
-from typing import Optional, Tuple
+
 from django.db import IntegrityError
+
 from ..executions.models import SideEffectLog
 
 logger = logging.getLogger(__name__)
@@ -21,7 +22,7 @@ class SideEffectManager:
         raw = f"{execution_id}:{node_key}:{action}:{json.dumps(params, sort_keys=True)}"
         return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
-    def check(self, tenant_id: str, key: str) -> Optional[dict]:
+    def check(self, tenant_id: str, key: str) -> dict | None:
         """
         Returns cached response if exists.
         """

@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import base64
+
 from django.core import signing
 
-from .interfaces import KMS
 from ..errors import SecretDecryptionError
+from .interfaces import KMS
 
 
 class DjangoSigningKMS(KMS):

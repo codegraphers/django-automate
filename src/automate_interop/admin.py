@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import InteropMapping, TemplateWorkflow, TemplateCollection
+
+from .models import InteropMapping, TemplateCollection, TemplateWorkflow
+
 
 @admin.register(InteropMapping)
 class InteropMappingAdmin(admin.ModelAdmin):

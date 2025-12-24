@@ -1,27 +1,26 @@
 from contextvars import ContextVar
-from typing import Optional
 
 # Global context for the current request/execution lifecycle
-_current_tenant_id: ContextVar[Optional[str]] = ContextVar("current_tenant_id", default=None)
-_current_actor_id: ContextVar[Optional[str]] = ContextVar("current_actor_id", default=None)
-_current_correlation_id: ContextVar[Optional[str]] = ContextVar("current_correlation_id", default=None)
+_current_tenant_id: ContextVar[str | None] = ContextVar("current_tenant_id", default=None)
+_current_actor_id: ContextVar[str | None] = ContextVar("current_actor_id", default=None)
+_current_correlation_id: ContextVar[str | None] = ContextVar("current_correlation_id", default=None)
 
 def set_current_tenant(tenant_id: str):
     return _current_tenant_id.set(tenant_id)
 
-def get_current_tenant() -> Optional[str]:
+def get_current_tenant() -> str | None:
     return _current_tenant_id.get()
 
 def set_current_actor(actor_id: str):
     return _current_actor_id.set(actor_id)
 
-def get_current_actor() -> Optional[str]:
+def get_current_actor() -> str | None:
     return _current_actor_id.get()
 
 def set_current_correlation_id(correlation_id: str):
     return _current_correlation_id.set(correlation_id)
 
-def get_current_correlation_id() -> Optional[str]:
+def get_current_correlation_id() -> str | None:
     return _current_correlation_id.get()
 
 class TenantContext:

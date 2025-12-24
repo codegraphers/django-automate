@@ -7,13 +7,14 @@ Usage:
     python manage.py sync_mcp_tools --all        # Sync all servers (including disabled)
 """
 from django.core.management.base import BaseCommand, CommandError
+
 from automate.models import MCPServer
-from automate_llm.mcp_client import sync_mcp_tools, MCPClientError
+from automate_llm.mcp_client import MCPClientError, sync_mcp_tools
 
 
 class Command(BaseCommand):
     help = "Sync tools from registered MCP servers"
-    
+
     def add_arguments(self, parser):
         parser.add_argument(
             "--server",
@@ -25,11 +26,11 @@ class Command(BaseCommand):
             action="store_true",
             help="Include disabled servers"
         )
-    
+
     def handle(self, *args, **options):
         server_slug = options.get("server")
         include_all = options.get("all")
-        
+
         if server_slug:
             try:
                 servers = [MCPServer.objects.get(slug=server_slug)]
@@ -39,18 +40,18 @@ class Command(BaseCommand):
             servers = MCPServer.objects.all()
             if not include_all:
                 servers = servers.filter(enabled=True)
-        
+
         if not servers:
             self.stdout.write(self.style.WARNING("No MCP servers to sync"))
             return
-        
+
         total_created = 0
         total_updated = 0
         errors = []
-        
+
         for server in servers:
             self.stdout.write(f"Syncing {server.name} ({server.endpoint_url})...")
-            
+
             try:
                 created, updated, schema = sync_mcp_tools(server)
                 total_created += created
@@ -63,11 +64,11 @@ class Command(BaseCommand):
                 self.stdout.write(
                     self.style.ERROR(f"  ✗ {str(e)}")
                 )
-        
+
         # Summary
         self.stdout.write("")
         self.stdout.write(f"Total: {total_created} created, {total_updated} updated")
-        
+
         if errors:
             self.stdout.write(
                 self.style.ERROR(f"Failed: {', '.join(errors)}")

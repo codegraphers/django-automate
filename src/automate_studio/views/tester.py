@@ -1,9 +1,11 @@
-from django.shortcuts import render
+import json
+
 from django.contrib.admin.views.decorators import staff_member_required
+from django.http import JsonResponse
+from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views import View
-from django.http import JsonResponse
-import json
+
 
 @method_decorator(staff_member_required, name='dispatch')
 class RuleTesterView(View):
@@ -17,7 +19,7 @@ class RuleTesterView(View):
                 "currency": "USD"
             }
         }
-        
+
         example_rule = {
             "conditions": {
                 "and": [
@@ -26,7 +28,7 @@ class RuleTesterView(View):
                 ]
             }
         }
-        
+
         return render(request, "admin/automate/studio/tester.html", {
             "title": "Rule Tester",
             "event_json": json.dumps(example_event, indent=2),
@@ -40,14 +42,14 @@ class RuleTesterView(View):
             data = json.loads(request.body)
             event = data.get("event", {})
             rule_spec = data.get("rule_spec", {})
-            
+
             # Simple simulation for MVP
             # Real impl would import RuleEngine from automate_core.rules.engine
-            
+
             match = True # Mock result
-            
+
             return JsonResponse({
-                "match": match, 
+                "match": match,
                 "explain": [
                     {"node": "type == 'order.created'", "result": True, "details": "Matches 'order.created'"},
                     {"node": "payload.amount > 100", "result": True, "details": "Value 299.00 > 100"},

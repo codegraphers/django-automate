@@ -9,10 +9,10 @@ Provides HTTP request functionality with protections against:
 
 All external HTTP requests in RAG subsystem should use this client.
 """
-import socket
 import ipaddress
 import logging
-from typing import Optional, Dict, Any
+import socket
+from typing import Any
 from urllib.parse import urlparse
 
 import requests
@@ -77,13 +77,13 @@ def ssrf_safe_request(
     method: str,
     url: str,
     *,
-    credentials_ref: Optional[str] = None,
+    credentials_ref: str | None = None,
     timeout: int = DEFAULT_TIMEOUT,
     max_size: int = DEFAULT_MAX_SIZE,
-    headers: Optional[Dict[str, str]] = None,
-    json: Optional[Dict[str, Any]] = None,
+    headers: dict[str, str] | None = None,
+    json: dict[str, Any] | None = None,
     **kwargs
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Make an HTTP request with SSRF protections.
     
@@ -111,20 +111,20 @@ def ssrf_safe_request(
     """
     # Parse URL
     parsed = urlparse(url)
-    
+
     if not parsed.hostname:
         raise SSRFError(f"Invalid URL: {url}")
-    
+
     if parsed.scheme not in ("http", "https"):
         raise SSRFError(f"Only http/https URLs allowed: {url}")
-    
+
     # Resolve and validate IP
     resolved_ip = resolve_hostname(parsed.hostname)
     logger.debug(f"Resolved {parsed.hostname} -> {resolved_ip}")
-    
+
     # Build headers
     request_headers = headers.copy() if headers else {}
-    
+
     # Resolve credentials if provided
     if credentials_ref:
         try:
@@ -133,7 +133,7 @@ def ssrf_safe_request(
                 request_headers["Authorization"] = f"Bearer {secret}"
         except Exception as e:
             logger.warning(f"Failed to resolve credentials: {e}")
-    
+
     # Make request with safety guards
     try:
         response = requests.request(
@@ -146,30 +146,30 @@ def ssrf_safe_request(
             stream=True,  # Stream to check size
             **kwargs
         )
-        
+
         # Check for redirect (we blocked follow, but check status)
         if response.status_code in (301, 302, 303, 307, 308):
             redirect_url = response.headers.get("Location", "unknown")
             raise SSRFError(f"Redirect blocked: {response.status_code} -> {redirect_url}")
-        
+
         # Limit response size
         content_length = response.headers.get("Content-Length")
         if content_length and int(content_length) > max_size:
             raise SSRFError(f"Response too large: {content_length} bytes")
-        
+
         # Read content with size limit
         content = b""
         for chunk in response.iter_content(chunk_size=8192):
             content += chunk
             if len(content) > max_size:
                 raise SSRFError(f"Response exceeded max size: {max_size} bytes")
-        
+
         # Check status
         response.raise_for_status()
-        
+
         # Parse JSON
         return response.json() if content else {}
-        
+
     except requests.RequestException as e:
         logger.error(f"HTTP request failed: {e}")
         raise

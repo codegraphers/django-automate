@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+
 class JsonObjectField(serializers.JSONField):
     pass
 

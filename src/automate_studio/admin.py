@@ -1,12 +1,14 @@
 from django.contrib import admin
 from django.urls import path
-from .views.wizard import AutomationWizardView
-from .views.tester import RuleTesterView
+
 from .views.explorer import ExecutionExplorerView
+from .views.tester import RuleTesterView
+from .views.wizard import AutomationWizardView
+
 
 class AutomateAdminSite(admin.AdminSite):
     site_header = "Automate Studio"
-    
+
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [

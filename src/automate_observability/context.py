@@ -1,5 +1,4 @@
 import contextvars
-from typing import Optional
 import uuid
 
 # Global context var for the current trace_id.

@@ -4,15 +4,15 @@ Access Control for RAG Endpoints
 Provides RBAC/ABAC policy enforcement for retrieval queries.
 """
 import logging
-from typing import Dict, Any, List, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
 
 def check_access_policy(
-    policy: Dict[str, Any],
+    policy: dict[str, Any],
     user,
-    request_context: Optional[Dict[str, Any]] = None
+    request_context: dict[str, Any] | None = None
 ) -> bool:
     """
     Check if a user has access based on endpoint policy.
@@ -37,28 +37,28 @@ def check_access_policy(
     if not policy:
         # No policy = allow all (for backward compatibility)
         return True
-    
+
     # Check allow_all bypass
     if policy.get("allow_all", False):
         return True
-    
+
     # Check authentication requirement
     if policy.get("require_authenticated", True):
         if not user or not user.is_authenticated:
             logger.info("Access denied: authentication required")
             return False
-    
+
     # Check denied users
     denied_users = policy.get("denied_users", [])
     if user and user.username in denied_users:
         logger.info(f"Access denied: user {user.username} is blocked")
         return False
-    
+
     # Check allowed users
     allowed_users = policy.get("allowed_users", [])
     if allowed_users and user and user.username in allowed_users:
         return True
-    
+
     # Check allowed groups
     allowed_groups = policy.get("allowed_groups", [])
     if allowed_groups:
@@ -71,18 +71,18 @@ def check_access_policy(
             # Already checked allowed_users above
             pass
         else:
-            logger.info(f"Access denied: user not in allowed groups")
+            logger.info("Access denied: user not in allowed groups")
             return False
-    
+
     # Default: allow if no specific restrictions
     return True
 
 
 def get_policy_decisions(
-    policy: Dict[str, Any],
+    policy: dict[str, Any],
     user,
     allowed: bool
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Get audit-friendly policy decision details.
     

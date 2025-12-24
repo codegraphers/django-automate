@@ -1,8 +1,10 @@
 from __future__ import annotations
-from typing import Any, Dict
 
-from automate_connectors.execution import ConnectorExecutor
+from typing import Any
+
 from automate_connectors.errors import ConnectorError
+from automate_connectors.execution import ConnectorExecutor
+
 
 class ConnectorBridgeTool:
     """
@@ -12,12 +14,12 @@ class ConnectorBridgeTool:
     def __init__(self, executor: ConnectorExecutor):
         self.executor = executor
 
-    def run(self, connector_code: str, action: str, profile_name: str, args: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
+    def run(self, connector_code: str, action: str, profile_name: str, args: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
         # 1. Resolve Profile (Stub - normally via Governance/Secrets)
         # In a real app, we'd lookup profile by name + user context
-        # resolved_profile = ... 
+        # resolved_profile = ...
         resolved_profile = {"name": profile_name, "kind": "connector"} # Placeholder
-        
+
         try:
             result = self.executor.execute(
                 connector_code=connector_code,

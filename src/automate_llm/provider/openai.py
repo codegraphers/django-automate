@@ -1,6 +1,5 @@
 from __future__ import annotations
-from typing import Any, Dict
-import requests # Or use openai SDK if available/preferred
+
 # Using requests for zero-dependency implementation relative to SDK version churn,
 # or better yet, assume `openai` package is present as per pyproject.toml deps (though not strictly enforced yet).
 # For robustness in this plan, I'll use direct HTTP or check imports.
@@ -11,9 +10,11 @@ try:
 except ImportError:
     openai = None
 
-from .interfaces import LLMProvider, CompletionRequest, CompletionResponse
 from automate_governance.secrets.resolver import SecretResolver
 from automate_llm.registry import register_provider
+
+from .interfaces import CompletionRequest, CompletionResponse, LLMProvider
+
 
 @register_provider("openai")
 @register_provider("open-ai")  # Also register hyphenated version
@@ -27,19 +28,19 @@ class OpenAIProvider(LLMProvider):
     def _get_client(self):
         if self._client:
             return self._client
-            
+
         if not openai:
             raise RuntimeError("openai package not installed")
-            
+
         api_key = self.secret_resolver.resolve_value(self.api_key_ref)
         org_id = self.secret_resolver.resolve_value(self.org_id_ref) if self.org_id_ref else None
-        
+
         self._client = openai.Client(api_key=api_key, organization=org_id)
         return self._client
 
     def chat_complete(self, request: CompletionRequest) -> CompletionResponse:
         client = self._get_client()
-        
+
         # Mapping generic request to OpenAI params
         params = {
             "model": request.model,
@@ -49,10 +50,10 @@ class OpenAIProvider(LLMProvider):
             "stop": request.stop,
             "stream": False # Streaming not supported in this simplified interface yet
         }
-        
+
         response = client.chat.completions.create(**params)
         choice = response.choices[0]
-        
+
         return CompletionResponse(
             content=choice.message.content or "",
             usage={
@@ -65,7 +66,7 @@ class OpenAIProvider(LLMProvider):
         )
 
     def count_tokens(self, text: str, model: str) -> int:
-        # Stub: usually requires tiktoken. 
+        # Stub: usually requires tiktoken.
         # Approx: 4 chars / token
         return len(text) // 4
 

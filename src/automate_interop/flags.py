@@ -1,5 +1,7 @@
 from __future__ import annotations
-from typing import List, Dict, Any
+
+from typing import Any
+
 from django.conf import settings
 
 # Default Configuration
@@ -22,7 +24,7 @@ class InteropFlags:
         return get_interop_setting("ENABLED", False)
 
     @property
-    def enabled_orchestrators(self) -> List[str]:
+    def enabled_orchestrators(self) -> list[str]:
         return get_interop_setting("ORCHESTRATORS_ENABLED", [])
 
     @property

@@ -1,17 +1,17 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Any
+
 
 class MetricsCollector(ABC):
     @abstractmethod
-    def increment(self, metric: str, tags: Dict[str, str] = None, value: float = 1.0):
+    def increment(self, metric: str, tags: dict[str, str] = None, value: float = 1.0):
         pass
 
     @abstractmethod
-    def timing(self, metric: str, duration_ms: float, tags: Dict[str, str] = None):
+    def timing(self, metric: str, duration_ms: float, tags: dict[str, str] = None):
         pass
 
     @abstractmethod
-    def gauge(self, metric: str, value: float, tags: Dict[str, str] = None):
+    def gauge(self, metric: str, value: float, tags: dict[str, str] = None):
         pass
 
 class NoOpCollector(MetricsCollector):

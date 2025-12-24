@@ -1,9 +1,12 @@
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+import json
+
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.paginator import Paginator
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
 from .runtime import ChatOrchestrator
-import json
+
 
 @csrf_exempt
 @staff_member_required
@@ -14,18 +17,18 @@ def chat_api(request):
     """
     if request.method != "POST":
         return JsonResponse({"error": "Method not allowed"}, status=405)
-    
+
     try:
         data = json.loads(request.body)
         question = data.get("question")
         if not question:
              return JsonResponse({"error": "No question provided"}, status=400)
-             
+
         orchestrator = ChatOrchestrator(request)
         result = orchestrator.chat(question)
-        
+
         return JsonResponse(result)
-        
+
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
 
@@ -36,26 +39,26 @@ def history_api(request):
     GET /admin/datachat/history/?page=1&limit=15
     Returns paginated chat history for the current user.
     """
-    from .models import DataChatSession, DataChatMessage
-    
+    from .models import DataChatMessage, DataChatSession
+
     # Get or create session for current user
     if request.user.is_authenticated:
         session = DataChatSession.objects.filter(user=request.user).first()
     else:
         session_key = request.session.session_key or ""
         session = DataChatSession.objects.filter(session_key=session_key).first()
-    
+
     if not session:
         return JsonResponse({"messages": [], "has_more": False, "total": 0})
-    
+
     # Paginate messages (newest first for loading, will reverse on client)
     page = int(request.GET.get("page", 1))
     limit = int(request.GET.get("limit", 15))
-    
+
     all_messages = DataChatMessage.objects.filter(session=session).order_by("-created_at")
     paginator = Paginator(all_messages, limit)
     page_obj = paginator.get_page(page)
-    
+
     messages = []
     for msg in reversed(page_obj.object_list):
         messages.append({
@@ -68,7 +71,7 @@ def history_api(request):
             "error": msg.error if msg.role == "assistant" else None,
             "created_at": msg.created_at.isoformat(),
         })
-    
+
     return JsonResponse({
         "messages": messages,
         "has_more": page_obj.has_next(),
@@ -81,32 +84,32 @@ def history_api(request):
 # Embeddable Widget API
 # ============================================================================
 
-from django.views.decorators.clickjacking import xframe_options_exempt
-from django.http import HttpResponse
-from django.core.cache import cache
 import fnmatch
-import time
+
+from django.core.cache import cache
+from django.http import HttpResponse
+from django.views.decorators.clickjacking import xframe_options_exempt
 
 
 def validate_embed_origin(request, embed):
     """Check if request Origin/Referer is in allowed_domains."""
     origin = request.headers.get("Origin") or request.headers.get("Referer", "")
-    
+
     if not origin:
         return False
-    
+
     # Handle "null" origin (file:// URLs) - check if "null" is in allowed domains
     if origin == "null":
         return "null" in embed.allowed_domains or "*" in embed.allowed_domains
-    
+
     # Extract components from origin
     from urllib.parse import urlparse
     parsed = urlparse(origin)
-    
+
     # Get full netloc (host:port) and just host
     netloc = parsed.netloc  # e.g., "localhost:8002"
     host = netloc.split(":")[0]  # e.g., "localhost"
-    
+
     for pattern in embed.allowed_domains:
         # Support wildcard for all domains
         if pattern == "*":
@@ -120,7 +123,7 @@ def validate_embed_origin(request, embed):
         # Check just hostname (localhost)
         if fnmatch.fnmatch(host, pattern):
             return True
-    
+
     return False
 
 
@@ -134,10 +137,10 @@ def check_rate_limit(embed, session_key):
     """Rate limiting per embed per session."""
     cache_key = f"embed_rate:{embed.id}:{session_key}"
     count = cache.get(cache_key, 0)
-    
+
     if count >= embed.rate_limit_per_minute:
         return False
-    
+
     cache.set(cache_key, count + 1, 60)  # 60 second window
     return True
 
@@ -149,21 +152,21 @@ def embed_widget_js(request, embed_id):
     Returns the widget JavaScript code.
     """
     from .models import ChatEmbed
-    
+
     try:
         embed = ChatEmbed.objects.get(id=embed_id, enabled=True)
     except ChatEmbed.DoesNotExist:
         response = HttpResponse("// Embed not found", content_type="application/javascript", status=404)
         response["Access-Control-Allow-Origin"] = "*"
         return response
-    
+
     # Get base URL for API calls
     base_url = request.build_absolute_uri("/").rstrip("/")
-    
+
     theme = embed.theme or {}
     primary_color = theme.get("primaryColor", "#2563eb")
     title = theme.get("title", "Data Assistant")
-    
+
     js_code = f'''
 (function() {{
     const EMBED_ID = "{embed.id}";
@@ -317,7 +320,7 @@ def embed_widget_js(request, embed_id):
     }});
 }})();
 '''
-    
+
     response = HttpResponse(js_code, content_type="application/javascript")
     response["Access-Control-Allow-Origin"] = "*"
     return response
@@ -330,7 +333,7 @@ def embed_chat_api(request, embed_id):
     Chat API for embedded widgets.
     """
     from .models import ChatEmbed
-    
+
     # Handle CORS preflight
     if request.method == "OPTIONS":
         response = HttpResponse()
@@ -338,38 +341,38 @@ def embed_chat_api(request, embed_id):
         response["Access-Control-Allow-Methods"] = "POST, OPTIONS"
         response["Access-Control-Allow-Headers"] = "Content-Type, X-Embed-Key, X-Session-Id"
         return response
-    
+
     if request.method != "POST":
         response = JsonResponse({"error": "POST required"}, status=405)
         response["Access-Control-Allow-Origin"] = "*"
         return response
-    
+
     try:
         embed = ChatEmbed.objects.get(id=embed_id, enabled=True)
     except ChatEmbed.DoesNotExist:
         response = JsonResponse({"error": "Embed not found"}, status=404)
         response["Access-Control-Allow-Origin"] = "*"
         return response
-    
+
     # Validate origin
     if embed.allowed_domains and not validate_embed_origin(request, embed):
         response = JsonResponse({"error": "Domain not allowed"}, status=403)
         response["Access-Control-Allow-Origin"] = "*"
         return response
-    
+
     # Validate API key
     if not validate_embed_api_key(request, embed):
         response = JsonResponse({"error": "Invalid API key"}, status=401)
         response["Access-Control-Allow-Origin"] = "*"
         return response
-    
+
     # Rate limiting
     session_key = request.headers.get("X-Session-Id") or request.META.get("REMOTE_ADDR", "unknown")
     if not check_rate_limit(embed, session_key):
         response = JsonResponse({"error": "Rate limit exceeded"}, status=429)
         response["Access-Control-Allow-Origin"] = "*"
         return response
-    
+
     # Process chat (reuse existing orchestrator)
     try:
         data = json.loads(request.body)
@@ -378,11 +381,11 @@ def embed_chat_api(request, embed_id):
             response = JsonResponse({"error": "No question provided"}, status=400)
             response["Access-Control-Allow-Origin"] = "*"
             return response
-        
+
         from .runtime import ChatOrchestrator
         orchestrator = ChatOrchestrator()  # No request = no auth required
         result = orchestrator.chat(question)
-        
+
         response = JsonResponse({
             "answer": result.get("answer", ""),
             "sql": result.get("sql", "") if not embed.allowed_tables else "",  # Hide SQL if restricted
@@ -390,7 +393,7 @@ def embed_chat_api(request, embed_id):
         })
         response["Access-Control-Allow-Origin"] = "*"
         return response
-        
+
     except Exception as e:
         response = JsonResponse({"error": str(e)}, status=500)
         response["Access-Control-Allow-Origin"] = "*"
@@ -403,12 +406,12 @@ def embed_config_api(request, embed_id):
     Returns embed configuration (theme, settings).
     """
     from .models import ChatEmbed
-    
+
     try:
         embed = ChatEmbed.objects.get(id=embed_id, enabled=True)
     except ChatEmbed.DoesNotExist:
         return JsonResponse({"error": "Not found"}, status=404)
-    
+
     return JsonResponse({
         "theme": embed.theme,
         "welcome_message": embed.welcome_message,
