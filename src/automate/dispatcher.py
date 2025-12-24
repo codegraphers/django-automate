@@ -89,6 +89,23 @@ class Dispatcher:
 
         return []
 
+    def _safe_save(self, obj):
+        """
+        Robust/retryable save for SQLite Locking issues during tests.
+        """
+        is_sqlite = "sqlite" in settings.DATABASES["default"]["ENGINE"]
+        max_retries = 10 if is_sqlite else 1
+
+        for attempt in range(max_retries):
+            try:
+                obj.save()
+                return
+            except Exception as e:
+                if is_sqlite and "database table is locked" in str(e) and attempt < max_retries - 1:
+                    time.sleep(random.uniform(0.05, 0.2))
+                    continue
+                raise e
+
     def _dispatch_event(self, entry: Outbox):  # noqa: C901, PLR0912, PLR0915
         if entry.kind != "event":
             # Only dispatch events for now
@@ -98,7 +115,7 @@ class Dispatcher:
         if not event_id:
             logger.error(f"Outbox entry {entry.id} missing event_id in payload")
             entry.status = OutboxStatusChoices.DLQ
-            entry.save()
+            self._safe_save(entry)
             return
 
         try:
@@ -106,7 +123,7 @@ class Dispatcher:
         except Event.DoesNotExist:
             logger.error(f"Event {event_id} not found for outbox entry {entry.id}")
             entry.status = OutboxStatusChoices.DLQ
-            entry.save()
+            self._safe_save(entry)
             return
 
         try:
@@ -124,10 +141,8 @@ class Dispatcher:
 
             if not matched_automations:
                 logger.debug(f"No automations found for event {event.id}")
-            if not matched_automations:
-                logger.debug(f"No automations found for event {event.id}")
                 entry.status = OutboxStatusChoices.DONE
-                entry.save()
+                self._safe_save(entry)
                 return
 
             # P0.2: Deduplicated Execution Creation with Version Snapshot
@@ -157,7 +172,7 @@ class Dispatcher:
             entry.status = OutboxStatusChoices.DONE
             entry.updated_at = timezone.now()  # Generic uses updated_at, kept processed_at removed?
             # OutboxItem doesn't have processed_at, using updated_at implicitly
-            entry.save()
+            self._safe_save(entry)
             logger.info(f"Dispatched event {event.id} to {count} automations")
 
         except Exception as e:
@@ -171,7 +186,7 @@ class Dispatcher:
                 logger.error(f"Event {event.id} exhausted retries. Moving to DLQ.")
                 entry.status = OutboxStatusChoices.DLQ
                 entry.last_error_message = str(e)
-                entry.save()
+                self._safe_save(entry)
 
                 # Legacy DLQ table removed. Using status+fields on item.
                 pass
@@ -179,14 +194,14 @@ class Dispatcher:
                 entry.status = OutboxStatusChoices.RETRY
 
                 # Exponential Backoff + Jitter
-                import random  # noqa: PLC0415
+                # import random # Moved to top
 
                 backoff = 2 ** (entry.attempt_count - 1)  # 1, 2, 4
                 jitter = random.uniform(0, 1)
                 delay = backoff + jitter
 
                 entry.next_attempt_at = timezone.now() + datetime.timedelta(seconds=delay)
-                entry.save()
+                self._safe_save(entry)
                 logger.info(f"Scheduled retry {entry.attempt_count} for event {event.id} in {delay:.2f}s")
 
     def _matches(self, trigger: TriggerSpec, event: Event):
