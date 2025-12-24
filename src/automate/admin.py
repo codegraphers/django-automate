@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import path
 from django_json_widget.widgets import JSONEditorWidget
-from django.db import models
+from django.db import models, transaction
 from .models import (
     Automation, TriggerSpec, Rule, Workflow,
     Event, Outbox, Execution, ExecutionStep,
@@ -103,29 +103,38 @@ class ExecutionAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
 
-    @admin.action(description="Replay selected executions")
+    @admin.action(description="Replay selected executions (Safe)")
     def replay_execution(self, request, queryset):
+        from automate_core.outbox.models import OutboxItem
+        from django.utils import timezone
+        
         success_count = 0
-        for execution in queryset:
-            # Re-queue logic
-            # Track B: We should technically create a NEW execution or reset this one?
-            # Best practice: Reset status to QUEUED, increment attempts is automatic in Runtime.
-            # OR: Create new Execution ref same Event (Replayability).
-            # Let's do Reset for simplicity in "Retry" semantics, 
-            # but ideally Replay = New Id.
-            # Track C requirement says "Replay UX", let's use Reset for "Retry" behavior.
+        with transaction.atomic():
+            for execution in queryset:
+                # 1. Reset State
+                execution.status = "queued"
+                execution.attempt = 0 # Reset attempts for fresh start
+                execution.context["replay_reason"] = "admin_action"
+                # Clear error state
+                if "error" in execution.context:
+                    del execution.context["error"]
+                if "last_error" in execution.context:
+                    del execution.context["last_error"]
+                    
+                execution.save()
+                
+                # 2. Enqueue in Outbox (Reliability)
+                OutboxItem.objects.create(
+                    tenant_id=execution.tenant_id,
+                    kind="execution_queued",
+                    payload={"execution_id": str(execution.id)},
+                    status="PENDING",
+                    priority=execution.priority,
+                    created_at=timezone.now()
+                )
+                success_count += 1
             
-            execution.status = "queued"
-            execution.error_summary = ""
-            # Don't reset attempts if we want to track total? 
-            # Actually, robust retry logic checks attempts < max. 
-            # If we manually replay, we might want to bump max_retries or reset attempts.
-            # Let's reset attempts to allow full run.
-            execution.attempts = 0
-            execution.save()
-            success_count += 1
-            
-        self.message_user(request, f"Re-queued {success_count} executions.")
+        self.message_user(request, f"Reliably re-queued {success_count} executions via Outbox.")
 
 @admin.register(PromptRelease)
 class PromptReleaseAdmin(admin.ModelAdmin):

@@ -37,13 +37,22 @@ class Execution(models.Model):
     # Context (Variables state)
     context = models.JSONField(default=dict)
     
+    # QoS
+    priority = models.IntegerField(default=100, db_index=True)
+    
+    # Distributed Locking (Lease)
+    lease_owner = models.CharField(max_length=128, null=True, blank=True, db_index=True)
+    lease_expires_at = models.DateTimeField(null=True, blank=True, db_index=True)
+    heartbeat_at = models.DateTimeField(null=True, blank=True)
+    
     started_at = models.DateTimeField(null=True, blank=True)
     finished_at = models.DateTimeField(null=True, blank=True)
     
     class Meta:
         indexes = [
             models.Index(fields=["tenant_id", "status"]),
-            models.Index(fields=["status", "started_at"]), # Worker polling
+            # Polling index: Unassigned or Leased-but-expired
+            models.Index(fields=["status", "lease_expires_at"]), 
         ]
         constraints = [
             # Ensure only one execution per event/automation tuple (Idempotency)
@@ -69,6 +78,11 @@ class StepRun(models.Model):
     status = models.CharField(max_length=20, choices=ExecutionStatusChoices.choices)
     attempt = models.IntegerField(default=1)
     
+    # Distributed Locking (Lease) for Step Workers
+    lease_owner = models.CharField(max_length=128, null=True, blank=True)
+    lease_expires_at = models.DateTimeField(null=True, blank=True)
+    heartbeat_at = models.DateTimeField(null=True, blank=True)
+    
     # Provider Info (which connector ran this?)
     provider_meta = models.JSONField(default=dict)
     
@@ -76,14 +90,35 @@ class StepRun(models.Model):
     finished_at = models.DateTimeField(null=True, blank=True)
     
     class Meta:
-        # One result per node per execution (mostly)
-        # Retries might append new StepRuns or update existing. Plan says append-only for attempts? 
-        # For now, let's simpler unique constraint on node_key which implies overwrite/update on retry, 
-        # OR we remove unique constraint to allow history.
-        # User plan said: "StepRun is append-only for attempts (or store attempts as child rows)"
-        # Let's keep it simple: One StepRun per node. Retries update it (like Celery Task). 
-        # If we need history, we need StepRunAttempt.
+        # One result per node per execution (strict uniqueness for safety)
         unique_together = ["execution", "node_key"]
+        indexes = [
+             models.Index(fields=["status", "lease_expires_at"]),
+        ]
+
+class SideEffectLog(models.Model):
+    """
+    Registry of external side-effects to guarantee exactly-once behavior 
+    even when steps are retried (SRE Requirement).
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    tenant_id = models.CharField(max_length=64, db_index=True)
+    
+    # Deduplication Key: sha256(execution_id + node_key + action + params)
+    key = models.CharField(max_length=64, unique=True, db_index=True)
+    
+    # The external reference (e.g. Stripe Charge ID, Slack TS)
+    external_id = models.CharField(max_length=255)
+    
+    # Cached response to return on replay
+    response_payload = models.JSONField(default=dict)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["tenant_id", "key"]),
+        ]
 
 # Alias for backward compat if needed, or just remove
 ExecutionStep = StepRun
