@@ -1,5 +1,8 @@
 site_name: Django Automate
 site_description: Production-grade automation for Django.
+site_url: https://codegraphers.github.io/django-automate/
+repo_url: https://github.com/codegraphers/django-automate
+repo_name: codegraphers/django-automate
 theme:
         name: material
         features:
