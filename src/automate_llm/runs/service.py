@@ -104,14 +104,14 @@ class RunService:
             if self.secret_resolver and conn_profile_model:
                 # Lookup profile
                 try:
-                    profile = ConnProfileModel.objects.get(name=provider_profile)
+                    profile = conn_profile_model.objects.get(name=provider_profile)
                     # Resolve secrets
                     resolved = self.secret_resolver.resolve_dictionary(profile.secrets)
-                    api_key = resolved.get("api_key", "")
-                    # Extract config
+                    # Merge config
+                    self.runtime_config.update(resolved)
                     provider_cfg = profile.config or {}
                     provider_code = provider_cfg.get("provider", "openai")
-                except ConnProfileModel.DoesNotExist:
+                except conn_profile_model.DoesNotExist:
                     # Check settings.LLM.PROVIDERS for static config (legacy/dev mode)
                     pass
 

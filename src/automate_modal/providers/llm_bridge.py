@@ -56,10 +56,10 @@ class LLMBridgeCapability(Capability):
             api_key_ref = config.get("api_key_ref", config.get("api_key"))
             org_id_ref = config.get("org_id_ref", config.get("org_id"))
 
-            return ProviderCls(secret_resolver=resolver, api_key_ref=api_key_ref, org_id_ref=org_id_ref)
+            return provider_cls(secret_resolver=resolver, api_key_ref=api_key_ref, org_id_ref=org_id_ref)
         except TypeError:
             # Fallback
-            return ProviderCls(config=config, secret_resolver=resolver)
+            return provider_cls(config=config, secret_resolver=resolver)
 
     def run(self, req: dict[str, Any], ctx: ExecutionCtx) -> ModalResult:
         provider = self._get_provider_instance(ctx)
