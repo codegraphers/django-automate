@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("automate_llm", "0001_initial"),
     ]
@@ -32,8 +31,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AddIndex(
             model_name="llmrequest",
-            index=models.Index(
-                fields=["purpose", "created_at"], name="automate_ll_purpose_36db76_idx"
-            ),
+            index=models.Index(fields=["purpose", "created_at"], name="automate_ll_purpose_36db76_idx"),
         ),
     ]

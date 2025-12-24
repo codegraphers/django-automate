@@ -6,6 +6,7 @@ Usage:
     python manage.py run_executions --limit=50   # Run up to 50 pending
     python manage.py run_executions --daemon     # Run continuously
 """
+
 import time
 
 from django.core.management.base import BaseCommand
@@ -15,23 +16,9 @@ class Command(BaseCommand):
     help = "Run pending workflow executions"
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            "--limit",
-            type=int,
-            default=10,
-            help="Maximum executions to process per batch"
-        )
-        parser.add_argument(
-            "--daemon",
-            action="store_true",
-            help="Run continuously (poll every 5 seconds)"
-        )
-        parser.add_argument(
-            "--poll-interval",
-            type=int,
-            default=5,
-            help="Seconds between polls when in daemon mode"
-        )
+        parser.add_argument("--limit", type=int, default=10, help="Maximum executions to process per batch")
+        parser.add_argument("--daemon", action="store_true", help="Run continuously (poll every 5 seconds)")
+        parser.add_argument("--poll-interval", type=int, default=5, help="Seconds between polls when in daemon mode")
 
     def handle(self, *args, **options):
         from automate.step_executors.workflow_executor import run_pending_executions  # noqa: PLC0415
@@ -49,9 +36,7 @@ class Command(BaseCommand):
                     results = run_pending_executions(limit=limit)
 
                     if results["success"] or results["failed"]:
-                        self.stdout.write(
-                            f"Processed: {results['success']} success, {results['failed']} failed"
-                        )
+                        self.stdout.write(f"Processed: {results['success']} success, {results['failed']} failed")
 
                     time.sleep(poll_interval)
 
@@ -61,7 +46,5 @@ class Command(BaseCommand):
             results = run_pending_executions(limit=limit)
 
             self.stdout.write(
-                self.style.SUCCESS(
-                    f"Completed: {results['success']} success, {results['failed']} failed"
-                )
+                self.style.SUCCESS(f"Completed: {results['success']} success, {results['failed']} failed")
             )

@@ -15,7 +15,7 @@ class RuleCompiler:
     def extract_index_terms(self, rule: RuleNode) -> list[str]:
         terms: set[str] = set()
         self._visit(rule, terms)
-        return sorted(list(terms))
+        return sorted(terms)
 
     def _visit(self, node: RuleNode, terms: set[str]) -> None:
         if not isinstance(node, dict):
@@ -37,7 +37,7 @@ class RuleCompiler:
                         terms.add(f"{path}={val}")
 
         # Recurse
-        for key, val in node.items():
+        for _key, val in node.items():
             if isinstance(val, list):
                 for item in val:
                     self._visit(item, terms)

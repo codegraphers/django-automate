@@ -17,18 +17,10 @@ def test_workflow_version_snapshot():
     wf1 = Workflow.objects.create(automation=auto, version=1, is_live=True, graph={})
 
     # Trigger
-    TriggerSpec.objects.create(
-        automation=auto,
-        type=TriggerTypeChoices.MANUAL,
-        filter_config={}
-    )
+    TriggerSpec.objects.create(automation=auto, type=TriggerTypeChoices.MANUAL, filter_config={})
 
     # 2. Ingest Event
-    event = EventIngestionService.ingest_event(
-        event_type="manual",
-        source="test",
-        payload={}
-    )
+    event = EventIngestionService.ingest_event(event_type="manual", source="test", payload={})
 
     # 3. Dispatch
     dispatcher = Dispatcher()
@@ -45,7 +37,7 @@ def test_workflow_version_snapshot():
     event2 = EventIngestionService.ingest_event(event_type="manual", source="test2", payload={})
     dispatcher.dispatch_batch()
     execution2 = Execution.objects.get(event=event2)
-    assert execution2.workflow_version == 1 # Should still be 1 because is_live=True on v1
+    assert execution2.workflow_version == 1  # Should still be 1 because is_live=True on v1
 
     # 6. Make v2 Live
     wf1.is_live = False

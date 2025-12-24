@@ -60,10 +60,10 @@ class AnthropicProvider(LLMProvider):
             usage={
                 "input_tokens": response.usage.input_tokens,
                 "output_tokens": response.usage.output_tokens,
-                "total_tokens": response.usage.input_tokens + response.usage.output_tokens
+                "total_tokens": response.usage.input_tokens + response.usage.output_tokens,
             },
             model_used=response.model,
-            raw_response=response.model_dump()
+            raw_response=response.model_dump(),
         )
 
     def count_tokens(self, text: str, model: str) -> int:

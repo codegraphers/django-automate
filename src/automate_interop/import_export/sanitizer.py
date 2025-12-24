@@ -20,8 +20,8 @@ class JsonSanitizer:
                 if k.lower() in self.KEYS_TO_SCRUB:
                     new_node[k] = "[REDACTED]"
                 elif k.lower() == "headerParameters" and isinstance(v, dict):
-                     # Specifically scrub headers in HTTP nodes (n8n structure dependent)
-                     new_node[k] = self._sanitize_headers(v)
+                    # Specifically scrub headers in HTTP nodes (n8n structure dependent)
+                    new_node[k] = self._sanitize_headers(v)
                 else:
                     new_node[k] = self._walk(v)
             return new_node
@@ -30,11 +30,12 @@ class JsonSanitizer:
         return node
 
     def _sanitize_headers(self, headers: dict[str, Any]) -> dict[str, Any]:
-        if not isinstance(headers, dict): return headers
+        if not isinstance(headers, dict):
+            return headers
         clean = {}
         for k, v in headers.items():
             if k.lower() in self.HEADERS_TO_SCRUB:
-                 clean[k] = "[REDACTED]"
+                clean[k] = "[REDACTED]"
             else:
-                 clean[k] = v
+                clean[k] = v
         return clean

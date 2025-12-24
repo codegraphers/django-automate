@@ -31,6 +31,7 @@ def test_all_connectors_adhere_to_contract():
 
         # 3. Check Validation Contract
         from automate_connectors.adapters.base import ValidationResult
+
         val_res = instance.validate_config({})
         assert isinstance(val_res, ValidationResult)
         assert isinstance(val_res.ok, bool)

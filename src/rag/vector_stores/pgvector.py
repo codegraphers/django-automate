@@ -2,6 +2,7 @@
 PGVector Store Adapter
 Using pgvector python client or raw SQL
 """
+
 import logging
 from typing import Any
 
@@ -16,6 +17,7 @@ try:
 except ImportError:
     pgvector = None
 
+
 class PGVectorStore(VectorStore):
     """PGVector using raw SQL for flexibility."""
 
@@ -23,13 +25,7 @@ class PGVectorStore(VectorStore):
         self.table_name = table_name
         self.connection_name = connection_name
 
-    def search(
-        self,
-        embedding: list[float],
-        top_k: int,
-        filters: dict[str, Any] | None = None
-    ) -> list[SearchResult]:
-
+    def search(self, embedding: list[float], top_k: int, filters: dict[str, Any] | None = None) -> list[SearchResult]:
         # Naive SQL construction - vulnerable to injection if table_name not safe
         # In prod, restrict table_name or use models
         sql = f"""
@@ -52,12 +48,7 @@ class PGVectorStore(VectorStore):
 
         results = []
         for row in rows:
-            results.append(SearchResult(
-                source_id=str(row[0]),
-                text=row[1],
-                metadata=row[2] or {},
-                score=row[3]
-            ))
+            results.append(SearchResult(source_id=str(row[0]), text=row[1], metadata=row[2] or {}, score=row[3]))
 
         return results
 

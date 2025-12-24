@@ -2,6 +2,7 @@
 Milvus Vector Store Adapter
 Using pymilvus
 """
+
 import logging
 from typing import Any
 
@@ -11,9 +12,10 @@ logger = logging.getLogger(__name__)
 
 # Lazy import
 try:
-    from pymilvus import DataType, MilvusClient
+    from pymilvus import MilvusClient
 except ImportError:
     MilvusClient = None
+
 
 class MilvusStore(VectorStore):
     """Milvus / Zilliz Cloud adapter."""
@@ -31,38 +33,32 @@ class MilvusStore(VectorStore):
         # In a real impl, we'd check if exists, or assume created by IndexProvider
         pass
 
-    def search(
-        self,
-        embedding: list[float],
-        top_k: int,
-        filters: dict[str, Any] | None = None
-    ) -> list[SearchResult]:
-
-        search_params = {
-            "metric_type": "COSINE",
-            "params": {}
-        }
+    def search(self, embedding: list[float], top_k: int, filters: dict[str, Any] | None = None) -> list[SearchResult]:
+        # search_params = {
+        #    "metric_type": "COSINE",
+        #    "params": {}
+        # }
 
         # filters in Milvus are expressions like "id > 0"
         # For now, we ignore dict filters or need a translator
         # This is a naive implementation
         filter_expr = ""
         if filters:
-             # Basic implementation: simple equality checks
-             exprs = []
-             for k, v in filters.items():
-                 if isinstance(v, str):
-                     exprs.append(f"{k} == '{v}'")
-                 else:
-                     exprs.append(f"{k} == {v}")
-             filter_expr = " and ".join(exprs)
+            # Basic implementation: simple equality checks
+            exprs = []
+            for k, v in filters.items():
+                if isinstance(v, str):
+                    exprs.append(f"{k} == '{v}'")
+                else:
+                    exprs.append(f"{k} == {v}")
+            filter_expr = " and ".join(exprs)
 
         res = self.client.search(
             collection_name=self.collection_name,
             data=[embedding],
             limit=top_k,
             filter=filter_expr if filter_expr else "",
-            output_fields=["text", "source_id", "metadata"]
+            output_fields=["text", "source_id", "metadata"],
         )
 
         # Milvus returns list of lists (one per query vector)
@@ -72,13 +68,15 @@ class MilvusStore(VectorStore):
         hits = res[0]
         results = []
         for hit in hits:
-            entity = hit.get('entity', {})
-            results.append(SearchResult(
-                text=entity.get('text', ''),
-                score=hit.get('distance', 0.0), # or score
-                source_id=entity.get('source_id', str(hit.get('id', ''))),
-                metadata=entity.get('metadata', {})
-            ))
+            entity = hit.get("entity", {})
+            results.append(
+                SearchResult(
+                    text=entity.get("text", ""),
+                    score=hit.get("distance", 0.0),  # or score
+                    source_id=entity.get("source_id", str(hit.get("id", ""))),
+                    metadata=entity.get("metadata", {}),
+                )
+            )
 
         return results
 

@@ -2,12 +2,13 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from automate.models import Execution, ExecutionStatusChoices, ExecutionStep, Automation
+from automate.models import Automation, Execution, ExecutionStatusChoices, ExecutionStep
 from automate.runtime import Runtime
 
 
 class CrashError(Exception):
     pass
+
 
 @pytest.mark.django_db
 class TestFailureInjection:
@@ -30,24 +31,22 @@ class TestFailureInjection:
             mock_get.return_value = MagicMock(return_value=mock_connector)
 
             # Create Dependencies
-            from automate.models import Event, Automation
             from django.utils import timezone
+
+            from automate.models import Automation, Event
+
             evt = Event.objects.create(tenant_id="test", event_type="test", source="test", occurred_at=timezone.now())
             auto = Automation.objects.create(tenant_id="test", slug="crash-test", name="Crash Test")
 
             # Create Execution
-            execution = Execution.objects.create(
-                status=ExecutionStatusChoices.RUNNING,
-                event=evt,
-                automation=auto
-            )
+            execution = Execution.objects.create(status=ExecutionStatusChoices.RUNNING, event=evt, automation=auto)
 
             # Step Logic
             # We call the internal _run_step to isolate the crash
             try:
                 runtime._run_step(execution, "step_crash", "Crasher", "mock_slug", {})
             except CrashError:
-                pass # Worker process would die here
+                pass  # Worker process would die here
 
             # Verify State
             step = ExecutionStep.objects.get(node_key="step_crash")
@@ -60,26 +59,22 @@ class TestFailureInjection:
         """
         runtime = Runtime()
         # 1. First Failure
-        from automate.models import Event
         from django.utils import timezone
+
+        from automate.models import Event
+
         event = Event.objects.create(
-            tenant_id="test-tenant",
-            event_type="test",
-            source="test",
-            occurred_at=timezone.now()
+            tenant_id="test-tenant", event_type="test", source="test", occurred_at=timezone.now()
         )
         auto = Automation.objects.create(tenant_id="test-tenant", slug="res-auto-storm", name="Resilience Storm Auto")
         execution = Execution.objects.create(
-             tenant_id="test-tenant",
-             event=event,
-             automation=auto,
-             status=ExecutionStatusChoices.RUNNING
+            tenant_id="test-tenant", event=event, automation=auto, status=ExecutionStatusChoices.RUNNING
         )
 
         # 1. First Failure
         runtime.run_execution(execution.id)
         execution.refresh_from_db()
-        assert execution.status == ExecutionStatusChoices.FAILED # In our sync runtime, we mark failed + log retry
+        assert execution.status == ExecutionStatusChoices.FAILED  # In our sync runtime, we mark failed + log retry
         assert execution.attempt == 1
 
         # 2. Second Trigger (Retry 1)

@@ -19,8 +19,9 @@ DEFAULTS = {
     },
     "LLM": {
         "DEFAULT_PROVIDER": "openai",
-    }
+    },
 }
+
 
 class ConfigLoader:
     """
@@ -48,7 +49,7 @@ class ConfigLoader:
                 break
 
         if found and current is not None:
-             return current
+            return current
 
         # 2. Check Defaults
         current = DEFAULTS

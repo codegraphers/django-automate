@@ -47,21 +47,21 @@ class VisualizationEngine:
                 "type": "bar",
                 "data": {
                     "labels": labels,
-                    "datasets": [{
-                        "label": data_col,
-                        "data": values,
-                        "backgroundColor": "rgba(54, 162, 235, 0.5)",
-                        "borderColor": "rgba(54, 162, 235, 1)",
-                        "borderWidth": 1
-                    }]
+                    "datasets": [
+                        {
+                            "label": data_col,
+                            "data": values,
+                            "backgroundColor": "rgba(54, 162, 235, 0.5)",
+                            "borderColor": "rgba(54, 162, 235, 1)",
+                            "borderWidth": 1,
+                        }
+                    ],
                 },
-                "options": {
-                    "responsive": True,
-                    "maintainAspectRatio": False
-                }
+                "options": {"responsive": True, "maintainAspectRatio": False},
             }
 
         return None
+
 
 class ResultSummarizer:
     def __init__(self, provider, model_name: str):
@@ -88,7 +88,7 @@ Executed SQL: {sql}
 Data Results (first {len(data_sample)} rows):
 {data_str}
 
-Task: Answer the user's question based strictly on these results. 
+Task: Answer the user's question based strictly on these results.
 - If the result is a count/aggregation, state it clearly.
 - If it's a list, summarize what was found.
 - Be concise and professional.
@@ -102,8 +102,8 @@ Task: Answer the user's question based strictly on these results.
                     model=self.model_name,
                     messages=[
                         {"role": "system", "content": "You are a data analyst assistant."},
-                        {"role": "user", "content": prompt}
-                    ]
+                        {"role": "user", "content": prompt},
+                    ],
                 )
             )
             return response.content

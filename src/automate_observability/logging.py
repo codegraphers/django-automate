@@ -8,6 +8,7 @@ class JsonFormatter(logging.Formatter):
     """
     Structured JSON formatter that automatically injects trace_id and standardizes fields.
     """
+
     def format(self, record):
         trace_id = get_trace_id()
 

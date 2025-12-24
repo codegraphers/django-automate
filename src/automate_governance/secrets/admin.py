@@ -17,6 +17,7 @@ class ConnectionProfileAdmin(admin.ModelAdmin):
         # This would optimally be computed or cached. For now, simple indicator.
         count = len(obj.secrets)
         return format_html(f"<span class='badge'>{count} refs</span>")
+
     secrets_status_badge.short_description = "Secrets"
 
     def get_urls(self):
@@ -58,4 +59,5 @@ class StoredSecretAdmin(admin.ModelAdmin):
     def rotate_secret(self, request, queryset):
         # Skeleton for rotation action
         pass
+
     rotate_secret.short_description = "Rotate selected secret (create new version)"

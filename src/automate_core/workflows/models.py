@@ -11,6 +11,7 @@ class Automation(models.Model):
     Root entity for a defined automation process.
     Multi-tenant, versioned container.
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     tenant_id = models.CharField(max_length=64, db_index=True)
     slug = models.SlugField(max_length=255)
@@ -31,10 +32,12 @@ class Automation(models.Model):
     def __str__(self):
         return f"{self.slug} (v{self.workflows.count()})"
 
+
 class Workflow(models.Model):
     """
     Immutable version of an automation logic (DAG).
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     automation = models.ForeignKey(Automation, related_name="workflows", on_delete=models.CASCADE)
     version = models.IntegerField(default=1)
@@ -59,6 +62,7 @@ class Workflow(models.Model):
             self.hash = hashlib.sha256(serialized).hexdigest()
         super().save(*args, **kwargs)
 
+
 class TriggerTypeChoices(models.TextChoices):
     MODEL_SIGNAL = "model_signal", _("Model Signal")
     WEBHOOK = "webhook", _("Webhook")
@@ -66,11 +70,13 @@ class TriggerTypeChoices(models.TextChoices):
     MANUAL = "manual", _("Manual")
     EXTERNAL = "external", _("External")
 
+
 class Trigger(models.Model):
     """
     Configuration for what triggers an automation.
     Links an automation to event matching logic.
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     automation = models.ForeignKey(Automation, related_name="triggers", on_delete=models.CASCADE)
 

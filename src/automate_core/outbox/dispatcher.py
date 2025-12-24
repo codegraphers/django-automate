@@ -28,7 +28,7 @@ class Dispatcher:
         store: OutboxStore,
         process_fn: ProcessFn,
         throughput: ThroughputController | None = None,
-        worker_id: str = "worker-1"
+        worker_id: str = "worker-1",
     ):
         self.store = store
         self.process_fn = process_fn
@@ -67,12 +67,7 @@ class Dispatcher:
                     delay = calculate_backoff(item.attempt_count)
                     next_at = now + delay
                     error_code = type(e).__name__
-                    self.store.mark_retry(
-                        item.id,
-                        owner=self.worker_id,
-                        next_attempt_at=next_at,
-                        error_code=error_code
-                    )
+                    self.store.mark_retry(item.id, owner=self.worker_id, next_attempt_at=next_at, error_code=error_code)
 
             processed_count += 1
 

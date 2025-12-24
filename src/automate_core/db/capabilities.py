@@ -10,13 +10,11 @@ class DbCapabilities:
     def supports_skip_locked(self) -> bool:
         vendor = connection.vendor
         if vendor == "postgresql":
-            return True # Generally 9.5+
+            return True  # Generally 9.5+
         if vendor == "mysql":
             # MySQL 8.0+ supports SKIP LOCKED
             return connection.mysql_version >= (8, 0, 1)
-        if vendor == "oracle":
-            return True
-        return False
+        return vendor == "oracle"
 
     @property
     def supports_gin_index(self) -> bool:

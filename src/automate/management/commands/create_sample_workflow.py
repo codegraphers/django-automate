@@ -17,11 +17,7 @@ class Command(BaseCommand):
         # 1. Create or get test automation
         automation, created = Automation.objects.get_or_create(
             slug="order-notification",
-            defaults={
-                "name": "High Value Order Notification",
-                "enabled": True,
-                "environment": "default"
-            }
+            defaults={"name": "High Value Order Notification", "enabled": True, "environment": "default"},
         )
 
         if created:
@@ -31,33 +27,21 @@ class Command(BaseCommand):
 
         # 2. Add trigger
         trigger, _ = TriggerSpec.objects.get_or_create(
-            automation=automation,
-            type="webhook",
-            defaults={
-                "config": {"event_type": "order.created"},
-                "enabled": True
-            }
+            automation=automation, type="webhook", defaults={"config": {"event_type": "order.created"}, "enabled": True}
         )
         self.stdout.write(f"  Trigger: {trigger.type}")
 
         # 3. Add rule (amount >= 100)
         rule, _ = Rule.objects.get_or_create(
             automation=automation,
-            defaults={
-                "priority": 1,
-                "conditions": {">=": [{"var": "event.payload.amount"}, 100]},
-                "enabled": True
-            }
+            defaults={"priority": 1, "conditions": {">=": [{"var": "event.payload.amount"}, 100]}, "enabled": True},
         )
         self.stdout.write("  Rule: amount >= 100")
 
         # 4. Create a simple summary prompt
         prompt, _ = Prompt.objects.get_or_create(
             slug="order_summarizer",
-            defaults={
-                "name": "Order Summarizer",
-                "description": "Summarizes an order for notifications"
-            }
+            defaults={"name": "Order Summarizer", "description": "Summarizes an order for notifications"},
         )
 
         PromptVersion.objects.update_or_create(
@@ -73,8 +57,8 @@ Customer: {{ event.customer_name }}
 Amount: ${{ event.amount }}
 Items: {{ event.items | tojson }}
 
-Keep it brief and professional."""
-            }
+Keep it brief and professional.""",
+            },
         )
         self.stdout.write("  Prompt: order_summarizer (v1)")
 
@@ -85,10 +69,7 @@ Keep it brief and professional."""
                     "id": "filter_high_value",
                     "type": "filter",
                     "name": "Check High Value",
-                    "config": {
-                        "condition": {">=": [{"var": "event.payload.amount"}, 100]},
-                        "on_fail": "stop"
-                    }
+                    "config": {"condition": {">=": [{"var": "event.payload.amount"}, 100]}, "on_fail": "stop"},
                 },
                 {
                     "id": "llm_summarize",
@@ -100,9 +81,9 @@ Keep it brief and professional."""
                             "order_id": "{{ event.payload.order_id }}",
                             "customer_name": "{{ event.payload.customer_name }}",
                             "amount": "{{ event.payload.amount }}",
-                            "items": "{{ event.payload.items }}"
-                        }
-                    }
+                            "items": "{{ event.payload.items }}",
+                        },
+                    },
                 },
                 {
                     "id": "slack_notify",
@@ -113,25 +94,15 @@ Keep it brief and professional."""
                         "method": "POST",
                         "url": "https://httpbin.org/post",  # Test endpoint instead of real Slack
                         "headers": {"Content-Type": "application/json"},
-                        "body": {
-                            "text": "{{ previous.llm_summarize }}",
-                            "channel": "#orders"
-                        }
-                    }
-                }
+                        "body": {"text": "{{ previous.llm_summarize }}", "channel": "#orders"},
+                    },
+                },
             ],
-            "config": {
-                "name": "High Value Order → LLM → Slack"
-            }
+            "config": {"name": "High Value Order → LLM → Slack"},
         }
 
         workflow, created = Workflow.objects.update_or_create(
-            automation=automation,
-            version=1,
-            defaults={
-                "graph": workflow_graph,
-                "is_live": True
-            }
+            automation=automation, version=1, defaults={"graph": workflow_graph, "is_live": True}
         )
 
         self.stdout.write(f"  Workflow: v{workflow.version} ({'created' if created else 'updated'})")

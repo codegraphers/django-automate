@@ -6,15 +6,18 @@ class SecretsBackend(ABC):
     """
     Interface for resolving secrets securely.
     """
+
     @abstractmethod
     def resolve(self, key: str) -> str | None:
         pass
+
 
 class EnvSecretsBackend(SecretsBackend):
     """
     Resolves secrets from Environment Variables.
     Format: env://VAR_NAME
     """
+
     def resolve(self, key: str) -> str | None:
         if not key:
             return None
@@ -32,6 +35,7 @@ class EnvSecretsBackend(SecretsBackend):
         # If ConnectionProfile holds "xoxb-123", we return "xoxb-123".
         # The insecurity comes from passing it in *Execution Inputs*.
         return key
+
 
 class SecretsManager:
     _backend = EnvSecretsBackend()

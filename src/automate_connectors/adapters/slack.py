@@ -11,15 +11,14 @@ from ..types import ActionSpec, ConnectorCapabilities, ConnectorResult
 
 logger = logging.getLogger(__name__)
 
+
 class SlackAdapter(ConnectorAdapter):
     code = "slack"
     name = "Slack"
 
     @property
     def capabilities(self) -> ConnectorCapabilities:
-        return ConnectorCapabilities(
-            supports_rate_limit_headers=True
-        )
+        return ConnectorCapabilities(supports_rate_limit_headers=True)
 
     @property
     def action_specs(self) -> dict[str, ActionSpec]:
@@ -31,11 +30,11 @@ class SlackAdapter(ConnectorAdapter):
                     "properties": {
                         "channel": {"type": "string"},
                         "message": {"type": "string"},
-                        "blocks": {"type": "array"}
+                        "blocks": {"type": "array"},
                     },
-                    "required": ["channel"]
+                    "required": ["channel"],
                 },
-                output_schema={"type": "object"}
+                output_schema={"type": "object"},
             )
         }
 
@@ -50,7 +49,7 @@ class SlackAdapter(ConnectorAdapter):
 
         # Extract secrets from profile in context
         profile = ctx.get("profile", {})
-        secrets = profile.get("encrypted_secrets", {}) # Decrypted by Executor before passing?
+        secrets = profile.get("encrypted_secrets", {})  # Decrypted by Executor before passing?
         # Note: Executor logic usually passes *resolved* secrets.
         # Let's assume Profile contains resolved secrets for now or ctx has them.
 
@@ -58,7 +57,7 @@ class SlackAdapter(ConnectorAdapter):
         token = secrets.get("token") or input_args.get("token")
 
         if not token:
-             raise ConnectorError(ConnectorErrorCode.AUTH_FAILED, "Missing Slack token in profile")
+            raise ConnectorError(ConnectorErrorCode.AUTH_FAILED, "Missing Slack token in profile")
 
         channel = input_args.get("channel")
         text = input_args.get("message")
@@ -76,18 +75,23 @@ class SlackAdapter(ConnectorAdapter):
                 "https://slack.com/api/chat.postMessage",
                 headers={"Authorization": f"Bearer {token}"},
                 json=payload,
-                timeout=10
+                timeout=10,
             )
 
             if resp.status_code == 429:
-                 retry_after = int(resp.headers.get("Retry-After", 1)) * 1000
-                 raise ConnectorError(ConnectorErrorCode.RATE_LIMITED, "Slack Rate Limit", retryable=True, details_safe={"retry_after_ms": retry_after})
+                retry_after = int(resp.headers.get("Retry-After", 1)) * 1000
+                raise ConnectorError(
+                    ConnectorErrorCode.RATE_LIMITED,
+                    "Slack Rate Limit",
+                    retryable=True,
+                    details_safe={"retry_after_ms": retry_after},
+                )
 
             resp.raise_for_status()
             data = resp.json()
 
             if not data.get("ok"):
-                 raise ConnectorError(ConnectorErrorCode.UPSTREAM_5XX, f"Slack Logic Error: {data.get('error')}")
+                raise ConnectorError(ConnectorErrorCode.UPSTREAM_5XX, f"Slack Logic Error: {data.get('error')}")
 
             return ConnectorResult(data=data)
 
@@ -95,5 +99,6 @@ class SlackAdapter(ConnectorAdapter):
             raise self.normalize_error(e)
 
     def normalize_error(self, exc: Exception) -> ConnectorError:
-        if isinstance(exc, ConnectorError): return exc
+        if isinstance(exc, ConnectorError):
+            return exc
         return ConnectorError(ConnectorErrorCode.INTERNAL_ERROR, str(exc))

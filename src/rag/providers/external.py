@@ -4,6 +4,7 @@ External RAG Retrieval Provider
 Proxies retrieval queries to an external RAG microservice via HTTP.
 This is the fastest path to value - no indexing needed in Django.
 """
+
 import logging
 import time
 from typing import Any
@@ -18,13 +19,13 @@ logger = logging.getLogger(__name__)
 class ExternalRetrievalProvider:
     """
     Retrieval provider that proxies to an external RAG microservice.
-    
+
     Expected external API contract:
-    
+
     POST /query
         Body: { query, top_k, filters, namespace, trace_id }
         Returns: { results: [{text, score, source_id, metadata}], latency_ms }
-    
+
     GET /health
         Returns: { status: "ok" | "error", message: "..." }
     """
@@ -32,14 +33,7 @@ class ExternalRetrievalProvider:
     key = "external_rag"
     name = "External RAG Service"
 
-    def query(
-        self,
-        *,
-        query: str,
-        filters: dict[str, Any],
-        top_k: int,
-        ctx: QueryContext
-    ) -> RetrievalResult:
+    def query(self, *, query: str, filters: dict[str, Any], top_k: int, ctx: QueryContext) -> RetrievalResult:
         """Execute retrieval query against external service."""
 
         base_url = ctx.source_config.get("base_url", "").rstrip("/")
@@ -51,13 +45,7 @@ class ExternalRetrievalProvider:
 
         url = f"{base_url}{query_path}"
 
-        payload = {
-            "query": query,
-            "top_k": top_k,
-            "filters": filters,
-            "namespace": namespace,
-            "trace_id": ctx.trace_id
-        }
+        payload = {"query": query, "top_k": top_k, "filters": filters, "namespace": namespace, "trace_id": ctx.trace_id}
 
         # Add any custom headers from config
         custom_headers = ctx.source_config.get("headers", {})
@@ -71,7 +59,7 @@ class ExternalRetrievalProvider:
                 json=payload,
                 credentials_ref=ctx.credentials_ref,
                 timeout=ctx.retrieval_config.get("timeout", 30),
-                headers=custom_headers
+                headers=custom_headers,
             )
 
             latency = int((time.time() - start) * 1000)
@@ -82,7 +70,7 @@ class ExternalRetrievalProvider:
                 results=results,
                 latency_ms=response.get("latency_ms", latency),
                 trace_id=ctx.trace_id,
-                total_count=response.get("total_count", len(results))
+                total_count=response.get("total_count", len(results)),
             )
 
         except SSRFError as e:
@@ -104,25 +92,13 @@ class ExternalRetrievalProvider:
         url = f"{base_url}{health_path}"
 
         try:
-            response = ssrf_safe_request(
-                "GET",
-                url,
-                credentials_ref=ctx.credentials_ref,
-                timeout=5
-            )
+            response = ssrf_safe_request("GET", url, credentials_ref=ctx.credentials_ref, timeout=5)
 
             status = response.get("status", "unknown")
-            return HealthStatus(
-                healthy=status == "ok",
-                message=response.get("message", ""),
-                details=response
-            )
+            return HealthStatus(healthy=status == "ok", message=response.get("message", ""), details=response)
 
         except Exception as e:
-            return HealthStatus(
-                healthy=False,
-                message=str(e)
-            )
+            return HealthStatus(healthy=False, message=str(e))
 
     def validate_config(self, config: dict[str, Any]) -> list[str]:
         """Validate external RAG configuration."""

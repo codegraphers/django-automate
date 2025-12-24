@@ -9,11 +9,14 @@ class DjangoPerm(BasePermission):
             return True
         return bool(request.user and request.user.has_perm(self.perm))
 
+
 class CanViewRuns(DjangoPerm):
     perm = "automate_llm.view_llmrun"
 
+
 class CanRunRuns(DjangoPerm):
     perm = "automate_llm.run_llmrun"
+
 
 class CanManagePrompts(DjangoPerm):
     perm = "automate_llm.change_prompt"

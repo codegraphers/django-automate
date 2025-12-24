@@ -9,12 +9,14 @@ class DriftState(Enum):
     DIVERGED = "DIVERGED"
     UNKNOWN = "UNKNOWN"
 
+
 @dataclass
 class DriftReport:
     state: DriftState
     local_hash: str
     remote_hash: str
     last_synced_at: str
+
 
 def calculate_drift(local_hash: str, remote_hash: str, last_synced_hash: str = None) -> DriftState:
     if local_hash == remote_hash:

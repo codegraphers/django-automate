@@ -3,6 +3,7 @@ LLM Step Executor
 
 Executes an LLM prompt and returns the generated content.
 """
+
 import logging
 import time
 
@@ -15,7 +16,7 @@ logger = logging.getLogger(__name__)
 class LLMStepExecutor(BaseStepExecutor):
     """
     Execute an LLM prompt step.
-    
+
     Config:
         prompt_slug: str - The slug of the prompt to use
         prompt_version: int - Optional version (default: latest approved)
@@ -67,9 +68,7 @@ class LLMStepExecutor(BaseStepExecutor):
 
             if not version:
                 return StepResult(
-                    success=False,
-                    output=None,
-                    error=f"No approved version found for prompt: {prompt_slug}"
+                    success=False, output=None, error=f"No approved version found for prompt: {prompt_slug}"
                 )
 
             # Render templates
@@ -82,7 +81,7 @@ class LLMStepExecutor(BaseStepExecutor):
                 except (TypeError, ValueError):
                     return json.dumps(str(x))
 
-            env.filters['tojson'] = safe_tojson
+            env.filters["tojson"] = safe_tojson
             system_tpl = env.from_string(version.system_template)
             user_tpl = env.from_string(version.user_template)
 
@@ -92,22 +91,14 @@ class LLMStepExecutor(BaseStepExecutor):
             # Get LLM provider
             model_config = LLMModelConfig.get_default()
             if not model_config:
-                return StepResult(
-                    success=False,
-                    output=None,
-                    error="No LLM model configured"
-                )
+                return StepResult(success=False, output=None, error="No LLM model configured")
 
             # Setup provider
             provider = model_config.provider
             provider_cls = get_provider_class(provider.slug)
 
             if not provider_cls:
-                return StepResult(
-                    success=False,
-                    output=None,
-                    error=f"Provider {provider.slug} not found"
-                )
+                return StepResult(success=False, output=None, error=f"Provider {provider.slug} not found")
 
             # Resolve API key
             class EnvBackend(SecretsBackend):
@@ -118,30 +109,26 @@ class LLMStepExecutor(BaseStepExecutor):
 
             api_key_source = provider.api_key_env_var
             if api_key_source.startswith("sk-"):
+
                 class RawKeyResolver:
                     def __init__(self, key):
                         self._key = key
+
                     def resolve_value(self, ref, **kwargs):
                         return self._key
+
                 resolver = RawKeyResolver(api_key_source)
                 api_key_ref = api_key_source
             else:
                 api_key_ref = f"secretref://env/llm/{api_key_source}"
 
-            llm_provider = provider_cls(
-                secret_resolver=resolver,
-                api_key_ref=api_key_ref,
-                org_id_ref=None
-            )
+            llm_provider = provider_cls(secret_resolver=resolver, api_key_ref=api_key_ref, org_id_ref=None)
 
             # Make the LLM call
             response = llm_provider.chat_complete(
                 CompletionRequest(
                     model=model_config.name,
-                    messages=[
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": user_prompt}
-                    ]
+                    messages=[{"role": "system", "content": system_prompt}, {"role": "user", "content": user_prompt}],
                 )
             )
 
@@ -154,21 +141,14 @@ class LLMStepExecutor(BaseStepExecutor):
                 metadata={
                     "prompt_slug": prompt_slug,
                     "model": model_config.name,
-                    "tokens": response.usage if hasattr(response, 'usage') else None
-                }
+                    "tokens": response.usage if hasattr(response, "usage") else None,
+                },
             )
 
         except Prompt.DoesNotExist:
-            return StepResult(
-                success=False,
-                output=None,
-                error=f"Prompt not found: {self.config.get('prompt_slug')}"
-            )
+            return StepResult(success=False, output=None, error=f"Prompt not found: {self.config.get('prompt_slug')}")
         except Exception as e:
             logger.exception(f"LLM step execution failed: {e}")
             return StepResult(
-                success=False,
-                output=None,
-                error=str(e),
-                duration_ms=int((time.time() - start_time) * 1000)
+                success=False, output=None, error=str(e), duration_ms=int((time.time() - start_time) * 1000)
             )

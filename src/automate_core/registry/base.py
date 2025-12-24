@@ -4,10 +4,12 @@ from typing import Generic, TypeVar
 
 T = TypeVar("T")
 
+
 class Registry(Generic[T]):
     """
     Thread-safe registry for plugins (Providers, Connectors, etc).
     """
+
     def __init__(self, name: str):
         self.name = name
         self._items: dict[str, type[T]] = {}

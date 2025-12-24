@@ -20,6 +20,7 @@ def list_triggers(request):
     ]
     return JsonResponse(triggers, safe=False)
 
+
 @csrf_exempt
 @require_POST
 @require_api_key
@@ -45,7 +46,7 @@ def subscribe(request):
 
     validator = HttpFetchTool()
     if not validator._is_safe_url(target_url):
-         return JsonResponse({"error": "Invalid Target URL: Blocked by SSRF Policy"}, status=400)
+        return JsonResponse({"error": "Invalid Target URL: Blocked by SSRF Policy"}, status=400)
 
     # P0.5: Unsubscribe Token / ID
     sub_id = str(uuid4())
@@ -53,6 +54,7 @@ def subscribe(request):
     # Store subscription (Mock for beta MVP, should use TriggerSpec/Model)
 
     return JsonResponse({"id": sub_id, "status": "subscribed"})
+
 
 @csrf_exempt
 @require_POST

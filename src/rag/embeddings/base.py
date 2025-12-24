@@ -3,6 +3,7 @@ Base Embeddings Protocol
 
 Defines the interface for embedding providers.
 """
+
 from typing import Protocol, runtime_checkable
 
 

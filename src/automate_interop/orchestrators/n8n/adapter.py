@@ -9,6 +9,7 @@ from ..contracts import ExternalOrchestrator, OrchestratorCapabilities, StartRes
 
 logger = logging.getLogger(__name__)
 
+
 class N8nAdapter(ExternalOrchestrator):
     def __init__(self, base_url: str, webhook_key: str):
         self.base_url = base_url.rstrip("/")
@@ -19,9 +20,9 @@ class N8nAdapter(ExternalOrchestrator):
         return OrchestratorCapabilities(
             webhook_start=True,
             callback_supported=True,
-            status_poll_supported=False, # n8n API needed for this, assuming webhook only for now per spec
+            status_poll_supported=False,  # n8n API needed for this, assuming webhook only for now per spec
             supports_templates_host=True,
-            supports_import_export=True
+            supports_import_export=True,
         )
 
     def start_run(self, request: dict[str, Any]) -> StartResult:
@@ -35,7 +36,7 @@ class N8nAdapter(ExternalOrchestrator):
         payload = {
             "correlation_id": correlation_id,
             "callback_url": request.get("callback_url"),
-            "data": request.get("payload")
+            "data": request.get("payload"),
         }
 
         try:
@@ -44,7 +45,7 @@ class N8nAdapter(ExternalOrchestrator):
                 return StartResult(
                     ok=False,
                     error=f"n8n Webhook failed: {resp.status_code} {resp.text}",
-                    meta={"status": resp.status_code}
+                    meta={"status": resp.status_code},
                 )
 
             # n8n "Respond to Webhook" might return data immediately
@@ -59,4 +60,4 @@ class N8nAdapter(ExternalOrchestrator):
         # For MVP, we assume a shared secret token mechanism
         # In prod, implementing HMAC would be better
         # TODO: Retrieve expected token from Secrets
-        return True # Stub
+        return True  # Stub

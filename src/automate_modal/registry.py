@@ -1,6 +1,7 @@
 """
 Provider and Registry Base Classes
 """
+
 from abc import ABC, abstractmethod
 from typing import Any
 
@@ -9,6 +10,7 @@ from .contracts import Capability, ExecutionCtx
 
 class ProviderBase(ABC):
     """Base class for all Multi-Modal Providers."""
+
     key: str
     display_name: str
 
@@ -60,6 +62,7 @@ class ProviderRegistry:
     @classmethod
     def all(cls) -> dict[str, type[ProviderBase]]:
         return dict(cls._providers)
+
 
 # Global registry instance if needed, or just use class methods
 registry = ProviderRegistry()

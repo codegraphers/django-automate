@@ -8,6 +8,7 @@ class RateLimiter:
     Token Bucket Rate Limiter backed by Redis (cache).
     Track D Requirement.
     """
+
     def __init__(self, key: str, limit: int, period: int):
         self.key = f"rl:{key}"
         self.limit = limit
@@ -28,10 +29,12 @@ class RateLimiter:
             return True
         return False
 
+
 class CircuitBreaker:
     """
     Simple Circuit Breaker.
     """
+
     def __init__(self, key: str, failure_threshold: int = 5, recovery_timeout: int = 60):
         self.key = f"cb:{key}"
         self.threshold = failure_threshold

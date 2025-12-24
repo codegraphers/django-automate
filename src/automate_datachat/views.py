@@ -22,7 +22,7 @@ def chat_api(request):
         data = json.loads(request.body)
         question = data.get("question")
         if not question:
-             return JsonResponse({"error": "No question provided"}, status=400)
+            return JsonResponse({"error": "No question provided"}, status=400)
 
         orchestrator = ChatOrchestrator(request)
         result = orchestrator.chat(question)
@@ -61,23 +61,27 @@ def history_api(request):
 
     messages = []
     for msg in reversed(page_obj.object_list):
-        messages.append({
-            "id": msg.id,
-            "role": msg.role,
-            "content": msg.content,
-            "sql": msg.sql if msg.role == "assistant" else None,
-            "data": msg.data_json if msg.role == "assistant" else None,
-            "chart": msg.chart_json if msg.role == "assistant" else None,
-            "error": msg.error if msg.role == "assistant" else None,
-            "created_at": msg.created_at.isoformat(),
-        })
+        messages.append(
+            {
+                "id": msg.id,
+                "role": msg.role,
+                "content": msg.content,
+                "sql": msg.sql if msg.role == "assistant" else None,
+                "data": msg.data_json if msg.role == "assistant" else None,
+                "chart": msg.chart_json if msg.role == "assistant" else None,
+                "error": msg.error if msg.role == "assistant" else None,
+                "created_at": msg.created_at.isoformat(),
+            }
+        )
 
-    return JsonResponse({
-        "messages": messages,
-        "has_more": page_obj.has_next(),
-        "total": paginator.count,
-        "page": page,
-    })
+    return JsonResponse(
+        {
+            "messages": messages,
+            "has_more": page_obj.has_next(),
+            "total": paginator.count,
+            "page": page,
+        }
+    )
 
 
 # ============================================================================
@@ -104,6 +108,7 @@ def validate_embed_origin(request, embed):
 
     # Extract components from origin
     from urllib.parse import urlparse
+
     parsed = urlparse(origin)
 
     # Get full netloc (host:port) and just host
@@ -176,7 +181,7 @@ def embed_widget_js(request, embed_id):
         primary: "{primary_color}",
         title: "{title}"
     }};
-    
+
     // Create styles
     const style = document.createElement("style");
     style.textContent = `
@@ -252,13 +257,13 @@ def embed_widget_js(request, embed_id):
         .embed-msg-bot {{ background: #f3f4f6; }}
     `;
     document.head.appendChild(style);
-    
+
     // Create widget
     const fab = document.createElement("div");
     fab.id = "datachat-embed-fab";
     fab.innerHTML = "💬";
     document.body.appendChild(fab);
-    
+
     const win = document.createElement("div");
     win.id = "datachat-embed-window";
     win.innerHTML = `
@@ -272,24 +277,24 @@ def embed_widget_js(request, embed_id):
         </div>
     `;
     document.body.appendChild(win);
-    
+
     // Toggle
     fab.addEventListener("click", () => {{
         win.style.display = win.style.display === "none" ? "flex" : "none";
     }});
-    
+
     // Send message
     async function sendMessage() {{
         const input = document.getElementById("datachat-embed-input");
         const msgs = document.getElementById("datachat-embed-messages");
         const q = input.value.trim();
         if (!q) return;
-        
+
         input.value = "";
         msgs.innerHTML += `<div class="embed-msg embed-msg-user">${{q}}</div>`;
         msgs.innerHTML += `<div class="embed-msg embed-msg-bot" id="loading">...</div>`;
         msgs.scrollTop = msgs.scrollHeight;
-        
+
         try {{
             const resp = await fetch(`${{BASE_URL}}/datachat/embed/v1/${{EMBED_ID}}/chat`, {{
                 method: "POST",
@@ -301,7 +306,7 @@ def embed_widget_js(request, embed_id):
             }});
             const data = await resp.json();
             document.getElementById("loading").remove();
-            
+
             if (data.error) {{
                 msgs.innerHTML += `<div class="embed-msg embed-msg-bot">Error: ${{data.error}}</div>`;
             }} else {{
@@ -313,7 +318,7 @@ def embed_widget_js(request, embed_id):
             msgs.innerHTML += `<div class="embed-msg embed-msg-bot">Connection error</div>`;
         }}
     }}
-    
+
     document.getElementById("datachat-embed-send").addEventListener("click", sendMessage);
     document.getElementById("datachat-embed-input").addEventListener("keypress", (e) => {{
         if (e.key === "Enter") sendMessage();
@@ -383,14 +388,17 @@ def embed_chat_api(request, embed_id):
             return response
 
         from .runtime import ChatOrchestrator
+
         orchestrator = ChatOrchestrator()  # No request = no auth required
         result = orchestrator.chat(question)
 
-        response = JsonResponse({
-            "answer": result.get("answer", ""),
-            "sql": result.get("sql", "") if not embed.allowed_tables else "",  # Hide SQL if restricted
-            "error": result.get("error")
-        })
+        response = JsonResponse(
+            {
+                "answer": result.get("answer", ""),
+                "sql": result.get("sql", "") if not embed.allowed_tables else "",  # Hide SQL if restricted
+                "error": result.get("error"),
+            }
+        )
         response["Access-Control-Allow-Origin"] = "*"
         return response
 
@@ -412,10 +420,10 @@ def embed_config_api(request, embed_id):
     except ChatEmbed.DoesNotExist:
         return JsonResponse({"error": "Not found"}, status=404)
 
-    return JsonResponse({
-        "theme": embed.theme,
-        "welcome_message": embed.welcome_message,
-        "require_auth": embed.require_auth,
-    })
-
-
+    return JsonResponse(
+        {
+            "theme": embed.theme,
+            "welcome_message": embed.welcome_message,
+            "require_auth": embed.require_auth,
+        }
+    )

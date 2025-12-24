@@ -15,18 +15,18 @@ class EchoCapability(Capability):
 
     def run(self, req: dict[str, Any], ctx: ExecutionCtx) -> ModalResult:
         return ModalResult(
-            task_type=self.task_type,
-            outputs={"echo": req, "msg": "Echo from provider"},
-            usage={"units": 1}
+            task_type=self.task_type, outputs={"echo": req, "msg": "Echo from provider"}, usage={"units": 1}
         )
 
     def stream(self, req: dict[str, Any], ctx: ExecutionCtx) -> Iterable[StreamEvent]:
         # Emulate stream
         import time
+
         prompt = req.get("prompt", "echo")
-        for i, char in enumerate(prompt):
+        for _i, char in enumerate(prompt):
             yield StreamEvent(type="token", data={"text": char}, ts=time.time())
             time.sleep(0.01)
+
 
 class EchoProvider(ProviderBase):
     key = "echo"
@@ -41,10 +41,7 @@ class EchoProvider(ProviderBase):
 
     @classmethod
     def config_schema(cls) -> dict:
-        return {
-            "type": "object",
-            "properties": {}
-        }
+        return {"type": "object", "properties": {}}
 
     def build_client(self, cfg: dict, ctx: ExecutionCtx) -> Any:
         return None

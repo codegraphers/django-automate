@@ -9,15 +9,16 @@ from .base import ProviderAdapter
 
 logger = logging.getLogger(__name__)
 
+
 class AnthropicAdapter(ProviderAdapter):
     code = "anthropic"
 
     @property
     def capabilities(self) -> dict[str, bool]:
         return {
-            "supports_streaming": False, # Todo
+            "supports_streaming": False,  # Todo
             "supports_tools": True,
-            "supports_vision": True
+            "supports_vision": True,
         }
 
     def chat(self, req: ChatRequest, *, api_key: str) -> ChatResponse:
@@ -60,21 +61,20 @@ class AnthropicAdapter(ProviderAdapter):
                 if block.type == "text":
                     content_text += block.text
                 elif block.type == "tool_use":
-                    tool_calls.append(ToolCall(
-                        id=block.id,
-                        name=block.name,
-                        arguments=block.input # Anthropic returns dict natively
-                    ))
+                    tool_calls.append(
+                        ToolCall(
+                            id=block.id,
+                            name=block.name,
+                            arguments=block.input,  # Anthropic returns dict natively
+                        )
+                    )
 
             return ChatResponse(
                 content=content_text,
                 role=resp.role,
                 tool_calls=tuple(tool_calls) if tool_calls else (),
-                usage=Usage(
-                    input_tokens=resp.usage.input_tokens,
-                    output_tokens=resp.usage.output_tokens
-                ),
-                provider_info={"id": resp.id, "model": resp.model}
+                usage=Usage(input_tokens=resp.usage.input_tokens, output_tokens=resp.usage.output_tokens),
+                provider_info={"id": resp.id, "model": resp.model},
             )
 
         except Exception as e:
@@ -93,10 +93,11 @@ class AnthropicAdapter(ProviderAdapter):
 
     def normalize_error(self, exc: Exception) -> LLMError:
         import anthropic
+
         if isinstance(exc, anthropic.AuthenticationError):
-             return LLMError(LLMErrorCode.AUTH_FAILED, str(exc), retryable=False)
+            return LLMError(LLMErrorCode.AUTH_FAILED, str(exc), retryable=False)
         if isinstance(exc, anthropic.RateLimitError):
-             return LLMError(LLMErrorCode.RATE_LIMITED, str(exc), retryable=True)
+            return LLMError(LLMErrorCode.RATE_LIMITED, str(exc), retryable=True)
         if isinstance(exc, anthropic.APIStatusError):
-             return LLMError(LLMErrorCode.PROVIDER_ERROR, str(exc), retryable=exc.status_code >= 500)
+            return LLMError(LLMErrorCode.PROVIDER_ERROR, str(exc), retryable=exc.status_code >= 500)
         return LLMError(LLMErrorCode.INTERNAL_ERROR, f"Anthropic Error: {exc}", retryable=False)

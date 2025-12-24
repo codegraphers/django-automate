@@ -10,6 +10,7 @@ class ConversationMemory:
         {"role": "assistant", "content": "Found 5 users...", "sql": "SELECT...", "data": [...] }
     ]
     """
+
     SESSION_KEY = "automate_datachat_history"
     MAX_TURNS = 10
 
@@ -60,8 +61,8 @@ class ConversationMemory:
 
     def _save(self, history: list[dict]):
         # Enforce max length
-        if len(history) > self.MAX_TURNS * 2: # 2 messages per turn roughly
-            history = history[-(self.MAX_TURNS*2):]
+        if len(history) > self.MAX_TURNS * 2:  # 2 messages per turn roughly
+            history = history[-(self.MAX_TURNS * 2) :]
 
         self.session[self.SESSION_KEY] = history
         self.session.modified = True

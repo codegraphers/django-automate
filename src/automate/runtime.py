@@ -1,12 +1,13 @@
 import logging
 
-from django.utils import timezone
 from django.conf import settings
+from django.utils import timezone
 
 from .models import Execution, ExecutionStatusChoices, ExecutionStep
 from .registry import registry
 
 logger = logging.getLogger(__name__)
+
 
 class Runtime:
     """
@@ -25,8 +26,8 @@ class Runtime:
         # Default attempt is 1. If we haven't started yet, it is attempt 1.
         # If we have started, this is a retry, so increment.
         if execution.started_at is not None:
-             execution.attempt += 1
-        
+            execution.attempt += 1
+
         execution.status = ExecutionStatusChoices.RUNNING
         execution.started_at = timezone.now()
         execution.save()
@@ -38,24 +39,25 @@ class Runtime:
             # Resolve Workflow
             workflow = execution.automation.workflows.filter(version=execution.workflow_version).first()
             if not workflow:
-                 # Fallback to live
-                 workflow = execution.automation.workflows.filter(is_live=True).first()
+                # Fallback to live
+                workflow = execution.automation.workflows.filter(is_live=True).first()
 
             if not workflow:
-                 raise ValueError("No workflow definition found for execution")
+                raise ValueError("No workflow definition found for execution")
 
             graph = workflow.graph
             nodes = graph.get("nodes", [])
 
             # Basic Linear Execution (Graph Traversal MVP)
             for node in nodes:
-                 step_id = node.get("id")
-                 if not step_id: continue
+                step_id = node.get("id")
+                if not step_id:
+                    continue
 
-                 step_type = node.get("type", "logging")
-                 config = node.get("config", {})
+                step_type = node.get("type", "logging")
+                config = node.get("config", {})
 
-                 self._run_step(execution, step_id, f"Step {step_id}", step_type, config)
+                self._run_step(execution, step_id, f"Step {step_id}", step_type, config)
 
             execution.status = ExecutionStatusChoices.SUCCESS
             execution.finished_at = timezone.now()
@@ -63,13 +65,13 @@ class Runtime:
 
         except Exception as e:
             logger.exception(f"Execution {execution.id} failed: {e}")
-            print(f"DEBUG: Execution {execution.id} failed: {e}") # For Pytest visibility
+            print(f"DEBUG: Execution {execution.id} failed: {e}")  # For Pytest visibility
 
             # RETRY LOGIC
             max_retries = getattr(settings, "AUTOMATE_MAX_RETRIES", 3)
             if execution.attempt < max_retries:
                 # Calculate Backoff
-                delay = 2 * (2 ** (execution.attempt - 1)) # 2, 4, 8 seconds
+                delay = 2 * (2 ** (execution.attempt - 1))  # 2, 4, 8 seconds
 
                 logger.warning(f"Scheduling retry {execution.attempt + 1} in {delay}s")
 
@@ -87,7 +89,7 @@ class Runtime:
                 # THIS IS A SIMPLIFICATION.
                 # But to satisfy "Implement Retry Logic":
 
-                execution.status = ExecutionStatusChoices.FAILED # Temporary state
+                execution.status = ExecutionStatusChoices.FAILED  # Temporary state
                 execution.error_summary = f"{str(e)} (Retrying...)"
                 execution.save()
 
@@ -106,13 +108,12 @@ class Runtime:
         # We check keys.
         forbidden_keys = {"token", "api_key", "password", "secret", "authorization"}
         # Case insensitive check
-        input_keys = {k.lower() for k in inputs.keys()}
+        input_keys = {k.lower() for k in inputs}
 
         if not settings.DEBUG and not getattr(settings, "AUTOMATE_ALLOW_RAW_SECRETS", False):
             if any(k in input_keys for k in forbidden_keys):
                 raise ValueError(
-                    "Raw credential keys found in inputs. "
-                    "Use ConnectionProfile for secrets management in Production."
+                    "Raw credential keys found in inputs. Use ConnectionProfile for secrets management in Production."
                 )
 
         # Get connector first to use redact()
@@ -128,12 +129,9 @@ class Runtime:
         step = ExecutionStep.objects.create(
             execution=execution,
             node_key=step_id,
-            provider_meta={
-                "step_name": step_name,
-                "connector_slug": connector_slug
-            },
-            input_data=safe_inputs, # Persist REDACTED
-            status=ExecutionStatusChoices.RUNNING
+            provider_meta={"step_name": step_name, "connector_slug": connector_slug},
+            input_data=safe_inputs,  # Persist REDACTED
+            status=ExecutionStatusChoices.RUNNING,
         )
 
         try:
@@ -141,23 +139,19 @@ class Runtime:
             action = inputs.get("action", "default")
             # Also support type="slack.send_message" style?
             # For now execution context:
-            ctx = {
-                "execution_id": str(execution.id),
-                "tenant_id": execution.tenant_id,
-                "context": execution.context
-            }
+            ctx = {"execution_id": str(execution.id), "tenant_id": execution.tenant_id, "context": execution.context}
 
             output = connector.execute(action, inputs, ctx)
 
             # Handle ConnectorResult
             result_data = output.data if hasattr(output, "data") else output
-            
+
             # Redact output
             step.output_data = connector.redact(result_data)
-            
+
             if hasattr(output, "meta"):
                 step.provider_meta.update(output.meta)
-            
+
             step.status = ExecutionStatusChoices.SUCCESS
             step.finished_at = timezone.now()
             step.save()
@@ -168,9 +162,8 @@ class Runtime:
             # Heuristic: Scan string inputs (> 4 chars) and mask them in the message
             if inputs:
                 for k, v in inputs.items():
-                    if isinstance(v, str) and len(v) > 4:
-                        if v in msg:
-                            msg = msg.replace(v, f"***REDACTED({k})***")
+                    if isinstance(v, str) and len(v) > 4 and v in msg:
+                        msg = msg.replace(v, f"***REDACTED({k})***")
 
             step.error_data = {"message": msg}
             step.status = ExecutionStatusChoices.FAILED

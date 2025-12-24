@@ -26,10 +26,7 @@ class EncryptedDBBackend(SecretsBackend):
         - Select current version unless explicit version provided.
         """
         qs = StoredSecret.objects.filter(namespace=ref.namespace, name=ref.name)
-        if ref.version:
-            qs = qs.filter(version=int(ref.version))
-        else:
-            qs = qs.filter(is_current=True)
+        qs = qs.filter(version=int(ref.version)) if ref.version else qs.filter(is_current=True)
         row = qs.first()
 
         if row is None:
@@ -57,10 +54,6 @@ class EncryptedDBBackend(SecretsBackend):
 
             ciphertext = self._kms.encrypt(new_value.encode("utf-8"))
             StoredSecret.objects.create(
-                namespace=namespace,
-                name=name,
-                ciphertext=ciphertext,
-                version=new_ver,
-                is_current=True
+                namespace=namespace, name=name, ciphertext=ciphertext, version=new_ver, is_current=True
             )
             return str(new_ver)

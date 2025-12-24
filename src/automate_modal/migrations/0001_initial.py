@@ -7,7 +7,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = []
@@ -31,9 +30,7 @@ class Migration(migrations.Migration):
                 ("target_id", models.CharField(blank=True, max_length=100, null=True)),
                 (
                     "correlation_id",
-                    models.CharField(
-                        blank=True, db_index=True, max_length=100, null=True
-                    ),
+                    models.CharField(blank=True, db_index=True, max_length=100, null=True),
                 ),
                 ("request_id", models.CharField(blank=True, max_length=100, null=True)),
                 ("meta", models.JSONField(blank=True, default=dict)),
@@ -65,9 +62,7 @@ class Migration(migrations.Migration):
                 ("name", models.CharField(max_length=255)),
                 (
                     "allowed_task_types",
-                    models.JSONField(
-                        default=list, help_text="List of allowed ModalTaskType strings"
-                    ),
+                    models.JSONField(default=list, help_text="List of allowed ModalTaskType strings"),
                 ),
                 (
                     "default_params",
@@ -107,9 +102,7 @@ class Migration(migrations.Migration):
                 ("name", models.CharField(max_length=255)),
                 (
                     "provider_key",
-                    models.CharField(
-                        help_text="Key from the ProviderRegistry", max_length=100
-                    ),
+                    models.CharField(help_text="Key from the ProviderRegistry", max_length=100),
                 ),
                 (
                     "config",
@@ -142,9 +135,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "correlation_id",
-                    models.CharField(
-                        blank=True, db_index=True, max_length=100, null=True
-                    ),
+                    models.CharField(blank=True, db_index=True, max_length=100, null=True),
                 ),
                 ("task_type", models.CharField(max_length=100)),
                 (
@@ -227,8 +218,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AddIndex(
             model_name="modaljob",
-            index=models.Index(
-                fields=["state", "scheduled_at"], name="automate_mo_state_57cc9e_idx"
-            ),
+            index=models.Index(fields=["state", "scheduled_at"], name="automate_mo_state_57cc9e_idx"),
         ),
     ]

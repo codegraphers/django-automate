@@ -12,6 +12,7 @@ class HttpFetchTool:
     SSRF-Safe HTTP Client.
     Blocks private IPs, loopback, metadata services.
     """
+
     name = "http.fetch"
 
     def __init__(self, allow_private: bool = False):
@@ -44,27 +45,34 @@ class HttpFetchTool:
         except Exception:
             return False
 
-    def run(self, url: str, method: str = "GET", headers: dict[str, str] | None = None, body: str | None = None, timeout_s: int = 5) -> dict[str, Any]:
+    def run(
+        self,
+        url: str,
+        method: str = "GET",
+        headers: dict[str, str] | None = None,
+        body: str | None = None,
+        timeout_s: int = 5,
+    ) -> dict[str, Any]:
         if not self._is_safe_url(url):
-             return {"error": "URL blocked by SSRF policy", "status": "blocked"}
+            return {"error": "URL blocked by SSRF policy", "status": "blocked"}
 
         try:
-             resp = requests.request(
-                 method=method,
-                 url=url,
-                 headers=headers,
-                 data=body,
-                 timeout=timeout_s,
-                 allow_redirects=True # Safe if we limit max redirects or use session
-             )
-             # Enforce size limit?
-             if len(resp.content) > 1024 * 1024:
-                  return {"error": "Response too large", "status": "blocked"}
+            resp = requests.request(
+                method=method,
+                url=url,
+                headers=headers,
+                data=body,
+                timeout=timeout_s,
+                allow_redirects=True,  # Safe if we limit max redirects or use session
+            )
+            # Enforce size limit?
+            if len(resp.content) > 1024 * 1024:
+                return {"error": "Response too large", "status": "blocked"}
 
-             return {
-                 "status": resp.status_code,
-                 "text": resp.text[:2000], # Truncate for LLM
-                 "headers": dict(resp.headers)
-             }
+            return {
+                "status": resp.status_code,
+                "text": resp.text[:2000],  # Truncate for LLM
+                "headers": dict(resp.headers),
+            }
         except Exception as e:
-             return {"error": str(e), "status": "failed"}
+            return {"error": str(e), "status": "failed"}

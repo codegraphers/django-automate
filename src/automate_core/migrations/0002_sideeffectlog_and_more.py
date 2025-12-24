@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("automate_core", "0001_initial"),
     ]
@@ -48,9 +47,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="execution",
             name="lease_owner",
-            field=models.CharField(
-                blank=True, db_index=True, max_length=128, null=True
-            ),
+            field=models.CharField(blank=True, db_index=True, max_length=128, null=True),
         ),
         migrations.AddField(
             model_name="execution",
@@ -88,8 +85,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AddIndex(
             model_name="sideeffectlog",
-            index=models.Index(
-                fields=["tenant_id", "key"], name="automate_co_tenant__c87b0d_idx"
-            ),
+            index=models.Index(fields=["tenant_id", "key"], name="automate_co_tenant__c87b0d_idx"),
         ),
     ]

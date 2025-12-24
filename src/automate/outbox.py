@@ -12,19 +12,18 @@ class OutboxStatusChoices(models.TextChoices):
     FAILED = "failed", "Failed"
     DEAD = "dead", "Dead"
 
+
 class Outbox(models.Model):
     """
-    Transactional outbox for Events. 
+    Transactional outbox for Events.
     Events are written here in the same transaction as the business data change.
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     event = models.OneToOneField(Event, on_delete=models.CASCADE, related_name="outbox_entry")
 
     status = models.CharField(
-        max_length=20,
-        choices=OutboxStatusChoices.choices,
-        default=OutboxStatusChoices.PENDING,
-        db_index=True
+        max_length=20, choices=OutboxStatusChoices.choices, default=OutboxStatusChoices.PENDING, db_index=True
     )
 
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)

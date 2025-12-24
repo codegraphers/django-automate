@@ -14,19 +14,13 @@ def test_secrets_redaction_on_persist():
     # Setup
     # Setup
     from django.utils import timezone
+
     event = Event.objects.create(
-        tenant_id="test-tenant",
-        event_type="manual", 
-        source="test",
-        payload={},
-        occurred_at=timezone.now()
+        tenant_id="test-tenant", event_type="manual", source="test", payload={}, occurred_at=timezone.now()
     )
     auto = Automation.objects.create(name="Leak Test", slug="leak-test")
     execution = Execution.objects.create(
-        tenant_id="test-tenant",
-        event=event, 
-        automation=auto, 
-        status=ExecutionStatusChoices.RUNNING
+        tenant_id="test-tenant", event=event, automation=auto, status=ExecutionStatusChoices.RUNNING
     )
 
     runtime = Runtime()
@@ -44,14 +38,16 @@ def test_secrets_redaction_on_persist():
     # Runtime._run_step calls `registry.get_connector(connector_slug)`.
     # So we patch `automate.registry.get_connector`.
 
-    with mock.patch("automate.registry.registry.get_connector", return_value=mock_cls), \
-         mock.patch("django.conf.settings.AUTOMATE_ALLOW_RAW_SECRETS", True, create=True):
+    with (
+        mock.patch("automate.registry.registry.get_connector", return_value=mock_cls),
+        mock.patch("django.conf.settings.AUTOMATE_ALLOW_RAW_SECRETS", True, create=True),
+    ):
         inputs = {"token": "super-secret-123", "other": "value"}
 
-        try:
-             runtime._run_step(execution, "step_1", "Secret Step", "mock-connector", inputs)
-        except Exception:
-             pass # Runtime re-raises or swallows? _run_step re-raises usually.
+        import contextlib
+
+        with contextlib.suppress(Exception):
+            runtime._run_step(execution, "step_1", "Secret Step", "mock-connector", inputs)
 
         # Verify Step
         step = ExecutionStep.objects.get(node_key="step_1")

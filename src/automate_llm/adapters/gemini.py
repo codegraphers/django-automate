@@ -8,15 +8,16 @@ from .base import ProviderAdapter
 
 logger = logging.getLogger(__name__)
 
+
 class GeminiAdapter(ProviderAdapter):
-    code = "google" # or gemini
+    code = "google"  # or gemini
 
     @property
     def capabilities(self) -> dict[str, bool]:
         return {
             "supports_streaming": False,
-            "supports_tools": False, # Simple impl for now
-            "supports_vision": True
+            "supports_tools": False,  # Simple impl for now
+            "supports_vision": True,
         }
 
     def chat(self, req: ChatRequest, *, api_key: str) -> ChatResponse:
@@ -38,8 +39,7 @@ class GeminiAdapter(ProviderAdapter):
             # Generate
             # Note: generation_config could handle temp/max_tokens
             generation_config = genai.types.GenerationConfig(
-                temperature=req.temperature,
-                max_output_tokens=req.max_tokens
+                temperature=req.temperature, max_output_tokens=req.max_tokens
             )
 
             resp = model.generate_content(last_msg, generation_config=generation_config)
@@ -47,7 +47,7 @@ class GeminiAdapter(ProviderAdapter):
             return ChatResponse(
                 content=resp.text,
                 role="model",
-                usage=Usage(input_tokens=0, output_tokens=0), # Usage not trivial in simple response
+                usage=Usage(input_tokens=0, output_tokens=0),  # Usage not trivial in simple response
             )
 
         except Exception as e:

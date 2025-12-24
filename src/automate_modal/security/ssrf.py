@@ -2,6 +2,7 @@
 SSRF-Safe Downloader for Multi-Modal Gateway.
 Optimized for streaming large files to BlobStore.
 """
+
 import ipaddress
 import logging
 import socket
@@ -13,8 +14,10 @@ from automate_modal.contracts import ArtifactRef, BlobStore
 
 logger = logging.getLogger(__name__)
 
+
 class SSRFError(Exception):
     pass
+
 
 BLOCKED_NETWORKS = [
     ipaddress.ip_network("127.0.0.0/8"),
@@ -25,15 +28,14 @@ BLOCKED_NETWORKS = [
     ipaddress.ip_network("0.0.0.0/8"),
 ]
 
+
 def is_ip_blocked(ip_str: str) -> bool:
     try:
         ip = ipaddress.ip_address(ip_str)
-        for network in BLOCKED_NETWORKS:
-            if ip in network:
-                return True
-        return False
+        return any(ip in network for network in BLOCKED_NETWORKS)
     except ValueError:
         return True
+
 
 def resolve_hostname(hostname: str) -> str:
     try:
@@ -42,13 +44,14 @@ def resolve_hostname(hostname: str) -> str:
             raise SSRFError(f"Blocked IP: {ip}")
         return ip
     except socket.gaierror as e:
-        raise SSRFError(f"DNS Resolution failed: {e}")
+        raise SSRFError(f"DNS Resolution failed: {e}") from e
+
 
 def safe_download(
     url: str,
     blob_store: BlobStore,
-    max_size: int = 50 * 1024 * 1024, # 50MB
-    timeout: int = 30
+    max_size: int = 50 * 1024 * 1024,  # 50MB
+    timeout: int = 30,
 ) -> ArtifactRef:
     """
     Downloads URL to BlobStore with SSRF checks.
@@ -63,7 +66,7 @@ def safe_download(
         # Stream request
         with requests.get(url, stream=True, timeout=timeout, allow_redirects=False) as response:
             if response.status_code in (301, 302, 307, 308):
-                 raise SSRFError("Redirects blocked")
+                raise SSRFError("Redirects blocked")
 
             response.raise_for_status()
 
@@ -86,12 +89,7 @@ def safe_download(
             mime = response.headers.get("Content-Type", "application/octet-stream")
             filename = url.split("/")[-1] or "downloaded_file"
 
-            return blob_store.put_bytes(
-                data=content,
-                mime=mime,
-                filename=filename,
-                meta={"source_url": url}
-            )
+            return blob_store.put_bytes(data=content, mime=mime, filename=filename, meta={"source_url": url})
 
     except requests.RequestException as e:
-        raise SSRFError(f"Download failed: {e}")
+        raise SSRFError(f"Download failed: {e}") from e

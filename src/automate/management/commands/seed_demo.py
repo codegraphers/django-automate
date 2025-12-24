@@ -12,24 +12,14 @@ class Command(BaseCommand):
         # 1. Automation
         # 1. Automation
         auto, created = Automation.objects.get_or_create(
-            name="Demo Workflow",
-            defaults={
-                "slug": "demo-workflow",
-                "tenant_id": "demo",
-                "is_active": True
-            }
+            name="Demo Workflow", defaults={"slug": "demo-workflow", "tenant_id": "demo", "is_active": True}
         )
         if not created:
             self.stdout.write("Demo automation already exists.")
             return
 
         # 2. Trigger (Manual)
-        TriggerSpec.objects.create(
-            automation=auto,
-            type=TriggerTypeChoices.MANUAL,
-            filter_config={},
-            is_active=True
-        )
+        TriggerSpec.objects.create(automation=auto, type=TriggerTypeChoices.MANUAL, filter_config={}, is_active=True)
 
         # 3. Workflow
         Workflow.objects.create(
@@ -37,15 +27,8 @@ class Command(BaseCommand):
             version=1,
             is_live=True,
             graph={
-                "nodes": [
-                    {
-                        "id": "step1",
-                        "type": "logging",
-                        "config": {"msg": "Hello from Demo!"},
-                        "next": []
-                    }
-                ],
-                "edges": []
-            }
+                "nodes": [{"id": "step1", "type": "logging", "config": {"msg": "Hello from Demo!"}, "next": []}],
+                "edges": [],
+            },
         )
         self.stdout.write(self.style.SUCCESS("Demo seeded successfully."))

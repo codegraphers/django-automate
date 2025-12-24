@@ -40,21 +40,18 @@ class RunExecutor:
         adapter_cfg: dict[str, Any],
     ) -> ChatResponse:
         adapter_cls = get_adapter_cls(provider_code)
-        adapter = adapter_cls(
-            base_url=adapter_cfg.get("base_url"),
-            headers=adapter_cfg.get("headers")
-        )
+        adapter = adapter_cls(base_url=adapter_cfg.get("base_url"), headers=adapter_cfg.get("headers"))
 
         # 1. Pre-Send Safety Hooks
         if self.pre_send_pipeline:
-             res = self.pre_send_pipeline.process({"req": req}, req)
-             if not res.allowed:
-                 raise LLMError(LLMErrorCode.POLICY_VIOLATION, f"Pre-send safety check failed: {res.rejection_reason}")
-             if res.modified_payload:
-                 # In a real scenario, we'd need to safely cast back to ChatRequest if type changed
-                 # or assume hooks modify in-place/return compatible types.
-                 # For safe skeletal impl, we skip replacing req unless carefully typed.
-                 pass
+            res = self.pre_send_pipeline.process({"req": req}, req)
+            if not res.allowed:
+                raise LLMError(LLMErrorCode.POLICY_VIOLATION, f"Pre-send safety check failed: {res.rejection_reason}")
+            if res.modified_payload:
+                # In a real scenario, we'd need to safely cast back to ChatRequest if type changed
+                # or assume hooks modify in-place/return compatible types.
+                # For safe skeletal impl, we skip replacing req unless carefully typed.
+                pass
 
         # 2. Policy Enforcement & Budget
         tools = list(req.tools)
@@ -70,7 +67,9 @@ class RunExecutor:
             if self.post_receive_pipeline:
                 res = self.post_receive_pipeline.process({"req": req, "resp": resp}, resp)
                 if not res.allowed:
-                    raise LLMError(LLMErrorCode.POLICY_VIOLATION, f"Post-receive safety check failed: {res.rejection_reason}")
+                    raise LLMError(
+                        LLMErrorCode.POLICY_VIOLATION, f"Post-receive safety check failed: {res.rejection_reason}"
+                    )
 
             # 5. Output Validation (Structural)
             # Check schema if one was implied by the request (e.g. response_format)
@@ -78,8 +77,8 @@ class RunExecutor:
 
             # 6. Tool Validation (if tools used in response)
             if resp.tool_calls:
-                 # Check against allowlist in policy/registry
-                 pass
+                # Check against allowlist in policy/registry
+                pass
 
             return resp
 

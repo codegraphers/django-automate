@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("rag", "0001_initial"),
     ]
@@ -62,9 +61,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "is_default",
-                    models.BooleanField(
-                        default=False, help_text="Use this model if none specified"
-                    ),
+                    models.BooleanField(default=False, help_text="Use this model if none specified"),
                 ),
                 ("created_at", models.DateTimeField(auto_now_add=True)),
                 ("updated_at", models.DateTimeField(auto_now=True)),

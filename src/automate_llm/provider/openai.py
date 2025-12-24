@@ -48,7 +48,7 @@ class OpenAIProvider(LLMProvider):
             "temperature": request.temperature,
             "max_tokens": request.max_tokens,
             "stop": request.stop,
-            "stream": False # Streaming not supported in this simplified interface yet
+            "stream": False,  # Streaming not supported in this simplified interface yet
         }
 
         response = client.chat.completions.create(**params)
@@ -59,10 +59,10 @@ class OpenAIProvider(LLMProvider):
             usage={
                 "prompt_tokens": response.usage.prompt_tokens,
                 "completion_tokens": response.usage.completion_tokens,
-                "total_tokens": response.usage.total_tokens
+                "total_tokens": response.usage.total_tokens,
             },
             model_used=response.model,
-            raw_response=response.model_dump()
+            raw_response=response.model_dump(),
         )
 
     def count_tokens(self, text: str, model: str) -> int:

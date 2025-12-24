@@ -10,25 +10,6 @@ from django.utils.translation import gettext_lazy as _
 # These models are now canonical in `src/automate_core`.
 # We import them here to maintain backward compatibility for imports,
 # but the database tables are now owned by `automate_core`.
-
-from automate_core.models import (
-    Automation,
-    Workflow,
-    Trigger,
-    Trigger as TriggerSpec, # Alias
-    TriggerTypeChoices,     # Enum
-    RuleSpec as Rule,        # Alias
-    Event,
-    OutboxItem as Outbox,    # Alias
-    Execution,
-    StepRun as ExecutionStep,
-    Artifact,
-    Policy,
-    # Enums
-    ExecutionStatusChoices,
-    OutboxStatusChoices
-)
-
 # Re-export choices if needed for compat (though explicit import is better)
 # EventStatusChoices = Event.Status # If we implemented it that way
 # For now, relying on consumers to update or use string values which match.
@@ -36,6 +17,7 @@ from automate_core.models import (
 # =============================================================================
 # LEGACY / FEATURE MODELS (To be moved to respective packages)
 # =============================================================================
+
 
 class LLMProvider(models.Model):
     slug = models.SlugField(max_length=50, unique=True, primary_key=True)
@@ -46,9 +28,10 @@ class LLMProvider(models.Model):
     def __str__(self):
         return self.name
 
+
 class LLMModelConfig(models.Model):
     provider = models.ForeignKey(LLMProvider, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100) # e.g. gpt-4
+    name = models.CharField(max_length=100)  # e.g. gpt-4
     is_default = models.BooleanField(default=False, db_index=True)
 
     # Default params
@@ -64,6 +47,7 @@ class LLMModelConfig(models.Model):
         default_marker = " (default)" if self.is_default else ""
         return f"{self.provider.slug}/{self.name}{default_marker}"
 
+
 class Prompt(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     slug = models.SlugField(max_length=255, unique=True)
@@ -72,6 +56,7 @@ class Prompt(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class PromptVersion(models.Model):
     prompt = models.ForeignKey(Prompt, related_name="versions", on_delete=models.CASCADE)
@@ -85,7 +70,7 @@ class PromptVersion(models.Model):
             ("rejected", "Rejected"),
             ("archived", "Archived"),
         ],
-        default="draft"
+        default="draft",
     )
 
     system_template = models.TextField(blank=True)
@@ -95,13 +80,20 @@ class PromptVersion(models.Model):
     output_schema = models.JSONField(default=dict, blank=True)
 
     # P0: First-class model config
-    default_model_config = models.ForeignKey(LLMModelConfig, null=True, blank=True, on_delete=models.SET_NULL, help_text="Default model to use for this prompt version")
+    default_model_config = models.ForeignKey(
+        LLMModelConfig,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        help_text="Default model to use for this prompt version",
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ("prompt", "version")
         ordering = ["-version"]
+
 
 # Workflow moved to automate_core
 # from automate_core.models import Workflow (already imported above)
@@ -112,6 +104,7 @@ class ConnectionProfile(models.Model):
     Stores credentials and config for a connector, scoped by environment.
     Track D Requirement.
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True)
@@ -132,39 +125,50 @@ class ConnectionProfile(models.Model):
     def __str__(self):
         return f"{self.name} ({self.connector_slug})"
 
+
 class PromptStatusChoices(models.TextChoices):
     DRAFT = "draft", "Draft"
     APPROVED = "approved", "Approved"
     REJECTED = "rejected", "Rejected"
     ARCHIVED = "archived", "Archived"
 
+
 class PromptRelease(models.Model):
     """
     Map a specific PromptVersion to an Environment.
     Track E Requirement.
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     prompt_version = models.ForeignKey("PromptVersion", on_delete=models.CASCADE)
     environment = models.CharField(max_length=50, choices=[("dev", "Dev"), ("staging", "Staging"), ("prod", "Prod")])
 
     # P0: Environment-specific model override
-    model_config = models.ForeignKey(LLMModelConfig, null=True, blank=True, on_delete=models.SET_NULL, help_text="Override model for this environment")
+    model_config = models.ForeignKey(
+        LLMModelConfig,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        help_text="Override model for this environment",
+    )
 
     deployed_at = models.DateTimeField(auto_now_add=True)
-    deployed_by = models.CharField(max_length=255, null=True) # User reference
+    deployed_by = models.CharField(max_length=255, null=True)  # User reference
 
     class Meta:
         unique_together = ["prompt_version", "environment"]
+
 
 class BudgetPolicy(models.Model):
     """
     Quota enforcement for LLM usage.
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
 
-    scope = models.CharField(max_length=50, default="global") # global, user, automation
+    scope = models.CharField(max_length=50, default="global")  # global, user, automation
 
     # Limits
     max_tokens_per_day = models.IntegerField(default=100000)
@@ -184,13 +188,13 @@ class Template(models.Model):
     Reusable templates for messages (Slack Blocks, Emails, etc).
     Track C Requirement.
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
-    type = models.CharField(max_length=50, choices=[
-        ("slack_blocks", "Slack Blocks (JSON)"),
-        ("jinja", "Jinja2 Text"),
-        ("json", "JSON Payload")
-    ])
+    type = models.CharField(
+        max_length=50,
+        choices=[("slack_blocks", "Slack Blocks (JSON)"), ("jinja", "Jinja2 Text"), ("json", "JSON Payload")],
+    )
 
     # The actual template content
     content = models.TextField(help_text="Jinja2 supported. Use {{ event.payload.id }} etc.")
@@ -211,6 +215,7 @@ class Template(models.Model):
 # MCP Server Integration
 # ============================================================================
 
+
 class MCPAuthTypeChoices(models.TextChoices):
     NONE = "none", _("No Authentication")
     BEARER = "bearer", _("Bearer Token")
@@ -220,10 +225,11 @@ class MCPAuthTypeChoices(models.TextChoices):
 class MCPServer(models.Model):
     """
     External MCP (Model Context Protocol) server registration.
-    
+
     MCP servers expose tools that can be discovered and invoked by the chat assistant.
     This model stores the server configuration and caches discovered tools.
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100, help_text="Display name for this MCP server")
     slug = models.SlugField(unique=True, help_text="Unique identifier (e.g., 'shopify-mcp')")
@@ -236,17 +242,13 @@ class MCPServer(models.Model):
         max_length=20,
         choices=MCPAuthTypeChoices.choices,
         default=MCPAuthTypeChoices.NONE,
-        help_text="How to authenticate with this server"
+        help_text="How to authenticate with this server",
     )
     auth_secret_ref = models.CharField(
-        max_length=255,
-        blank=True,
-        help_text="Secret reference (e.g., 'env:MCP_SHOPIFY_TOKEN' or raw token)"
+        max_length=255, blank=True, help_text="Secret reference (e.g., 'env:MCP_SHOPIFY_TOKEN' or raw token)"
     )
     auth_header_name = models.CharField(
-        max_length=100,
-        default="Authorization",
-        help_text="Header name for API key auth (e.g., 'X-API-Key')"
+        max_length=100, default="Authorization", help_text="Header name for API key auth (e.g., 'X-API-Key')"
     )
 
     # Status
@@ -272,10 +274,11 @@ class MCPServer(models.Model):
 class MCPTool(models.Model):
     """
     Discovered tool from an MCP server.
-    
+
     Tools are cached locally after discovery to avoid repeated API calls.
     Each tool has a name, description, and input schema.
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     server = models.ForeignKey(MCPServer, on_delete=models.CASCADE, related_name="tools")
 
@@ -302,4 +305,3 @@ class MCPTool(models.Model):
 
     def __str__(self):
         return f"{self.server.slug}/{self.name}"
-

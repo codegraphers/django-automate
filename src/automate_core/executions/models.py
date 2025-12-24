@@ -14,11 +14,13 @@ class ExecutionStatusChoices(models.TextChoices):
     FAILED = "failed", _("Failed")
     CANCELED = "canceled", _("Canceled")
 
+
 class Execution(models.Model):
     """
     State of a single run of an automation.
     Canonical root of runtime state.
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     tenant_id = models.CharField(max_length=64, db_index=True)
 
@@ -34,7 +36,9 @@ class Execution(models.Model):
     workflow_version = models.IntegerField(default=1)
 
     # Lifecycle
-    status = models.CharField(max_length=20, choices=ExecutionStatusChoices.choices, default=ExecutionStatusChoices.QUEUED)
+    status = models.CharField(
+        max_length=20, choices=ExecutionStatusChoices.choices, default=ExecutionStatusChoices.QUEUED
+    )
     attempt = models.IntegerField(default=1)
 
     # Context (Variables state)
@@ -65,15 +69,17 @@ class Execution(models.Model):
             models.UniqueConstraint(fields=["tenant_id", "automation", "event"], name="unique_execution_per_event")
         ]
 
+
 class StepRun(models.Model):
     """
     Log of a single step (node) within an execution.
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     execution = models.ForeignKey(Execution, related_name="steps", on_delete=models.CASCADE)
 
     # Identity
-    node_key = models.CharField(max_length=255) # ID in the graph
+    node_key = models.CharField(max_length=255)  # ID in the graph
 
     # Data
     input_data = models.JSONField(default=dict)
@@ -99,14 +105,16 @@ class StepRun(models.Model):
         # One result per node per execution (strict uniqueness for safety)
         unique_together = ["execution", "node_key"]
         indexes = [
-             models.Index(fields=["status", "lease_expires_at"]),
+            models.Index(fields=["status", "lease_expires_at"]),
         ]
+
 
 class SideEffectLog(models.Model):
     """
-    Registry of external side-effects to guarantee exactly-once behavior 
+    Registry of external side-effects to guarantee exactly-once behavior
     even when steps are retried (SRE Requirement).
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     tenant_id = models.CharField(max_length=64, db_index=True)
 
@@ -125,6 +133,7 @@ class SideEffectLog(models.Model):
         indexes = [
             models.Index(fields=["tenant_id", "key"]),
         ]
+
 
 # Alias for backward compat if needed, or just remove
 ExecutionStep = StepRun

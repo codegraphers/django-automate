@@ -6,6 +6,7 @@ from .models import Event, Outbox
 
 logger = logging.getLogger(__name__)
 
+
 class EventIngestionService:
     @staticmethod
     def ingest_event(
@@ -20,7 +21,6 @@ class EventIngestionService:
         Ingests an event transactionally, creating both the Event record
         and the Outbox entry to ensure it gets processed.
         P0.3: Robust idempotency using DB constraints.
-        """
         """
         from django.utils import timezone  # noqa: PLC0415
 
@@ -43,7 +43,7 @@ class EventIngestionService:
                     payload=payload,
                     context=context,
                     idempotency_key=idempotency_key,
-                    occurred_at=timezone.now()
+                    occurred_at=timezone.now(),
                 )
 
                 # Canonical OutboxItem (Generic)
@@ -52,8 +52,8 @@ class EventIngestionService:
                     tenant_id=tenant_id,
                     kind="event",
                     payload={"event_id": str(event.id)},
-                    status="PENDING", # Default
-                    priority=100
+                    status="PENDING",  # Default
+                    priority=100,
                 )
 
                 logger.info(f"Event ingested: {event.id} ({event_type})")

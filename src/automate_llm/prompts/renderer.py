@@ -8,6 +8,7 @@ class StrictUndefined(Undefined):
     def __str__(self):
         raise ValueError(f"Undefined variable in prompt: {self._undefined_name}")
 
+
 class PromptRenderer:
     """
     Renders prompts using a secured Jinja2 environment.
@@ -17,7 +18,7 @@ class PromptRenderer:
     def __init__(self):
         self.env = SandboxedEnvironment(
             undefined=StrictUndefined,
-            autoescape=False # Prompts are text, usually don't need HTML escaping unless for web view
+            autoescape=False,  # Prompts are text, usually don't need HTML escaping unless for web view
         )
 
     def render(self, template_text: str, variables: dict[str, Any]) -> str:

@@ -11,10 +11,12 @@ class HookResult:
     modified_payload: Any | None = None
     rejection_reason: str | None = None
 
+
 class SafetyHook(ABC):
     @abstractmethod
     def run(self, ctx: dict[str, Any], payload: Any) -> HookResult:
         pass
+
 
 class SafetyPipeline:
     def __init__(self, hooks: list[SafetyHook]) -> None:

@@ -24,7 +24,8 @@ class QueryExecutor:
             columns = [col[0] for col in cursor.description]
             results = cursor.fetchall()
 
-            return [dict(zip(columns, row)) for row in results]
+            return [dict(zip(columns, row, strict=False)) for row in results]
+
 
 class SchemaIntrospector:
     @staticmethod

@@ -12,21 +12,23 @@ class EventStatusChoices(models.TextChoices):
     DONE = "done", _("Done")
     FAILED = "failed", _("Failed")
 
+
 class Event(models.Model):
     """
     Immutable canonical event log.
     Single source of truth for all ingress facts.
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     tenant_id = models.CharField(max_length=64, db_index=True)
 
     # Classification
     event_type = models.CharField(max_length=128, db_index=True)  # e.g. "order.created"
-    source = models.CharField(max_length=64) # "webhook", "signal", "schedule", "admin"
+    source = models.CharField(max_length=64)  # "webhook", "signal", "schedule", "admin"
 
     # Traceability
     correlation_id = models.UUIDField(default=uuid.uuid4, db_index=True)
-    trigger_id = models.IntegerField(null=True, blank=True) # pointer to TriggerSpec (Legacy/Optional?)
+    trigger_id = models.IntegerField(null=True, blank=True)  # pointer to TriggerSpec (Legacy/Optional?)
 
     # Timing
     occurred_at = models.DateTimeField()
@@ -35,7 +37,7 @@ class Event(models.Model):
 
     # Data
     payload = models.JSONField(default=dict)
-    payload_hash = models.CharField(max_length=64) # SHA256 of canonical payload
+    payload_hash = models.CharField(max_length=64)  # SHA256 of canonical payload
 
     # Idempotency
     idempotency_key = models.CharField(max_length=128, null=True, blank=True)
@@ -45,10 +47,7 @@ class Event(models.Model):
 
     # Lifecycle
     status = models.CharField(
-        max_length=20,
-        choices=EventStatusChoices.choices,
-        default=EventStatusChoices.NEW,
-        db_index=True
+        max_length=20, choices=EventStatusChoices.choices, default=EventStatusChoices.NEW, db_index=True
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -58,7 +57,7 @@ class Event(models.Model):
         indexes = [
             models.Index(fields=["tenant_id", "occurred_at"]),
             models.Index(fields=["tenant_id", "event_type", "occurred_at"]),
-            models.Index(fields=["status", "created_at"]), # For worker polling
+            models.Index(fields=["status", "created_at"]),  # For worker polling
         ]
         # Unique constraint for idempotency
         constraints = [

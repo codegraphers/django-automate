@@ -5,6 +5,7 @@ import uuid
 # This ensures it propagates in async/sync flows appropriately in Python 3.7+
 _trace_id_ctx = contextvars.ContextVar("trace_id", default=None)
 
+
 def get_trace_id() -> str:
     """Returns the current trace_id, creating one if missing."""
     tid = _trace_id_ctx.get()
@@ -17,8 +18,10 @@ def get_trace_id() -> str:
         return val
     return tid
 
+
 def set_trace_id(trace_id: str) -> None:
     _trace_id_ctx.set(trace_id)
+
 
 def dictionary_tid_is_set(tid) -> bool:
     return tid is not None

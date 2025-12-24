@@ -9,6 +9,7 @@ class ThrottleBucket(models.Model):
     tokens = models.FloatField(default=0.0)
     last_refill = models.DateTimeField(auto_now_add=True)
 
+
 class ThrottleStore:
     """
     Token bucket implementation using DB atomic upserts.
@@ -21,8 +22,7 @@ class ThrottleStore:
         with transaction.atomic():
             # Select for update to lock the bucket
             bucket, created = ThrottleBucket.objects.select_for_update().get_or_create(
-                key=key,
-                defaults={"tokens": capacity, "last_refill": now}
+                key=key, defaults={"tokens": capacity, "last_refill": now}
             )
 
             if created:

@@ -9,8 +9,9 @@ from automate_modal.registry import ProviderBase
 
 logger = logging.getLogger(__name__)
 
+
 class OpenAITTSCapability(Capability):
-    def __init__(self, parent: 'OpenAIAudioProvider'):
+    def __init__(self, parent: "OpenAIAudioProvider"):
         self.task_type = ModalTaskType.AUDIO_TTS
         self.parent = parent
 
@@ -22,16 +23,13 @@ class OpenAITTSCapability(Capability):
         api_key = self.parent.resolve_api_key(ctx)
 
         url = "https://api.openai.com/v1/audio/speech"
-        headers = {
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json"
-        }
+        headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
 
         payload = {
             "model": req.get("model", "tts-1"),
             "input": req.get("text"),
             "voice": req.get("voice", "alloy"),
-            "response_format": req.get("format", "mp3")
+            "response_format": req.get("format", "mp3"),
         }
 
         response = requests.post(url, headers=headers, json=payload, stream=True)
@@ -50,7 +48,7 @@ class OpenAITTSCapability(Capability):
             data=audio_data,
             mime=mime,
             filename=f"{ctx.request_id}.{payload['response_format']}",
-            meta={"provider": "openai", "task": "tts", "voice": payload["voice"]}
+            meta={"provider": "openai", "task": "tts", "voice": payload["voice"]},
         )
 
         return ModalResult(
@@ -58,15 +56,16 @@ class OpenAITTSCapability(Capability):
             outputs={"message": "Audio generated"},
             artifacts=[artifact],
             usage={"chars": len(payload["input"])},
-            raw_provider_meta={}
+            raw_provider_meta={},
         )
 
     def stream(self, req: dict[str, Any], ctx: ExecutionCtx) -> Iterable[StreamEvent]:
         # OpenAI supports chunked transfer encoding for audio
         raise NotImplementedError("Audio streaming not implemented yet")
 
+
 class OpenAIWhisperCapability(Capability):
-    def __init__(self, parent: 'OpenAIAudioProvider'):
+    def __init__(self, parent: "OpenAIAudioProvider"):
         self.task_type = ModalTaskType.AUDIO_STT
         self.parent = parent
 
@@ -80,7 +79,7 @@ class OpenAIWhisperCapability(Capability):
         # Resolve Input
         if "audio_artifact_uri" in req:
             file_obj = ctx.blob.open(req["audio_artifact_uri"])
-            filename = "audio.mp3" # simplistic
+            filename = "audio.mp3"  # simplistic
         elif "audio_url" in req:
             # Download temp?
             # For simplicity let's assume artifact usage primarily
@@ -90,13 +89,8 @@ class OpenAIWhisperCapability(Capability):
         headers = {"Authorization": f"Bearer {api_key}"}
 
         # Multipart form data
-        files = {
-            "file": (filename, file_obj, "audio/mpeg")
-        }
-        data = {
-            "model": req.get("model", "whisper-1"),
-            "response_format": "verbose_json"
-        }
+        files = {"file": (filename, file_obj, "audio/mpeg")}
+        data = {"model": req.get("model", "whisper-1"), "response_format": "verbose_json"}
 
         response = requests.post(url, headers=headers, files=files, data=data)
         response.raise_for_status()
@@ -111,20 +105,17 @@ class OpenAIWhisperCapability(Capability):
             data=transcript_bytes,
             mime="text/plain",
             filename=f"{ctx.request_id}_transcript.txt",
-            meta={"source": "whisper"}
+            meta={"source": "whisper"},
         )
 
         return ModalResult(
             task_type=self.task_type,
-            outputs={
-                "text": text,
-                "segments_count": len(segments),
-                "duration": result_json.get("duration")
-            },
+            outputs={"text": text, "segments_count": len(segments), "duration": result_json.get("duration")},
             artifacts=[trans_artifact],
             usage={"duration": result_json.get("duration")},
-            raw_provider_meta=result_json
+            raw_provider_meta=result_json,
         )
+
 
 class OpenAIAudioProvider(ProviderBase):
     key = "openai-audio"
@@ -138,7 +129,7 @@ class OpenAIAudioProvider(ProviderBase):
             "required": ["api_key_ref"],
             "properties": {
                 "api_key_ref": {"type": "string"},
-            }
+            },
         }
 
     @property

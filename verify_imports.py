@@ -51,7 +51,6 @@ modules = [
     "automate_llm.tools",
     "automate_llm.pricing",
     "automate_llm.validation",
-
     # Connectors Framework
     "automate_connectors.errors",
     "automate_connectors.types",
@@ -60,7 +59,6 @@ modules = [
     # Connectors
     "automate_connectors.execution",
     "automate_connectors.registry",
-
     # LLM Integrations
     "automate_llm.tools.http",
     "automate_llm.tools.bridge",
@@ -68,7 +66,6 @@ modules = [
     "automate_llm.tools.types",
     "automate_llm.adapters.anthropic",
     "automate_llm.adapters.gemini",
-
     # Interop
     "automate_interop.flags",
     "automate_interop.orchestrators.contracts",
@@ -80,10 +77,8 @@ modules = [
     "automate_interop.sync.drift",
     "automate_interop.models",
     "automate_interop.admin",
-
     # Connectors
     "automate_connectors.adapters.slack",
-
     # Observability
     "automate_observability.context",
     "automate_observability.middleware",
@@ -91,7 +86,6 @@ modules = [
     "automate_observability.models",
     "automate_observability.metrics",
     "automate_observability.service",
-
     # Authoring Studio
     "automate_studio.views.wizard",
     "automate_studio.views.tester",

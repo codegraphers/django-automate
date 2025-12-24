@@ -10,6 +10,7 @@ from .conf import llm_settings
 
 _SECRETREF_RE = re.compile(r"secretref://[A-Za-z0-9._/\-]+")
 
+
 def redact_obj(obj: Any, *, max_field_len: int = 2000) -> Any:
     """
     Redact common secret patterns and truncate long fields.
@@ -45,12 +46,14 @@ def redact_obj(obj: Any, *, max_field_len: int = 2000) -> Any:
 
     return str(obj)[:max_field_len] + "…"
 
+
 @dataclass
 class RedactionEngine:
     """
     Future: integrate with SecretsResolver and structured PII detection.
     For now: deterministic generic redaction + truncation.
     """
+
     def redact_payload(self, payload: Any) -> Any:
         cfg = llm_settings()
         red = cfg["POLICY"]["redaction"]

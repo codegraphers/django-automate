@@ -8,6 +8,7 @@ class DataChatSession(models.Model):
     """
     A chat session for a user. One session per user, or one per browser session.
     """
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     session_key = models.CharField(max_length=64, db_index=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -24,6 +25,7 @@ class DataChatMessage(models.Model):
     """
     Individual messages in a chat session.
     """
+
     ROLE_CHOICES = [
         ("user", "User"),
         ("assistant", "Assistant"),
@@ -41,11 +43,7 @@ class DataChatMessage(models.Model):
 
     # Link to LLM audit log
     llm_request = models.ForeignKey(
-        "automate_llm.LLMRequest",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="datachat_messages"
+        "automate_llm.LLMRequest", on_delete=models.SET_NULL, null=True, blank=True, related_name="datachat_messages"
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -68,55 +66,34 @@ import uuid
 class ChatEmbed(models.Model):
     """
     Configuration for an embeddable chat widget.
-    
+
     Each embed has its own API key, allowed domains, and customization settings.
     Embed code can be generated and placed on external websites.
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100, help_text="Display name for this embed config")
 
     # Security
     api_key = models.CharField(
-        max_length=64,
-        unique=True,
-        editable=False,
-        help_text="API key for authenticating embed requests"
+        max_length=64, unique=True, editable=False, help_text="API key for authenticating embed requests"
     )
-    allowed_domains = models.JSONField(
-        default=list,
-        help_text='List of allowed domains ["example.com", "*.myapp.io"]'
-    )
+    allowed_domains = models.JSONField(default=list, help_text='List of allowed domains ["example.com", "*.myapp.io"]')
 
     # Access Control
-    require_auth = models.BooleanField(
-        default=False,
-        help_text="Require user login (redirects to your auth)"
-    )
-    allowed_tables = models.JSONField(
-        default=list,
-        blank=True,
-        help_text="Restrict to specific tables (empty = all)"
-    )
+    require_auth = models.BooleanField(default=False, help_text="Require user login (redirects to your auth)")
+    allowed_tables = models.JSONField(default=list, blank=True, help_text="Restrict to specific tables (empty = all)")
 
     # Rate Limiting
-    rate_limit_per_minute = models.IntegerField(
-        default=10,
-        help_text="Max requests per minute per session"
-    )
-    max_queries_per_session = models.IntegerField(
-        default=100,
-        help_text="Max total queries per session"
-    )
+    rate_limit_per_minute = models.IntegerField(default=10, help_text="Max requests per minute per session")
+    max_queries_per_session = models.IntegerField(default=100, help_text="Max total queries per session")
 
     # Customization
     theme = models.JSONField(
-        default=dict,
-        blank=True,
-        help_text='{"primaryColor": "#2563eb", "title": "Data Assistant"}'
+        default=dict, blank=True, help_text='{"primaryColor": "#2563eb", "title": "Data Assistant"}'
     )
     welcome_message = models.TextField(
-        default="Hello! Ask me anything about your data.",
-        help_text="Initial message shown in the widget"
+        default="Hello! Ask me anything about your data.", help_text="Initial message shown in the widget"
     )
 
     # Status
@@ -141,4 +118,3 @@ class ChatEmbed(models.Model):
     def get_embed_code(self, base_url: str = "") -> str:
         """Generate the embed code snippet."""
         return f'''<script src="{base_url}/datachat/embed/v1/{self.id}/widget.js" data-key="{self.api_key}"></script>'''
-

@@ -9,6 +9,7 @@ This exposes:
 - GET /tools - Returns list of available tools
 - POST /execute - Executes a tool
 """
+
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
@@ -18,39 +19,32 @@ MOCK_TOOLS = [
         "description": "Get current weather for a city",
         "inputSchema": {
             "type": "object",
-            "properties": {
-                "city": {"type": "string", "description": "City name"}
-            },
-            "required": ["city"]
-        }
+            "properties": {"city": {"type": "string", "description": "City name"}},
+            "required": ["city"],
+        },
     },
     {
         "name": "calculate",
         "description": "Perform a mathematical calculation",
         "inputSchema": {
             "type": "object",
-            "properties": {
-                "expression": {"type": "string", "description": "Math expression to evaluate"}
-            },
-            "required": ["expression"]
-        }
+            "properties": {"expression": {"type": "string", "description": "Math expression to evaluate"}},
+            "required": ["expression"],
+        },
     },
     {
         "name": "get_stock_price",
         "description": "Get the current stock price for a ticker symbol",
         "inputSchema": {
             "type": "object",
-            "properties": {
-                "symbol": {"type": "string", "description": "Stock ticker symbol (e.g., AAPL, GOOGL)"}
-            },
-            "required": ["symbol"]
-        }
-    }
+            "properties": {"symbol": {"type": "string", "description": "Stock ticker symbol (e.g., AAPL, GOOGL)"}},
+            "required": ["symbol"],
+        },
+    },
 ]
 
 
 class MCPHandler(BaseHTTPRequestHandler):
-
     def do_OPTIONS(self):
         """Handle CORS preflight."""
         self.send_response(200)
@@ -87,12 +81,7 @@ class MCPHandler(BaseHTTPRequestHandler):
                 city = args.get("city", "Unknown")
                 result = {
                     "success": True,
-                    "data": {
-                        "city": city,
-                        "temperature": "22°C",
-                        "condition": "Sunny",
-                        "humidity": "45%"
-                    }
+                    "data": {"city": city, "temperature": "22°C", "condition": "Sunny", "humidity": "45%"},
                 }
             elif tool_name == "calculate":
                 expr = args.get("expression", "0")
@@ -108,11 +97,7 @@ class MCPHandler(BaseHTTPRequestHandler):
                 prices = {"AAPL": 185.23, "GOOGL": 141.56, "MSFT": 378.90}
                 result = {
                     "success": True,
-                    "data": {
-                        "symbol": symbol,
-                        "price": prices.get(symbol.upper(), 100.00),
-                        "currency": "USD"
-                    }
+                    "data": {"symbol": symbol, "price": prices.get(symbol.upper(), 100.00), "currency": "USD"},
                 }
             else:
                 result = {"success": False, "error": f"Unknown tool: {tool_name}"}

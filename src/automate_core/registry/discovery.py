@@ -1,13 +1,10 @@
 from __future__ import annotations
 
 import sys
+from importlib.metadata import entry_points
 
 from .base import Registry, T
 
-if sys.version_info < (3, 10):
-    from importlib_metadata import entry_points
-else:
-    from importlib.metadata import entry_points
 
 def autodiscover(registry: Registry[T], group: str) -> None:
     """
@@ -15,7 +12,7 @@ def autodiscover(registry: Registry[T], group: str) -> None:
     """
     # Defensive for different python versions of importlib.metadata
     eps = entry_points()
-    if sys.version_info >= (3, 10) and hasattr(eps, 'select'):
+    if sys.version_info >= (3, 10) and hasattr(eps, "select"):
         # 3.10+ API
         matches = eps.select(group=group)
     else:

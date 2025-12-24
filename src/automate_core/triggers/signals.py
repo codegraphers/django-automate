@@ -26,13 +26,8 @@ def model_signal_handler(sender: Any, instance: models.Model, created: bool, **k
         for field in instance._meta.fields:
             if field.name not in ["password", "secret"]:
                 val = getattr(instance, field.name)
-                payload[field.name] = str(val) # simplify
+                payload[field.name] = str(val)  # simplify
     except Exception:
         pass
 
-    emit_event(
-        tenant_id=tenant_id,
-        event_type=event_type,
-        source="signal",
-        payload=payload
-    )
+    emit_event(tenant_id=tenant_id, event_type=event_type, source="signal", payload=payload)

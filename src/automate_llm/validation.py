@@ -10,6 +10,7 @@ class ValidationResult:
     ok: bool
     errors: list[str]
 
+
 class OutputValidator:
     def validate_structure(self, response_text: str, schema: dict[str, Any] | None) -> ValidationResult:
         """
@@ -21,7 +22,7 @@ class OutputValidator:
 
         try:
             # 1. Parse JSON
-            data = json.loads(response_text)
+            json.loads(response_text)
 
             # 2. Schema check (stub for now, assuming jsonschema package available)
             # from jsonschema import validate, ValidationError
@@ -32,7 +33,7 @@ class OutputValidator:
 
             return ValidationResult(ok=True, errors=[])
         except json.JSONDecodeError as e:
-             return ValidationResult(ok=False, errors=[f"Invalid JSON: {str(e)}"])
+            return ValidationResult(ok=False, errors=[f"Invalid JSON: {str(e)}"])
 
     def validate_tool_calls(self, tool_calls: list[Any], allowed_tools: list[str]) -> ValidationResult:
         """

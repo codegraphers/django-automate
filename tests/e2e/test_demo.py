@@ -16,11 +16,7 @@ def test_demo_flow_e2e():
     call_command("seed_demo")
 
     # 2. Trigger Manual Event
-    event = EventIngestionService.ingest_event(
-        event_type="manual",
-        source="e2e",
-        payload={"foo": "bar"}
-    )
+    event = EventIngestionService.ingest_event(event_type="manual", source="e2e", payload={"foo": "bar"})
 
     # 3. Dispatch
     dispatcher = Dispatcher()

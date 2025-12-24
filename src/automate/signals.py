@@ -6,13 +6,15 @@ from .ingestion import EventIngestionService
 # We can allow users to configure WHICH models to watch via settings
 # AUTOMATE_WATCHED_MODELS = ['app.ModelName', ...]
 
+
 def get_watched_models():
-    watched = getattr(settings, 'AUTOMATE_WATCHED_MODELS', [])
+    watched = getattr(settings, "AUTOMATE_WATCHED_MODELS", [])
     for model_path in watched:
         try:
             yield apps.get_model(model_path)
         except LookupError:
             continue
+
 
 def model_change_handler(sender, instance, created, **kwargs):
     # Retrieve watched models dynamically to avoid import-time side effects
@@ -29,7 +31,7 @@ def model_change_handler(sender, instance, created, **kwargs):
         "pk": str(instance.pk),
         "action": action,
         # TODO: Serialize instance data (carefully)
-        "data": str(instance)
+        "data": str(instance),
     }
 
     # P0.3: Deterministic Idempotency Key
@@ -45,7 +47,8 @@ def model_change_handler(sender, instance, created, **kwargs):
         event_type=f"model.{model_name}.{action}",
         source="django_signal",
         payload=payload,
-        idempotency_key=idempotency_key
+        idempotency_key=idempotency_key,
     )
+
 
 # Note: Actual connection of this signal happens in apps.py based on settings

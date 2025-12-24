@@ -1,6 +1,5 @@
-
 class DataChatRegistry:
-    _registry = {} # { Model: ConfigDict }
+    _registry = {}  # { Model: ConfigDict }
 
     @classmethod
     def register(cls, model_class, include_fields=None, exclude_fields=None, tags=None):
@@ -14,10 +13,7 @@ class DataChatRegistry:
         all_fields = [f.name for f in meta.get_fields() if not f.is_relation and not f.many_to_many]
 
         allowed_fields = []
-        if include_fields:
-            allowed_fields = include_fields
-        else:
-            allowed_fields = all_fields
+        allowed_fields = include_fields or all_fields
 
         if exclude_fields:
             allowed_fields = [f for f in allowed_fields if f not in exclude_fields]
@@ -26,7 +22,7 @@ class DataChatRegistry:
             "model": model_class,
             "table_name": table_name,
             "fields": allowed_fields,
-            "tags": tags or []
+            "tags": tags or [],
         }
         return model_class
 
@@ -43,9 +39,11 @@ class DataChatRegistry:
 
         return tables
 
+
 # Decorator shortcut
 def register_model(include_fields=None, exclude_fields=None, tags=None):
     def _wrapper(model_class):
         DataChatRegistry.register(model_class, include_fields, exclude_fields, tags)
         return model_class
+
     return _wrapper

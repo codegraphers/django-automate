@@ -7,4 +7,5 @@ This app provides:
 - Retrieval API gateway
 - Provider interfaces for pluggable backends
 """
-default_app_config = 'rag.apps.RagConfig'
+
+default_app_config = "rag.apps.RagConfig"

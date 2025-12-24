@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = []
@@ -72,9 +71,7 @@ class Migration(migrations.Migration):
                         fields=["tenant_id", "enabled", "priority"],
                         name="automate_go_tenant__9191db_idx",
                     ),
-                    django.contrib.postgres.indexes.GinIndex(
-                        fields=["index_terms"], name="rule_terms_gin"
-                    ),
+                    django.contrib.postgres.indexes.GinIndex(fields=["index_terms"], name="rule_terms_gin"),
                 ],
                 "unique_together": {("tenant_id", "name")},
             },

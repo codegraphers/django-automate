@@ -1,12 +1,12 @@
-
 # Simple hardcoded pricing table for MVP
 # In production, fetch from DB or external service
 PRICING_TABLE_USD_PER_1K = {
-    "gpt-4-turbo": (0.01, 0.03), # (Input, Output)
+    "gpt-4-turbo": (0.01, 0.03),  # (Input, Output)
     "gpt-3.5-turbo": (0.001, 0.002),
     "claude-3-opus": (0.015, 0.075),
     "claude-3-sonnet": (0.003, 0.015),
 }
+
 
 class CostTracker:
     def calculate_cost(self, model: str, input_tokens: int, output_tokens: int) -> float:

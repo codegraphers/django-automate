@@ -8,7 +8,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = []
@@ -389,9 +388,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "filter_config",
-                    models.JSONField(
-                        default=dict, help_text="JSONLogic/filtering rules"
-                    ),
+                    models.JSONField(default=dict, help_text="JSONLogic/filtering rules"),
                 ),
                 ("priority", models.IntegerField(default=0)),
                 ("is_active", models.BooleanField(default=True)),
@@ -480,9 +477,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "mime_type",
-                    models.CharField(
-                        default="application/octet-stream", max_length=128
-                    ),
+                    models.CharField(default="application/octet-stream", max_length=128),
                 ),
                 ("size_bytes", models.BigIntegerField(default=0)),
                 ("sha256", models.CharField(db_index=True, max_length=64)),
@@ -514,29 +509,21 @@ class Migration(migrations.Migration):
                         fields=["tenant_id", "execution"],
                         name="automate_co_tenant__9efd6d_idx",
                     ),
-                    models.Index(
-                        fields=["sha256"], name="automate_co_sha256_01fd0f_idx"
-                    ),
+                    models.Index(fields=["sha256"], name="automate_co_sha256_01fd0f_idx"),
                 ],
             },
         ),
         migrations.AddIndex(
             model_name="trigger",
-            index=models.Index(
-                fields=["type", "event_type"], name="automate_co_type_40fb60_idx"
-            ),
+            index=models.Index(fields=["type", "event_type"], name="automate_co_type_40fb60_idx"),
         ),
         migrations.AddIndex(
             model_name="execution",
-            index=models.Index(
-                fields=["tenant_id", "status"], name="automate_co_tenant__1ef932_idx"
-            ),
+            index=models.Index(fields=["tenant_id", "status"], name="automate_co_tenant__1ef932_idx"),
         ),
         migrations.AddIndex(
             model_name="execution",
-            index=models.Index(
-                fields=["status", "started_at"], name="automate_co_status_09ca17_idx"
-            ),
+            index=models.Index(fields=["status", "started_at"], name="automate_co_status_09ca17_idx"),
         ),
         migrations.AddConstraint(
             model_name="execution",

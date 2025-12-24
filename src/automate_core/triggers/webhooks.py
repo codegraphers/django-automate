@@ -25,7 +25,7 @@ class WebhookIngestor:
         try:
             payload = request.JSON
         except Exception:
-            payload = {} # or raw body if spec indicates
+            payload = {}  # or raw body if spec indicates
 
         # 3. Emit Event
         event_type = trigger.config.get("event_type", "webhook.received")
@@ -36,7 +36,7 @@ class WebhookIngestor:
             source="webhook",
             payload=payload,
             trigger_id=trigger.id,
-            idempotency_key=request.headers.get("X-Idempotency-Key")
+            idempotency_key=request.headers.get("X-Idempotency-Key"),
         )
 
     def _verify_signature(self, request: HttpRequest, trigger: TriggerSpec) -> None:
@@ -49,7 +49,7 @@ class WebhookIngestor:
             # Scale-safe fail closed if secret missing
             raise PermissionDenied("Signing secret not resolved")
 
-        signature = request.headers.get("X-Signature") # Simplified common case
+        signature = request.headers.get("X-Signature")  # Simplified common case
         if not signature:
             raise PermissionDenied("Missing signature header")
 

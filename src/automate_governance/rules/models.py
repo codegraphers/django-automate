@@ -21,7 +21,6 @@ class RuleSpec(models.Model):
         indexes = [
             # Standard index
             models.Index(fields=["tenant_id", "enabled", "priority"]),
-
             # GIN Index for fast term matching (Postgres only)
             # Check availability or use conditional migration in real app
             # GinIndex(fields=["index_terms"], name="rule_terms_gin"),

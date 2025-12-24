@@ -5,6 +5,7 @@ from sqlglot import exp
 class SQLPolicyException(Exception):
     pass
 
+
 class SQLPolicy:
     def __init__(self, allowed_tables: list[str], max_rows: int = 1000):
         self.allowed_tables = set(allowed_tables)
@@ -50,11 +51,11 @@ class SQLPolicy:
                     # Complex limit (e.g. ALL or expression) -> overwrite for safety
                     should_enforce_max = True
             except Exception:
-                 # Fallback -> overwrite
-                 should_enforce_max = True
+                # Fallback -> overwrite
+                should_enforce_max = True
 
         if should_enforce_max:
-             # Use the builder API which handles replacement correctly
-             expression = expression.limit(self.max_rows)
+            # Use the builder API which handles replacement correctly
+            expression = expression.limit(self.max_rows)
 
         return expression.sql()

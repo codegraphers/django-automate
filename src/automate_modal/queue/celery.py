@@ -1,6 +1,7 @@
 """
 Celery adapter for JobQueue.
 """
+
 from typing import Any
 
 from celery import current_app
@@ -21,22 +22,19 @@ class CeleryJobQueue(JobQueue):
         # We pass job_id as the primary arg to the task
         job_id = payload.get("job_id")
         if not job_id:
-             raise ValueError("Payload must contain job_id")
+            raise ValueError("Payload must contain job_id")
 
         # Signature
         sig = current_app.signature(
-            job_name, # "automate_modal.tasks.execute_job"
+            job_name,  # "automate_modal.tasks.execute_job"
             args=[job_id],
             priority=priority,
-            immutable=True
+            immutable=True,
         )
 
-        if delay_s > 0:
-            result = sig.apply_async(countdown=delay_s)
-        else:
-            result = sig.apply_async()
+        result = sig.apply_async(countdown=delay_s) if delay_s > 0 else sig.apply_async()
 
-        return str(result.id) # This is celery task id, distinct from our internal job_id
+        return str(result.id)  # This is celery task id, distinct from our internal job_id
 
     def cancel(self, job_id: str) -> None:
         # Canceling via celery usually requires the celery task ID, not our internal job ID.

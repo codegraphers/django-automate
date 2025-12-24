@@ -2,6 +2,7 @@
 Environment-based Secrets Resolver.
 Resolves `env://VAR_NAME` using os.environ.
 """
+
 import os
 
 from automate_modal.contracts import SecretsResolver
@@ -15,7 +16,7 @@ class EnvSecretsResolver(SecretsResolver):
             return ""
 
         if secret_ref.startswith("env://"):
-            var_name = secret_ref[len("env://"):]
+            var_name = secret_ref[len("env://") :]
             val = os.environ.get(var_name)
             if val is None:
                 # Log warning? For now just return empty or raise
@@ -23,7 +24,7 @@ class EnvSecretsResolver(SecretsResolver):
             return val
 
         if secret_ref.startswith("plain://"):
-            return secret_ref[len("plain://"):]
+            return secret_ref[len("plain://") :]
 
         # Fallback or strict?
         # For security, we might want to default to treating as plain text only if whitelisted,

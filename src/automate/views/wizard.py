@@ -9,6 +9,7 @@ class AutomationWizardView:
     A step-by-step wizard for creating Automations.
     Track C requirement.
     """
+
     def as_view(self, request):
         if request.method == "POST":
             return self.post(request)
@@ -34,15 +35,11 @@ class AutomationWizardView:
             TriggerSpec.objects.create(
                 automation=auto,
                 type=trigger_type,
-                config={} # Empty config for now, would be wizard step 2
+                config={},  # Empty config for now, would be wizard step 2
             )
 
             # 3. Create Draft Workflow
-            Workflow.objects.create(
-                automation=auto,
-                version=1,
-                graph={"nodes": [], "edges": []}
-            )
+            Workflow.objects.create(automation=auto, version=1, graph={"nodes": [], "edges": []})
 
             messages.success(request, f"Automation '{name}' created!")
             return redirect(f"/admin/automate/automation/{auto.id}/change/")

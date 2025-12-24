@@ -14,6 +14,7 @@ class ProviderAdapter(ABC):
       - never contain policy logic
       - normalize exceptions into LLMError
     """
+
     code: str  # e.g. "openai"
 
     def __init__(self, *, base_url: str | None = None, headers: dict[str, str] | None = None) -> None:

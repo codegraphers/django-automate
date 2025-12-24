@@ -8,7 +8,7 @@ class AuditLogEntry(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
 
     actor = models.CharField(max_length=255, help_text="User or Service Account", db_index=True)
-    action = models.CharField(max_length=100, db_index=True) # e.g. WORKFLOW_PUBLISHED
+    action = models.CharField(max_length=100, db_index=True)  # e.g. WORKFLOW_PUBLISHED
 
     # Polymorphic-ish reference
     object_type = models.CharField(max_length=100, blank=True)

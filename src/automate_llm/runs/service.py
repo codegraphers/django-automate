@@ -17,6 +17,7 @@ ConnectionProfile = None
 
 _DEFAULT_STORE: RunStore | None = None
 
+
 class RunService:
     def __init__(
         self,
@@ -26,7 +27,7 @@ class RunService:
         executor: RunExecutor | None = None,
         policy: LLMPolicyEngine | None = None,
         redaction: RedactionEngine | None = None,
-        secret_resolver: Any | None = None
+        secret_resolver: Any | None = None,
     ) -> None:
         self.store = store
         self.compiler = compiler or PromptCompiler()
@@ -38,11 +39,11 @@ class RunService:
         # Lazy load secret resolver if not provided
         if not self.secret_resolver:
             try:
-                from automate_governance.secrets.resolver import SecretResolver as ResolverCls
-                self.secret_resolver = ResolverCls()
+                from automate_governance.secrets.resolver import SecretResolver as Resolver
+
+                self.secret_resolver = Resolver()
             except ImportError:
                 pass
-
 
     def create_run(
         self,
@@ -75,7 +76,7 @@ class RunService:
         self,
         *,
         run_id: int,
-        provider_profile: str, # passed from create_run context usually
+        provider_profile: str,  # passed from create_run context usually
         model: str,
         prompt_ver: PromptVersionSnapshot | None,
         inputs: dict[str, Any] | None,
@@ -90,17 +91,17 @@ class RunService:
             # Convention: provider_profile string match a ConnectionProfile.name in DB
             # If not found, fall back to settings or error.
 
-            provider_code = "openai" # Default fallback
+            provider_code = "openai"  # Default fallback
             api_key = ""
             provider_cfg = {}
 
             # Lazy import model to avoid AppRegistryNotReady
             try:
-                from automate_governance.models import ConnectionProfile as ConnProfileModel
+                from automate_governance.models import ConnectionProfile as conn_profile_model
             except ImportError:
-                ConnProfileModel = None
+                conn_profile_model = None
 
-            if self.secret_resolver and ConnProfileModel:
+            if self.secret_resolver and conn_profile_model:
                 # Lookup profile
                 try:
                     profile = ConnProfileModel.objects.get(name=provider_profile)
@@ -111,14 +112,14 @@ class RunService:
                     provider_cfg = profile.config or {}
                     provider_code = provider_cfg.get("provider", "openai")
                 except ConnProfileModel.DoesNotExist:
-                     # Check settings.LLM.PROVIDERS for static config (legacy/dev mode)
-                     pass
+                    # Check settings.LLM.PROVIDERS for static config (legacy/dev mode)
+                    pass
 
             # Simple fallback for skeleton if no DB profile found (e.g. initial dev)
             if not api_key:
-                 # Attempt to load from settings directly (e.g. AUTOMATE.LLM.PROFILES)
-                 # keeping it simple for now, assume openai
-                 pass
+                # Attempt to load from settings directly (e.g. AUTOMATE.LLM.PROFILES)
+                # keeping it simple for now, assume openai
+                pass
 
             # 2. Compile Prompt
             if prompt_ver:
@@ -185,9 +186,11 @@ class RunService:
         # TODO: integrate with Outbox (preferred) and/or Celery
         raise NotImplementedError
 
+
 # Convenience functions
 def llm_call(**kwargs: Any) -> Any:
     raise NotImplementedError
+
 
 def llm_run_async(**kwargs: Any) -> Any:
     raise NotImplementedError

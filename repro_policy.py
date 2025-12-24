@@ -1,4 +1,3 @@
-
 from automate_datachat.sqlpolicy import SQLPolicy
 
 try:

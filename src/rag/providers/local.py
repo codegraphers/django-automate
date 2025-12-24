@@ -10,6 +10,7 @@ Configured in KnowledgeSource.config:
     "embedding_model": "slug-of-model"
 }
 """
+
 import logging
 from typing import Any
 
@@ -23,6 +24,7 @@ from .base import HealthStatus, QueryContext, RetrievalResult
 
 logger = logging.getLogger(__name__)
 
+
 class LocalRetrievalProvider:
     """
     Retrieval provider that uses local/internal resources.
@@ -33,15 +35,7 @@ class LocalRetrievalProvider:
     key = "local_index"
     name = "Local Index (Milvus/PGVector)"
 
-    def query(
-        self,
-        *,
-        query: str,
-        filters: dict[str, Any],
-        top_k: int,
-        ctx: QueryContext
-    ) -> RetrievalResult:
-
+    def query(self, *, query: str, filters: dict[str, Any], top_k: int, ctx: QueryContext) -> RetrievalResult:
         # 1. Get Embedding Model
         model_key = ctx.source_config.get("embedding_model")
         if not model_key:
@@ -59,7 +53,7 @@ class LocalRetrievalProvider:
         embedder = OpenAIEmbeddings(
             api_key=api_key,
             model=model.config.get("model_name", "text-embedding-ada-002"),
-            api_base=model.config.get("api_base")
+            api_base=model.config.get("api_base"),
         )
 
         # 2. Embed Query
@@ -85,33 +79,30 @@ class LocalRetrievalProvider:
 
         # 5. Format Results
         return RetrievalResult(
-            results=[{
-                "text": r.text,
-                "score": r.score,
-                "source_id": r.source_id,
-                "metadata": r.metadata
-            } for r in results],
-            latency_ms=0, # Calculated by caller usually
+            results=[
+                {"text": r.text, "score": r.score, "source_id": r.source_id, "metadata": r.metadata} for r in results
+            ],
+            latency_ms=0,  # Calculated by caller usually
             trace_id=ctx.trace_id,
-            total_count=len(results)
+            total_count=len(results),
         )
 
     def health(self, *, ctx: QueryContext) -> HealthStatus:
         # Check vector store health
         try:
-             # Basic connectivity check logic similar to query but without embedding
-             store_type = ctx.source_config.get("vector_store", "milvus")
-             if store_type == "milvus":
-                 uri = ctx.source_config.get("milvus_uri") or resolve_secret_ref(ctx.source_config.get("milvus_uri_ref"))
-                 store = MilvusStore(uri=uri) # minimal init
-                 health = store.health()
-             elif store_type == "pgvector":
-                  store = PGVectorStore("test")
-                  health = store.health()
-             else:
-                 return HealthStatus(healthy=False, message="Unknown store config")
+            # Basic connectivity check logic similar to query but without embedding
+            store_type = ctx.source_config.get("vector_store", "milvus")
+            if store_type == "milvus":
+                uri = ctx.source_config.get("milvus_uri") or resolve_secret_ref(ctx.source_config.get("milvus_uri_ref"))
+                store = MilvusStore(uri=uri)  # minimal init
+                health = store.health()
+            elif store_type == "pgvector":
+                store = PGVectorStore("test")
+                health = store.health()
+            else:
+                return HealthStatus(healthy=False, message="Unknown store config")
 
-             return HealthStatus(healthy=health["healthy"], message=health["message"])
+            return HealthStatus(healthy=health["healthy"], message=health["message"])
 
         except Exception as e:
             return HealthStatus(healthy=False, message=str(e))

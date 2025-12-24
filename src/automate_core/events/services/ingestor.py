@@ -13,6 +13,7 @@ from ..models import Event
 
 logger = logging.getLogger(__name__)
 
+
 class EventIngestor:
     """
     Atomic service to ingest events and trigger automations reliably.
@@ -22,14 +23,15 @@ class EventIngestor:
     - strict matching logic
     """
 
-    def ingest(self,
-               tenant_id: str,
-               event_type: str,
-               source: str,
-               payload: dict,
-               idempotency_key: str = None,
-               context: dict = None) -> Event:
-
+    def ingest(
+        self,
+        tenant_id: str,
+        event_type: str,
+        source: str,
+        payload: dict,
+        idempotency_key: str = None,
+        context: dict = None,
+    ) -> Event:
         # 1. Normalize
         correlation_id = context.get("correlation_id") if context else str(uuid.uuid4())
         if not context:
@@ -53,7 +55,7 @@ class EventIngestor:
                     idempotency_key=idempotency_key,
                     context=context,
                     occurred_at=timezone.now(),
-                    status="dispatched"
+                    status="dispatched",
                 )
 
                 # 4. Strictly Match Triggers
@@ -63,7 +65,7 @@ class EventIngestor:
                     automation__tenant_id=tenant_id,
                     automation__is_active=True,
                     is_active=True,
-                    event_type=event_type # Exact match or implement pattern match logic
+                    event_type=event_type,  # Exact match or implement pattern match logic
                 ).select_related("automation")
 
                 dispatch_count = 0
@@ -79,10 +81,10 @@ class EventIngestor:
                         event=event,
                         automation=trigger.automation,
                         trigger=trigger,
-                        workflow_version=1, # TODO: Get HEAD version
+                        workflow_version=1,  # TODO: Get HEAD version
                         status=ExecutionStatusChoices.QUEUED,
                         correlation_id=correlation_id,
-                        context=context
+                        context=context,
                     )
 
                     # 6. Create Outbox Item (The Reliability Promise)
@@ -91,7 +93,7 @@ class EventIngestor:
                         kind="execution_queued",
                         payload={"execution_id": str(execution.id)},
                         status="PENDING",
-                        priority=trigger.priority
+                        priority=trigger.priority,
                     )
                     dispatch_count += 1
 
@@ -113,7 +115,4 @@ class EventIngestor:
 
         # TODO: Implement robust JSONLogic evaluation
         # For now, minimal key-value match
-        for k, v in trigger.filter_config.items():
-            if payload.get(k) != v:
-                return False
-        return True
+        return all(payload.get(k) == v for k, v in trigger.filter_config.items())

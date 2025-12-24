@@ -2,6 +2,7 @@
 Local Filesystem Blob Store.
 Stores artifacts in MEDIA_ROOT/modal_artifacts/
 """
+
 import uuid
 from typing import Any
 
@@ -34,15 +35,15 @@ class LocalBlobStore(BlobStore):
             uri=full_uri,
             mime=mime,
             size_bytes=len(data),
-            sha256="", # TODO: calculate
-            meta=meta
+            sha256="",  # TODO: calculate
+            meta=meta,
         )
 
     def open(self, uri: str) -> Any:
         if not uri.startswith(self.PREFIX):
             raise ValueError(f"Invalid URI scheme for LocalBlobStore: {uri}")
 
-        path = uri[len(self.PREFIX):]
+        path = uri[len(self.PREFIX) :]
         if not default_storage.exists(path):
             raise FileNotFoundError(f"Artifact not found: {path}")
 
@@ -54,6 +55,6 @@ class LocalBlobStore(BlobStore):
         if not uri.startswith(self.PREFIX):
             raise ValueError(f"Invalid URI scheme: {uri}")
 
-        path = uri[len(self.PREFIX):]
+        path = uri[len(self.PREFIX) :]
         # Assuming MEDIA_URL is configured
         return f"{settings.MEDIA_URL}{path}"

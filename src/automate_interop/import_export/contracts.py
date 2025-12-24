@@ -10,11 +10,13 @@ class WorkflowSanitizer(ABC):
         """Strip credentials and unsafe data."""
         raise NotImplementedError
 
+
 class Importer(ABC):
     @abstractmethod
     def parse(self, external_json: dict[str, Any]) -> dict[str, Any]:
         """Convert external JSON to internal model structure."""
         raise NotImplementedError
+
 
 class Exporter(ABC):
     @abstractmethod

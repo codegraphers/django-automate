@@ -14,12 +14,14 @@ class CompletionRequest:
     stop: list[str] | None = None
     stream: bool = False
 
+
 @dataclass
 class CompletionResponse:
     content: str
     usage: dict[str, int]  # {"prompt_tokens": 10, "completion_tokens": 5, "total_tokens": 15}
     model_used: str
     raw_response: dict[str, Any]
+
 
 class LLMProvider(ABC):
     """

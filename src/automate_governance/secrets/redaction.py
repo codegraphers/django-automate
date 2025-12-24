@@ -4,7 +4,12 @@ from collections.abc import Iterable, Mapping
 from typing import Any
 
 DEFAULT_SENSITIVE_KEYS = {
-    "api_key", "token", "secret", "password", "authorization", "cookie",
+    "api_key",
+    "token",
+    "secret",
+    "password",
+    "authorization",
+    "cookie",
 }
 
 

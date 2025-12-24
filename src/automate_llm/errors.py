@@ -15,6 +15,7 @@ class LLMErrorCode(str, Enum):
     CANCELLED = "LLM_CANCELLED"
     INTERNAL_ERROR = "LLM_INTERNAL_ERROR"
 
+
 @dataclass
 class LLMError(Exception):
     code: LLMErrorCode

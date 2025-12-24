@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("automate_llm", "0002_add_llmrequest_context_fields"),
     ]
@@ -13,9 +12,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="llmrequest",
             name="input_payload",
-            field=models.JSONField(
-                blank=True, help_text="Messages sent to LLM", null=True
-            ),
+            field=models.JSONField(blank=True, help_text="Messages sent to LLM", null=True),
         ),
         migrations.AddField(
             model_name="llmrequest",

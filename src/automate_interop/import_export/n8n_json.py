@@ -13,7 +13,7 @@ class N8nJsonAdapter(Importer, Exporter):
     def parse(self, external_json: dict[str, Any]) -> dict[str, Any]:
         # Validate structure (nodes, connections)
         if "nodes" not in external_json or "connections" not in external_json:
-             raise ValueError("Invalid n8n JSON: missing nodes/connections")
+            raise ValueError("Invalid n8n JSON: missing nodes/connections")
 
         safe_json = self.sanitizer.sanitize(external_json)
 

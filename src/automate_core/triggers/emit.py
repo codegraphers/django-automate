@@ -13,10 +13,12 @@ from django.utils import timezone
 # But following the "Trigger System" task, "emit.py" is listed.
 # I will implement the Emission logic assuming the Event model structure.
 
+
 def compute_payload_hash(payload: dict[str, Any]) -> str:
     """Canonical SHA256 hash of payload."""
     canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
 
 def emit_event(
     *,
@@ -25,7 +27,7 @@ def emit_event(
     source: str,
     payload: dict[str, Any],
     trigger_id: int | None = None,
-    idempotency_key: str | None = None
+    idempotency_key: str | None = None,
 ) -> Any:
     """
     Emit a canonical event to the DB (and subsequently Outbox).
@@ -37,7 +39,7 @@ def emit_event(
 
     # Dedupe check (if idempotency_key provided)
     if idempotency_key and Event.objects.filter(tenant_id=tenant_id, idempotency_key=idempotency_key).exists():
-        return None # Already exists
+        return None  # Already exists
 
     event = Event.objects.create(
         tenant_id=tenant_id,
@@ -47,7 +49,7 @@ def emit_event(
         payload=payload,
         payload_hash=payload_hash,
         idempotency_key=idempotency_key,
-        occurred_at=timezone.now()
+        occurred_at=timezone.now(),
     )
 
     # TODO: Enqueue to Outbox (kind="event_dispatch")

@@ -6,18 +6,20 @@ from django.db import models
 class PolicyScopeChoices(models.TextChoices):
     GLOBAL = "global", "Global"
     AUTOMATION = "automation", "Automation"
-    ENDPOINT = "endpoint", "Endpoint" # e.g. a specific LLM endpoint
+    ENDPOINT = "endpoint", "Endpoint"  # e.g. a specific LLM endpoint
     USER = "user", "User"
+
 
 class Policy(models.Model):
     """
     Governance rules: RBAC, Budget, Rate Limits, Redaction.
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     tenant_id = models.CharField(max_length=64, db_index=True)
 
     scope = models.CharField(max_length=32, choices=PolicyScopeChoices.choices, default=PolicyScopeChoices.GLOBAL)
-    target_id = models.UUIDField(null=True, blank=True, db_index=True) # ID of Automation or User
+    target_id = models.UUIDField(null=True, blank=True, db_index=True)  # ID of Automation or User
 
     name = models.CharField(max_length=255)
 

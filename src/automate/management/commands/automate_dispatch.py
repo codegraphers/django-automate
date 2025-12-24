@@ -19,5 +19,5 @@ class Command(BaseCommand):
                 self.stdout.write("Stopping...")
                 break
             except Exception as e:
-                 self.stderr.write(f"Error: {e}")
-                 time.sleep(5)
+                self.stderr.write(f"Error: {e}")
+                time.sleep(5)

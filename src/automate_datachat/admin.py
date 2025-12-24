@@ -22,6 +22,7 @@ class DataChatMessageAdmin(admin.ModelAdmin):
 
     def short_content(self, obj):
         return obj.content[:50] + "..." if len(obj.content) > 50 else obj.content
+
     short_content.short_description = "Content"
 
 
@@ -33,31 +34,27 @@ class ChatEmbedAdmin(admin.ModelAdmin):
     readonly_fields = ["id", "api_key", "embed_code_display", "created_at", "updated_at"]
 
     fieldsets = [
-        (None, {
-            "fields": ["name", "enabled"]
-        }),
-        ("Security", {
-            "fields": ["api_key", "allowed_domains", "require_auth"]
-        }),
-        ("Limits", {
-            "fields": ["rate_limit_per_minute", "max_queries_per_session", "allowed_tables"],
-            "classes": ["collapse"]
-        }),
-        ("Customization", {
-            "fields": ["theme", "welcome_message"]
-        }),
-        ("Embed Code", {
-            "fields": ["embed_code_display"],
-            "description": "Copy this code to embed the widget on your site."
-        }),
+        (None, {"fields": ["name", "enabled"]}),
+        ("Security", {"fields": ["api_key", "allowed_domains", "require_auth"]}),
+        (
+            "Limits",
+            {"fields": ["rate_limit_per_minute", "max_queries_per_session", "allowed_tables"], "classes": ["collapse"]},
+        ),
+        ("Customization", {"fields": ["theme", "welcome_message"]}),
+        (
+            "Embed Code",
+            {"fields": ["embed_code_display"], "description": "Copy this code to embed the widget on your site."},
+        ),
     ]
 
     def api_key_preview(self, obj):
         return f"{obj.api_key[:12]}..." if obj.api_key else "-"
+
     api_key_preview.short_description = "API Key"
 
     def domain_count(self, obj):
         return len(obj.allowed_domains) if obj.allowed_domains else "All"
+
     domain_count.short_description = "Domains"
 
     def embed_code_display(self, obj):
@@ -65,8 +62,7 @@ class ChatEmbedAdmin(admin.ModelAdmin):
             return "Save first to generate embed code"
         code = obj.get_embed_code("https://yoursite.com")
         return format_html(
-            '<textarea readonly style="width:100%; height:60px; font-family:monospace;">{}</textarea>',
-            code
+            '<textarea readonly style="width:100%; height:60px; font-family:monospace;">{}</textarea>', code
         )
-    embed_code_display.short_description = "Embed Code"
 
+    embed_code_display.short_description = "Embed Code"

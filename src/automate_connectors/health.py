@@ -12,10 +12,12 @@ class HealthCheckResult:
     error: str | None = None
     meta: dict[str, Any] = None
 
+
 class ConnectionHealthCheck(ABC):
     """
     Contract for probing the liveness/validity of a connection profile.
     """
+
     @abstractmethod
     def check(self, config: dict[str, Any], secrets: dict[str, Any]) -> HealthCheckResult:
         raise NotImplementedError

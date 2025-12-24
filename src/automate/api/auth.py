@@ -21,4 +21,5 @@ def require_api_key(view_func):
             return JsonResponse({"error": "Invalid API Key"}, status=403)
 
         return view_func(request, *args, **kwargs)
+
     return _wrapped_view

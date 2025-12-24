@@ -11,8 +11,9 @@ class OutboxStatusChoices(models.TextChoices):
     DONE = "DONE", _("Done")
     CANCELLED = "CANCELLED", _("Cancelled")
 
+
 class OutboxItem(models.Model):
-    STATUS_CHOICES = OutboxStatusChoices.choices # Backward compat alias
+    STATUS_CHOICES = OutboxStatusChoices.choices  # Backward compat alias
 
     tenant_id = models.CharField(max_length=64, db_index=True)
     status = models.CharField(max_length=32, choices=OutboxStatusChoices.choices, default=OutboxStatusChoices.PENDING)

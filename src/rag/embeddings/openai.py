@@ -1,6 +1,7 @@
 """
 OpenAI Embeddings Implementation
 """
+
 import logging
 
 from .base import Embeddings
@@ -12,6 +13,7 @@ except ImportError:
     OpenAI = None
 
 logger = logging.getLogger(__name__)
+
 
 class OpenAIEmbeddings(Embeddings):
     """OpenAI embeddings wrapper."""
@@ -41,7 +43,7 @@ class OpenAIEmbeddings(Embeddings):
         if self._dimension is None:
             # Lazy load dimension by embedding a dummy token
             # Or use known dimensions for standard models
-            if self.model == "text-embedding-ada-002" or self.model == "text-embedding-3-small":
+            if self.model in {"text-embedding-ada-002", "text-embedding-3-small"}:
                 self._dimension = 1536
             elif self.model == "text-embedding-3-large":
                 self._dimension = 3072

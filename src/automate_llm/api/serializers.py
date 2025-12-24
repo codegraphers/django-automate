@@ -4,6 +4,7 @@ from rest_framework import serializers
 class JsonObjectField(serializers.JSONField):
     pass
 
+
 class LlmRunCreateSerializer(serializers.Serializer):
     mode = serializers.ChoiceField(choices=["sync", "async"], default="async")
     provider_profile = serializers.CharField(required=False, default="llm:default")

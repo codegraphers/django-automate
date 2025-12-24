@@ -2,8 +2,8 @@ from django.apps import AppConfig
 
 
 class ExampleProjectConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'example_project'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "example_project"
 
     def ready(self):
         # Register models for Data Chat
@@ -16,13 +16,9 @@ class ExampleProjectConfig(AppConfig):
             DataChatRegistry.register(
                 User,
                 include_fields=["id", "username", "email", "date_joined", "is_staff", "is_active", "last_login"],
-                tags=["auth"]
+                tags=["auth"],
             )
-            DataChatRegistry.register(
-                Group,
-                include_fields=["id", "name"],
-                tags=["auth"]
-            )
+            DataChatRegistry.register(Group, include_fields=["id", "name"], tags=["auth"])
 
             # Automate models
             from automate.models import (  # noqa: PLC0415
@@ -37,67 +33,81 @@ class ExampleProjectConfig(AppConfig):
             )
 
             DataChatRegistry.register(
-                LLMProvider,
-                include_fields=["slug", "name", "base_url", "api_key_env_var"],
-                tags=["llm", "config"]
+                LLMProvider, include_fields=["slug", "name", "base_url", "api_key_env_var"], tags=["llm", "config"]
             )
             DataChatRegistry.register(
                 LLMModelConfig,
                 include_fields=["id", "name", "provider_id", "is_default", "max_tokens", "temperature"],
-                tags=["llm", "config"]
+                tags=["llm", "config"],
             )
             DataChatRegistry.register(
-                Prompt,
-                include_fields=["id", "slug", "name", "description"],
-                tags=["llm", "prompts"]
+                Prompt, include_fields=["id", "slug", "name", "description"], tags=["llm", "prompts"]
             )
             DataChatRegistry.register(
                 PromptVersion,
                 include_fields=["id", "prompt_id", "version", "status", "created_at"],
-                tags=["llm", "prompts"]
+                tags=["llm", "prompts"],
             )
             DataChatRegistry.register(
                 Automation,
                 include_fields=["id", "name", "slug", "enabled", "environment", "created_at"],
-                tags=["automation"]
+                tags=["automation"],
             )
             DataChatRegistry.register(
                 Execution,
-                include_fields=["id", "automation_id", "status", "started_at", "finished_at", "duration_ms",
-                                "attempts"],
-                tags=["automation", "execution"]
+                include_fields=[
+                    "id",
+                    "automation_id",
+                    "status",
+                    "started_at",
+                    "finished_at",
+                    "duration_ms",
+                    "attempts",
+                ],
+                tags=["automation", "execution"],
             )
             DataChatRegistry.register(
                 Event,
                 include_fields=["id", "event_type", "source", "status", "created_at"],
-                tags=["automation", "events"]
+                tags=["automation", "events"],
             )
             DataChatRegistry.register(
-                BudgetPolicy,
-                include_fields=["id", "name", "max_monthly_usd", "enabled"],
-                tags=["governance"]
+                BudgetPolicy, include_fields=["id", "name", "max_monthly_usd", "enabled"], tags=["governance"]
             )
 
             # LLM Request logs
             from automate_llm.governance.models import LLMRequest  # noqa: PLC0415
+
             DataChatRegistry.register(
                 LLMRequest,
-                include_fields=["id", "provider", "model", "prompt_slug", "purpose", "status", "input_tokens",
-                                "output_tokens", "latency_ms", "cost_usd", "created_at"],
-                tags=["llm", "logs"]
+                include_fields=[
+                    "id",
+                    "provider",
+                    "model",
+                    "prompt_slug",
+                    "purpose",
+                    "status",
+                    "input_tokens",
+                    "output_tokens",
+                    "latency_ms",
+                    "cost_usd",
+                    "created_at",
+                ],
+                tags=["llm", "logs"],
             )
 
             # DataChat models
             from automate_datachat.models import DataChatMessage, DataChatSession  # noqa: PLC0415
+
             DataChatRegistry.register(
                 DataChatSession,
                 include_fields=["id", "user_id", "session_key", "created_at", "updated_at"],
-                tags=["datachat"]
+                tags=["datachat"],
             )
             DataChatRegistry.register(
                 DataChatMessage,
                 include_fields=["id", "session_id", "role", "content", "sql", "created_at", "llm_request_id"],
-                tags=["datachat"]
+                tags=["datachat"],
             )
 
         except ImportError as e:
@@ -110,8 +120,10 @@ class ExampleProjectConfig(AppConfig):
             # SQL Generator Prompt - IMPROVED
             sql_prompt, created = Prompt.objects.get_or_create(
                 slug="datachat_sql_generator",
-                defaults={"name": "Data Chat SQL Generator",
-                          "description": "Generates SQL from natural language questions"}
+                defaults={
+                    "name": "Data Chat SQL Generator",
+                    "description": "Generates SQL from natural language questions",
+                },
             )
 
             # Always update to version 4 with session context support
@@ -177,14 +189,14 @@ Q: "Show me all products" → TOOL_CALL: {"tool": "listProducts", "args": {}}
 Q: "What tables do you have?" → I can help with user data, system settings, and logs. What would you like to know?""",
                     "user_template": """{{ history }}
 
-User: {{ question }}"""
-                }
+User: {{ question }}""",
+                },
             )
 
             # Summarizer Prompt
             sum_prompt, created = Prompt.objects.get_or_create(
                 slug="datachat_summarizer",
-                defaults={"name": "Data Chat Summarizer", "description": "Summarizes SQL results in natural language"}
+                defaults={"name": "Data Chat Summarizer", "description": "Summarizes SQL results in natural language"},
             )
             if created or not sum_prompt.versions.filter(version=2).exists():
                 PromptVersion.objects.update_or_create(
@@ -193,17 +205,15 @@ User: {{ question }}"""
                     defaults={
                         "status": "approved",
                         "system_template": "You are a helpful data analyst. Provide clear, concise summaries of "
-                                           "query results. If there's an error, explain what went wrong in plain "
-                                           "language.",
+                        "query results. If there's an error, explain what went wrong in plain "
+                        "language.",
                         "user_template": """Question: {{ question }}
 SQL: {{ sql }}
 Results ({{ row_count }} rows): {{ results }}
 {% if error %}Error: {{ error }}{% endif %}
 
-Summarize these results conversationally. Be concise but informative."""
-                    }
+Summarize these results conversationally. Be concise but informative.""",
+                    },
                 )
         except Exception as e:
             print(f"Prompt seeding error: {e}")
-
-

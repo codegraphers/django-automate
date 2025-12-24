@@ -6,9 +6,10 @@ class LLMRequest(models.Model):
     Audit log for every LLM interaction.
     Critical for cost tracking and governance.
     """
+
     tenant_id = models.CharField(max_length=64, db_index=True, default="default")
-    provider = models.CharField(max_length=64) # "openai", "anthropic"
-    model = models.CharField(max_length=128)   # "gpt-4-turbo"
+    provider = models.CharField(max_length=64)  # "openai", "anthropic"
+    model = models.CharField(max_length=128)  # "gpt-4-turbo"
 
     # Context for traceability
     prompt_slug = models.CharField(max_length=128, blank=True)  # e.g., "datachat_sql_generator"
@@ -20,7 +21,7 @@ class LLMRequest(models.Model):
     cost_usd = models.DecimalField(max_digits=12, decimal_places=6, null=True)
     latency_ms = models.IntegerField(null=True)
 
-    status = models.CharField(max_length=32) # SUCCESS, FAILED, BLOCKED
+    status = models.CharField(max_length=32)  # SUCCESS, FAILED, BLOCKED
     error_message = models.TextField(blank=True)
 
     # Store full request/response for debugging and eval
@@ -37,5 +38,3 @@ class LLMRequest(models.Model):
 
     def __str__(self):
         return f"{self.provider}/{self.model} - {self.purpose} ({self.status})"
-
-

@@ -5,6 +5,7 @@ from .models import Event
 
 logger = logging.getLogger(__name__)
 
+
 class RuleEvaluator:
     """
     Evaluates rules against an event.
@@ -15,7 +16,7 @@ class RuleEvaluator:
         Returns True if ALL enabled rules pass.
         If no rules exist, returns True.
         """
-        rules = automation.rules.filter(enabled=True).order_by('priority')
+        rules = automation.rules.filter(enabled=True).order_by("priority")
 
         if not rules.exists():
             return True
@@ -60,7 +61,7 @@ class RuleEvaluator:
         # Leaf nodes: { "var": "value" }
         # Simplified: key is field path, value is expected value
         for key, expected in condition.items():
-            if key in ["and", "or"]: # Handled above
+            if key in ["and", "or"]:  # Handled above
                 continue
 
             actual = self._get_value_from_context(key, context)
@@ -74,7 +75,7 @@ class RuleEvaluator:
         Dot-notation lookup: "event.payload.status"
         """
         current = context
-        parts = path.split('.')
+        parts = path.split(".")
 
         for part in parts:
             if isinstance(current, dict):

@@ -9,6 +9,7 @@ Provides HTTP request functionality with protections against:
 
 All external HTTP requests in RAG subsystem should use this client.
 """
+
 import ipaddress
 import logging
 import socket
@@ -24,24 +25,25 @@ logger = logging.getLogger(__name__)
 
 class SSRFError(Exception):
     """Raised when SSRF protection blocks a request."""
+
     pass
 
 
 # Private/internal IP ranges to block
 BLOCKED_NETWORKS = [
-    ipaddress.ip_network("127.0.0.0/8"),       # Loopback
-    ipaddress.ip_network("10.0.0.0/8"),        # Private Class A
-    ipaddress.ip_network("172.16.0.0/12"),     # Private Class B
-    ipaddress.ip_network("192.168.0.0/16"),    # Private Class C
-    ipaddress.ip_network("169.254.0.0/16"),    # Link-local
-    ipaddress.ip_network("0.0.0.0/8"),         # Current network
-    ipaddress.ip_network("100.64.0.0/10"),     # Carrier-grade NAT
-    ipaddress.ip_network("192.0.0.0/24"),      # IETF Protocol Assignments
-    ipaddress.ip_network("192.0.2.0/24"),      # TEST-NET-1
-    ipaddress.ip_network("198.51.100.0/24"),   # TEST-NET-2
-    ipaddress.ip_network("203.0.113.0/24"),    # TEST-NET-3
-    ipaddress.ip_network("224.0.0.0/4"),       # Multicast
-    ipaddress.ip_network("240.0.0.0/4"),       # Reserved
+    ipaddress.ip_network("127.0.0.0/8"),  # Loopback
+    ipaddress.ip_network("10.0.0.0/8"),  # Private Class A
+    ipaddress.ip_network("172.16.0.0/12"),  # Private Class B
+    ipaddress.ip_network("192.168.0.0/16"),  # Private Class C
+    ipaddress.ip_network("169.254.0.0/16"),  # Link-local
+    ipaddress.ip_network("0.0.0.0/8"),  # Current network
+    ipaddress.ip_network("100.64.0.0/10"),  # Carrier-grade NAT
+    ipaddress.ip_network("192.0.0.0/24"),  # IETF Protocol Assignments
+    ipaddress.ip_network("192.0.2.0/24"),  # TEST-NET-1
+    ipaddress.ip_network("198.51.100.0/24"),  # TEST-NET-2
+    ipaddress.ip_network("203.0.113.0/24"),  # TEST-NET-3
+    ipaddress.ip_network("224.0.0.0/4"),  # Multicast
+    ipaddress.ip_network("240.0.0.0/4"),  # Reserved
 ]
 
 # Default limits
@@ -53,10 +55,7 @@ def is_ip_blocked(ip_str: str) -> bool:
     """Check if an IP address is in a blocked range."""
     try:
         ip = ipaddress.ip_address(ip_str)
-        for network in BLOCKED_NETWORKS:
-            if ip in network:
-                return True
-        return False
+        return any(ip in network for network in BLOCKED_NETWORKS)
     except ValueError:
         # Invalid IP, block it
         return True
@@ -70,10 +69,10 @@ def resolve_hostname(hostname: str) -> str:
             raise SSRFError(f"Blocked private/internal IP: {ip} (resolved from {hostname})")
         return ip
     except socket.gaierror as e:
-        raise SSRFError(f"DNS resolution failed for {hostname}: {e}")
+        raise SSRFError(f"DNS resolution failed for {hostname}: {e}") from e
 
 
-def ssrf_safe_request(
+def ssrf_safe_request(  # noqa: C901
     method: str,
     url: str,
     *,
@@ -82,17 +81,17 @@ def ssrf_safe_request(
     max_size: int = DEFAULT_MAX_SIZE,
     headers: dict[str, str] | None = None,
     json: dict[str, Any] | None = None,
-    **kwargs
+    **kwargs,
 ) -> dict[str, Any]:
     """
     Make an HTTP request with SSRF protections.
-    
+
     Protections:
     - Blocks requests to private/internal IP ranges
     - Disables redirects (prevents redirect-based SSRF)
     - Enforces timeout limits
     - Limits response size
-    
+
     Args:
         method: HTTP method (GET, POST, etc.)
         url: Target URL
@@ -102,10 +101,10 @@ def ssrf_safe_request(
         headers: Additional headers
         json: JSON body payload
         **kwargs: Additional requests arguments
-        
+
     Returns:
         Parsed JSON response
-        
+
     Raises:
         SSRFError: If request is blocked by SSRF protection
     """
@@ -144,7 +143,7 @@ def ssrf_safe_request(
             timeout=timeout,
             allow_redirects=False,  # Block redirects
             stream=True,  # Stream to check size
-            **kwargs
+            **kwargs,
         )
 
         # Check for redirect (we blocked follow, but check status)

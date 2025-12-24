@@ -3,6 +3,7 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
+
 class WorkflowCompiler:
     """
     Validates and compiles workflow graphs.

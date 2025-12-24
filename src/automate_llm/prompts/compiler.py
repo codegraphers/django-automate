@@ -20,6 +20,7 @@ class PromptVersionSnapshot:
     tool_specs_json: list[dict[str, Any]] | None = None
     policy_hints_json: dict[str, Any] | None = None
 
+
 class PromptCompiler:
     def __init__(self) -> None:
         pass
@@ -30,7 +31,7 @@ class PromptCompiler:
 
     def build_tools(self, tool_specs_json: list[dict[str, Any]] | None) -> list[ToolSpec]:
         tools: list[ToolSpec] = []
-        for t in (tool_specs_json or []):
+        for t in tool_specs_json or []:
             tools.append(
                 ToolSpec(
                     name=t["name"],
@@ -55,7 +56,9 @@ class PromptCompiler:
         renderer_cls = get_renderer_cls(prompt_ver.template_type)
         renderer = renderer_cls()
 
-        template_payload = prompt_ver.messages_json if prompt_ver.template_type == "chat_messages" else prompt_ver.template
+        template_payload = (
+            prompt_ver.messages_json if prompt_ver.template_type == "chat_messages" else prompt_ver.template
+        )
 
         # Determine messages from renderer
         rendered_output = renderer.render(template=template_payload, inputs=inputs)
@@ -63,10 +66,10 @@ class PromptCompiler:
         # Ensure it's a list of ChatMessage
         messages: list[ChatMessage] = []
         if isinstance(rendered_output, list):
-             messages = rendered_output # Assume type is correct for now
+            messages = rendered_output  # Assume type is correct for now
         else:
-             # Basic handling for single string return
-             messages = [ChatMessage(role="user", content=str(rendered_output))]
+            # Basic handling for single string return
+            messages = [ChatMessage(role="user", content=str(rendered_output))]
 
         tools = self.build_tools(prompt_ver.tool_specs_json)
         params = prompt_ver.default_params_json or {}

@@ -19,16 +19,15 @@ class ToolRegistry:
     def get(self, name: str) -> ToolDefinition | None:
         return self._tools.get(name)
 
+
 class ToolExecutor:
     """
     Robust Tool Executor.
     Pipeline: Check Registry -> Validate Args -> Execute -> Validate Output -> Redact.
     """
+
     def __init__(
-        self,
-        registry: ToolRegistry,
-        redaction: RedactionEngine | None = None,
-        validator: OutputValidator | None = None
+        self, registry: ToolRegistry, redaction: RedactionEngine | None = None, validator: OutputValidator | None = None
     ) -> None:
         self.registry = registry
         self.redaction = redaction or RedactionEngine()
@@ -38,9 +37,9 @@ class ToolExecutor:
         # 1. Lookup
         tool = self.registry.get(name)
         if not tool:
-             # In strict mode, raise. In forgiving mode, return error dict.
-             # We choose strict for internal integrity.
-             raise ValueError(f"Tool {name} not found")
+            # In strict mode, raise. In forgiving mode, return error dict.
+            # We choose strict for internal integrity.
+            raise ValueError(f"Tool {name} not found")
 
         # 2. Argument Validation (against tool.schema)
         # TODO: Implement strict jsonschema check here
@@ -61,7 +60,7 @@ class ToolExecutor:
 
         except ConnectorError as ce:
             # Pass through structured connector errors
-             return ce.to_dict()
+            return ce.to_dict()
         except Exception as e:
-             # Catchall for arbitrary tool failures
-             return {"status": "failed", "error": str(e)}
+            # Catchall for arbitrary tool failures
+            return {"status": "failed", "error": str(e)}

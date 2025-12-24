@@ -12,6 +12,7 @@ from .models import Execution, ExecutionStatusChoices, StepRun
 
 logger = logging.getLogger(__name__)
 
+
 class ExecutionEngine:
     """
     SRE-Grade Execution Worker.
@@ -59,7 +60,11 @@ class ExecutionEngine:
             # 2. Chaos Hook (Start) - D4
             ChaosModule.check_and_raise("execution:start", {"execution_id": execution_id})
 
-            if execution.status in (ExecutionStatusChoices.SUCCESS, ExecutionStatusChoices.FAILED, ExecutionStatusChoices.CANCELED):
+            if execution.status in (
+                ExecutionStatusChoices.SUCCESS,
+                ExecutionStatusChoices.FAILED,
+                ExecutionStatusChoices.CANCELED,
+            ):
                 logger.info(f"Execution {execution_id} already finished: {execution.status}")
                 return
 
@@ -67,15 +72,14 @@ class ExecutionEngine:
             # In a real system, we'd cache this or fetch from Workflow model
             # For now, simplistic traversal stub.
             workflow = Workflow.objects.filter(
-                automation=execution.automation,
-                version=execution.workflow_version
+                automation=execution.automation, version=execution.workflow_version
             ).first()
 
             if not workflow:
                 self._fail_execution(execution, "Workflow version not found")
                 return
 
-            graph = workflow.graph # Expected: {"nodes": [...], "edges": [...]}
+            graph = workflow.graph  # Expected: {"nodes": [...], "edges": [...]}
 
             # 4. Determine Next Steps
             # Simple linear execution for MVP? Or finding pending steps?
@@ -116,12 +120,12 @@ class ExecutionEngine:
             node_key=node_key,
             defaults={
                 "status": ExecutionStatusChoices.RUNNING,
-                "input_data": {}, # Resolve inputs here
-            }
+                "input_data": {},  # Resolve inputs here
+            },
         )
 
         if step_run.status == ExecutionStatusChoices.SUCCESS:
-            return # Already done
+            return  # Already done
 
         logger.info(f"Running step {node_key}")
 
@@ -160,13 +164,14 @@ class ExecutionEngine:
             step_run.error_data = {"message": str(e)}
             step_run.save()
             # Retry logic would go here (Outbox reschedule)
-            raise e # Bubble up for now to crash execution
+            raise e  # Bubble up for now to crash execution
 
     def _get_runnable_nodes(self, execution: Execution, graph: dict) -> list:
         # Stub: Just return first node if no steps, or next node.
         # This graph traversal logic is complex, simplifying for MVP structure.
         nodes = graph.get("nodes", [])
-        if not nodes: return []
+        if not nodes:
+            return []
 
         # Check existing steps
         existing_keys = set(execution.steps.values_list("node_key", flat=True))
@@ -208,7 +213,9 @@ class ExecutionEngine:
 
         if execution.attempt > MAX_RETRIES:
             # DLQ / Permanent Fail
-            logger.error(f"Execution {execution.id} exceeded max retries ({MAX_RETRIES}). Moving to FAILED (DLQ candidate).")
+            logger.error(
+                f"Execution {execution.id} exceeded max retries ({MAX_RETRIES}). Moving to FAILED (DLQ candidate)."
+            )
             execution.status = ExecutionStatusChoices.FAILED
             execution.context["last_error"] = str(exception)
             execution.context["traceback"] = traceback.format_exc()
@@ -219,6 +226,7 @@ class ExecutionEngine:
         # Schedule Retry
         # Exponential Backoff: 2^attempt (seconds) + jitter
         import random
+
         backoff_seconds = (2 ** (execution.attempt - 1)) * 10
         jitter = random.randint(1, 5)
         delay = backoff_seconds + jitter
@@ -247,5 +255,5 @@ class ExecutionEngine:
             payload={"execution_id": str(execution.id)},
             status="RETRY",
             next_attempt_at=next_attempt,
-            attempt_count=execution.attempt
+            attempt_count=execution.attempt,
         )

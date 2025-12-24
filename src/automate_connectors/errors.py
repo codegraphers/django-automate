@@ -17,6 +17,7 @@ class ConnectorErrorCode(str, Enum):
     TRANSIENT_NETWORK = "TRANSIENT_NETWORK"
     INTERNAL_ERROR = "INTERNAL_ERROR"
 
+
 @dataclass
 class ConnectorError(Exception):
     code: ConnectorErrorCode
@@ -31,5 +32,5 @@ class ConnectorError(Exception):
             "message": self.message_safe,
             "retryable": self.retryable,
             "details": self.details_safe or {},
-            "connector": self.connector_code
+            "connector": self.connector_code,
         }

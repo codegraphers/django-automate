@@ -10,20 +10,24 @@ class Artifact(models.Model):
     Blob reference for large outputs (files, audio, expensive JSON).
     Content-addressed immutable usage.
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     tenant_id = models.CharField(max_length=64, db_index=True)
 
     execution = models.ForeignKey(Execution, related_name="artifacts", on_delete=models.CASCADE)
     step_run = models.ForeignKey(StepRun, related_name="artifacts", on_delete=models.SET_NULL, null=True, blank=True)
 
-    kind = models.CharField(max_length=32, choices=[
-        ("text", "Text"),
-        ("json", "JSON"),
-        ("audio", "Audio"),
-        ("video", "Video"),
-        ("image", "Image"),
-        ("file", "File"),
-    ])
+    kind = models.CharField(
+        max_length=32,
+        choices=[
+            ("text", "Text"),
+            ("json", "JSON"),
+            ("audio", "Audio"),
+            ("video", "Video"),
+            ("image", "Image"),
+            ("file", "File"),
+        ],
+    )
 
     uri = models.CharField(max_length=1024, help_text="s3:// or file:// URI")
     mime_type = models.CharField(max_length=128, default="application/octet-stream")
@@ -36,7 +40,7 @@ class Artifact(models.Model):
     meta = models.JSONField(default=dict)
 
     created_at = models.DateTimeField(auto_now_add=True)
-    expires_at = models.DateTimeField(null=True, blank=True) # Retention policy
+    expires_at = models.DateTimeField(null=True, blank=True)  # Retention policy
 
     class Meta:
         indexes = [

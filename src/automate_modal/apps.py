@@ -2,9 +2,9 @@ from django.apps import AppConfig
 
 
 class AutomateModalConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'automate_modal'
-    verbose_name = 'Multi-Modal Gateway'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "automate_modal"
+    verbose_name = "Multi-Modal Gateway"
 
     def ready(self):
         # Autodiscover providers
@@ -20,4 +20,3 @@ class AutomateModalConfig(AppConfig):
         ProviderRegistry.register(VideoPipelineProvider)
 
         # Register Workflow Step
-

@@ -1,6 +1,8 @@
 from typing import Any
+
 from ..adapters.base import ConnectorAdapter, ValidationResult
 from ..types import ActionSpec, ConnectorCapabilities, ConnectorResult
+
 
 class LoggingAdapter(ConnectorAdapter):
     code = "logging"
@@ -23,4 +25,5 @@ class LoggingAdapter(ConnectorAdapter):
 
     def normalize_error(self, exc: Exception):
         from ..errors import ConnectorError, ConnectorErrorCode
+
         return ConnectorError(ConnectorErrorCode.INTERNAL_ERROR, str(exc))

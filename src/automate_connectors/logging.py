@@ -8,10 +8,12 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
+
 def trace_connector_execution(func: Callable[..., Any]) -> Callable[..., Any]:
     """
     Decorator for ConnectorAdapter.execute to emit structured logs.
     """
+
     @functools.wraps(func)
     def wrapper(self, action: str, input: Any, ctx: Any, *args, **kwargs):
         start_ts = time.time()
@@ -30,7 +32,7 @@ def trace_connector_execution(func: Callable[..., Any]) -> Callable[..., Any]:
                     "trace_id": trace_id,
                     "duration_ms": duration_ms,
                     "status": "success",
-                }
+                },
             )
             return result
         except Exception as e:
@@ -46,8 +48,8 @@ def trace_connector_execution(func: Callable[..., Any]) -> Callable[..., Any]:
                     "duration_ms": duration_ms,
                     "status": "failed",
                     "error_code": str(error_code),
-                    "error_message": str(e)
-                }
+                    "error_message": str(e),
+                },
             )
             raise
 

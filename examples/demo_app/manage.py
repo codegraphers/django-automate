@@ -11,7 +11,7 @@ def main():
     curr_dir = Path(__file__).resolve().parent
     sys.path.append(str(curr_dir.parent / "packages" / "django_automate" / "src"))
 
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'example_project.settings')
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "example_project.settings")
 
     # Add the package source to sys.path so we can run without installing
     # This simulates "editable" install
@@ -30,5 +30,6 @@ def main():
         ) from exc
     execute_from_command_line(sys.argv)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

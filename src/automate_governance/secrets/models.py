@@ -2,11 +2,11 @@ from django.db import models
 
 
 class ConnectionProfile(models.Model):
-    kind = models.CharField(max_length=64)      # "stripe", "openai", "slack"
+    kind = models.CharField(max_length=64)  # "stripe", "openai", "slack"
     name = models.CharField(max_length=128)
 
-    config = models.JSONField(default=dict)     # non-secret config only
-    secrets = models.JSONField(default=dict)    # { "api_key": "secretref://..." }
+    config = models.JSONField(default=dict)  # non-secret config only
+    secrets = models.JSONField(default=dict)  # { "api_key": "secretref://..." }
 
     is_active = models.BooleanField(default=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -16,6 +16,7 @@ class ConnectionProfile(models.Model):
 
     class Meta:
         unique_together = [("tenant_id", "kind", "name")]
+
 
 class StoredSecret(models.Model):
     namespace = models.CharField(max_length=128, db_index=True)

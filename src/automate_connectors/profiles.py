@@ -7,10 +7,12 @@ from typing import Any
 # but assume dict-like object or Django model instance passed in.
 # Real usage: integration with Admin form or API view
 
+
 @dataclass
 class ProfileValidationAttempt:
     ok: bool
     errors: list[str]
+
 
 class ConnectionProfileValidator:
     def validate(self, profile_data: dict[str, Any], connector_code: str) -> ProfileValidationAttempt:
@@ -19,14 +21,14 @@ class ConnectionProfileValidator:
         """
         # 1. Enforce Kind
         if profile_data.get("kind") != "connector":
-             return ProfileValidationAttempt(ok=False, errors=["Profile kind must be 'connector'"])
+            return ProfileValidationAttempt(ok=False, errors=["Profile kind must be 'connector'"])
 
         # 2. Enforce Code match
         cfg = profile_data.get("config", {}) or {}
         if cfg.get("connector_code") != connector_code:
-             # This check depends on if the profile is strictly 1:1 with code
-             # or if 'config.connector_code' is the source of truth.
-             pass
+            # This check depends on if the profile is strictly 1:1 with code
+            # or if 'config.connector_code' is the source of truth.
+            pass
 
         # 3. Load Adapter for deep validation
         # from ..registry import get_adapter_cls

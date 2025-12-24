@@ -3,6 +3,7 @@ Workflow Executor
 
 Orchestrates the execution of a complete workflow by running steps in sequence.
 """
+
 import logging
 import time
 from typing import Optional
@@ -18,7 +19,7 @@ logger = logging.getLogger(__name__)
 class WorkflowExecutor:
     """
     Executes a workflow by running each step in sequence.
-    
+
     Workflow Definition Format:
         {
             "steps": [
@@ -29,7 +30,7 @@ class WorkflowExecutor:
                     "config": {...}
                 },
                 {
-                    "id": "step_2", 
+                    "id": "step_2",
                     "type": "llm",
                     "name": "Generate Summary",
                     "config": {"prompt_slug": "order_summarizer", ...}
@@ -56,7 +57,7 @@ class WorkflowExecutor:
     def run(self) -> bool:
         """
         Execute the workflow.
-        
+
         Returns:
             True if workflow completed successfully, False otherwise
         """
@@ -88,7 +89,7 @@ class WorkflowExecutor:
                 step_index=0,
                 previous_outputs={},
                 event_payload=self.event.payload or {},
-                automation_config=workflow.graph.get("config", {})
+                automation_config=workflow.graph.get("config", {}),
             )
 
             # Execute each step
@@ -123,7 +124,7 @@ class WorkflowExecutor:
                     output_data={"output": result.output, "metadata": result.metadata} if result.success else {},
                     status="success" if result.success else "failed",
                     duration_ms=result.duration_ms or int((time.time() - step_start) * 1000),
-                    error_message=result.error or ""
+                    error_message=result.error or "",
                 )
 
                 # Check if step failed and should stop
@@ -138,14 +139,13 @@ class WorkflowExecutor:
                         return False
 
                 # Check for branching (from filter steps)
-                if step_type == "filter" and result.output:
-                    if result.output.get("action") == "branch":
-                        branch_to = result.output.get("branch_to")
-                        # Find the branch step index
-                        branch_idx = self._find_step_index(steps_def, branch_to)
-                        if branch_idx is not None:
-                            # Skip to branch (modify the loop by updating steps_def slice)
-                            logger.info(f"Branching to step: {branch_to}")
+                if step_type == "filter" and result.output and result.output.get("action") == "branch":
+                    branch_to = result.output.get("branch_to")
+                    # Find the branch step index
+                    branch_idx = self._find_step_index(steps_def, branch_to)
+                    if branch_idx is not None:
+                        # Skip to branch (modify the loop by updating steps_def slice)
+                        logger.info(f"Branching to step: {branch_to}")
                             # For now, we'll just log - proper branching requires more complex flow
 
                 # Store output for next step
@@ -164,9 +164,7 @@ class WorkflowExecutor:
         """Get the workflow definition for this execution."""
         # Try to get specific version
         if self.execution.workflow_version:
-            workflow = self.automation.workflows.filter(
-                version=self.execution.workflow_version
-            ).first()
+            workflow = self.automation.workflows.filter(version=self.execution.workflow_version).first()
             if workflow:
                 return workflow
 
@@ -215,9 +213,11 @@ def run_pending_executions(limit: int = 10):
     """
     from automate.models import Execution, ExecutionStatusChoices
 
-    pending = Execution.objects.filter(
-        status=ExecutionStatusChoices.QUEUED
-    ).select_related("event", "automation").order_by("id")[:limit]
+    pending = (
+        Execution.objects.filter(status=ExecutionStatusChoices.QUEUED)
+        .select_related("event", "automation")
+        .order_by("id")[:limit]
+    )
 
     results = {"success": 0, "failed": 0}
 

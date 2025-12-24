@@ -14,9 +14,11 @@ _DEFAULT_INTEROP = {
     "SYNC_ENABLED": False,
 }
 
+
 def get_interop_setting(key: str, default: Any = None) -> Any:
     interop_conf = getattr(settings, "AUTOMATE_INTEROP", {})
     return interop_conf.get(key, _DEFAULT_INTEROP.get(key, default))
+
 
 class InteropFlags:
     @property
@@ -34,5 +36,6 @@ class InteropFlags:
     @property
     def sync_enabled(self) -> bool:
         return get_interop_setting("SYNC_ENABLED", False)
+
 
 flags = InteropFlags()

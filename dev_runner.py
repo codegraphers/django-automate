@@ -8,6 +8,7 @@ DJANGO_PORT = 8000
 MKDOCS_PORT = 8001
 HOST = "127.0.0.1"
 
+
 def main():
     print("🚀 Starting Django Automate Dev Environment...")
 
@@ -64,6 +65,7 @@ def main():
         for p in processes:
             p.terminate()
         print("Done.")
+
 
 if __name__ == "__main__":
     main()

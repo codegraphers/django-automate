@@ -16,15 +16,19 @@ class ConnectorRegistry:
             raise ValueError(f"Connector '{code}' not found")
         return self._connectors[code]
 
+
 # Global Singleton
 _registry = ConnectorRegistry()
+
 
 def get_connector_registry() -> ConnectorRegistry:
     return _registry
 
+
 def register_connector(cls: type[ConnectorAdapter]):
     _registry.register(cls)
     return cls
+
 
 # Public shortcut
 def get_adapter_cls(code: str) -> type[ConnectorAdapter]:

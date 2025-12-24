@@ -17,7 +17,7 @@ def test_secrets_resolution_in_connector():
         slug="test-slack",
         connector_slug="slack",
         encrypted_secrets={"token": "env://SLACK_TEST_TOKEN"},
-        enabled=True
+        enabled=True,
     )
 
     connector = SlackConnector()
@@ -30,12 +30,11 @@ def test_secrets_resolution_in_connector():
         mock_post.return_value = mock_response
 
         # Execute
-        connector.execute("send_message", {"channel": "C123"}, {
-            "profile": {"encrypted_secrets": {"token": "xoxb-real-token"}}
-        })
+        connector.execute(
+            "send_message", {"channel": "C123"}, {"profile": {"encrypted_secrets": {"token": "xoxb-real-token"}}}
+        )
 
         # Verify Header
         args, kwargs = mock_post.call_args
         headers = kwargs.get("headers", {})
         assert headers["Authorization"] == "Bearer xoxb-real-token"
-

@@ -12,17 +12,17 @@ from .types import ConnectorResult
 
 logger = logging.getLogger(__name__)
 
+
 class ConnectorExecutor:
     """
     The One True Pipeline for connector execution.
     Orchestrates: Profile -> Policy -> RateLimit -> Execute -> Audit.
     """
+
     def __init__(
-        self,
-        rate_limiter: RateLimiter | None = None,
-        profile_validator: ConnectionProfileValidator | None = None
+        self, rate_limiter: RateLimiter | None = None, profile_validator: ConnectionProfileValidator | None = None
     ) -> None:
-        self.rate_limiter = rate_limiter or InMemoryRateLimiter() # TODO: swap for Redis in prod
+        self.rate_limiter = rate_limiter or InMemoryRateLimiter()  # TODO: swap for Redis in prod
         self.profile_validator = profile_validator or ConnectionProfileValidator()
 
     def execute(
@@ -30,7 +30,7 @@ class ConnectorExecutor:
         *,
         connector_code: str,
         action: str,
-        profile: dict[str, Any], # Resolved profile with secrets
+        profile: dict[str, Any],  # Resolved profile with secrets
         input_args: dict[str, Any],
         ctx: dict[str, Any],
     ) -> ConnectorResult:
@@ -47,11 +47,11 @@ class ConnectorExecutor:
             adapter_cls = get_adapter_cls(connector_code)
             adapter = adapter_cls()
         except Exception as e:
-             raise ConnectorError(ConnectorErrorCode.CONFIG_INVALID, f"Adapter {connector_code} not found: {e}")
+            raise ConnectorError(ConnectorErrorCode.CONFIG_INVALID, f"Adapter {connector_code} not found: {e}")
 
         # 3. Action Spec Check
         if action not in adapter.action_specs:
-             raise ConnectorError(ConnectorErrorCode.INVALID_INPUT, f"Action {action} not supported by {connector_code}")
+            raise ConnectorError(ConnectorErrorCode.INVALID_INPUT, f"Action {action} not supported by {connector_code}")
 
         # 4. Rate Limiter Reserve
         # Determine strict or dynamic policy from profile/connector config
@@ -60,12 +60,12 @@ class ConnectorExecutor:
         permit = self.rate_limiter.acquire(rl_key)
 
         if not permit.is_allowed:
-             raise ConnectorError(
-                 ConnectorErrorCode.RATE_LIMITED,
-                 f"Rate limited. Retry after {permit.retry_after_ms}ms",
-                 retryable=True,
-                 details_safe={"retry_after_ms": permit.retry_after_ms}
-             )
+            raise ConnectorError(
+                ConnectorErrorCode.RATE_LIMITED,
+                f"Rate limited. Retry after {permit.retry_after_ms}ms",
+                retryable=True,
+                details_safe={"retry_after_ms": permit.retry_after_ms},
+            )
 
         start_ts = time.time()
         status = "failed"
@@ -90,7 +90,7 @@ class ConnectorExecutor:
             # self.rate_limiter.commit(permit, result.meta.get("headers"))
 
             status = "success"
-            return ConnectorResult(status="success", data=result, meta={"duration_ms": (time.time()-start_ts)*1000})
+            return ConnectorResult(status="success", data=result, meta={"duration_ms": (time.time() - start_ts) * 1000})
 
         except Exception as e:
             # 7. Normalize Error
@@ -112,6 +112,6 @@ class ConnectorExecutor:
                     "status": status,
                     "error_code": str(error_code) if error_code else None,
                     "duration_ms": duration_ms,
-                    "trace_id": trace_id
-                }
+                    "trace_id": trace_id,
+                },
             )

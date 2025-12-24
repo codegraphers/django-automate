@@ -9,6 +9,7 @@ Resolves secret references in various formats:
 
 All credentials in RAG should use SecretRef, never raw secrets.
 """
+
 import logging
 import os
 
@@ -17,24 +18,25 @@ logger = logging.getLogger(__name__)
 
 class SecretRefError(Exception):
     """Raised when secret resolution fails."""
+
     pass
 
 
 def resolve_secret_ref(ref: str) -> str | None:
     """
     Resolve a secret reference to its actual value.
-    
+
     Supported formats:
     - env://VAR_NAME - Read from environment variable
     - db://name - Read from SecretStore model (if available)
     - raw://value - Use raw value (testing only!)
-    
+
     Args:
         ref: SecretRef URI string
-        
+
     Returns:
         Resolved secret value, or None if not found
-        
+
     Raises:
         SecretRefError: If format is invalid or resolution fails
     """
@@ -76,7 +78,8 @@ def _resolve_db(name: str) -> str | None:
     """Resolve from database SecretStore."""
     try:
         # Try to use automate's SecretStore if available
-        from automate.models import SecretStore
+        from automate.models import SecretStore  # noqa: PLC0415
+
         secret = SecretStore.objects.filter(name=name).first()
         if secret:
             return secret.get_value()
@@ -100,11 +103,11 @@ def _resolve_vault(path: str) -> str | None:
 def redact_secret(value: str, show_chars: int = 4) -> str:
     """
     Redact a secret value for safe logging.
-    
+
     Args:
         value: Secret value to redact
         show_chars: Number of characters to show at the end
-        
+
     Returns:
         Redacted string like "****abcd"
     """

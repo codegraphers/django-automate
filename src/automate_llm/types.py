@@ -6,11 +6,13 @@ from typing import Any, Literal
 
 Role = Literal["system", "user", "assistant", "tool"]
 
+
 @dataclass(frozen=True)
 class ChatMessage:
     role: Role
     content: str
     name: str | None = None
+
 
 @dataclass(frozen=True)
 class ToolSpec:
@@ -18,11 +20,13 @@ class ToolSpec:
     description: str
     input_schema: dict[str, Any]  # JSON Schema
 
+
 @dataclass(frozen=True)
 class ToolCall:
     name: str
     arguments: dict[str, Any]
     id: str | None = None
+
 
 @dataclass(frozen=True)
 class CostEstimate:
@@ -31,6 +35,7 @@ class CostEstimate:
     token_estimate_in: int | None = None
     token_estimate_out: int | None = None
 
+
 @dataclass(frozen=True)
 class Usage:
     tokens_in: int | None = None
@@ -38,6 +43,7 @@ class Usage:
     total_tokens: int | None = None
     cost_usd: float | None = None
     provider_request_id: str | None = None
+
 
 @dataclass(frozen=True)
 class ChatRequest:
@@ -51,12 +57,14 @@ class ChatRequest:
     timeout_s: int | None = None
     metadata: dict[str, Any] = field(default_factory=dict)  # trace_id, prompt_version, etc.
 
+
 @dataclass(frozen=True)
 class ChatResponse:
     output_text: str
     usage: Usage = field(default_factory=Usage)
     tool_calls: Sequence[ToolCall] = field(default_factory=list)
     raw_provider_payload: dict[str, Any] | None = None  # stored only if policy allows
+
 
 @dataclass(frozen=True)
 class CompiledPrompt:

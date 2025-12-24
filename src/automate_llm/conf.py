@@ -19,6 +19,7 @@ DEFAULTS: dict[str, Any] = {
     "DB_OPT": {"enable_json_indexes_if_supported": True, "enable_gin_if_postgres": True},
 }
 
+
 def llm_settings() -> dict[str, Any]:
     root = getattr(settings, "DJANGO_AUTOMATE", {}) or {}
     llm = root.get("LLM", {}) or {}
@@ -30,5 +31,8 @@ def llm_settings() -> dict[str, Any]:
 
     # nested redaction/output_contract
     merged["POLICY"]["redaction"] = {**DEFAULTS["POLICY"]["redaction"], **merged["POLICY"].get("redaction", {})}
-    merged["POLICY"]["output_contract"] = {**DEFAULTS["POLICY"]["output_contract"], **merged["POLICY"].get("output_contract", {})}
+    merged["POLICY"]["output_contract"] = {
+        **DEFAULTS["POLICY"]["output_contract"],
+        **merged["POLICY"].get("output_contract", {}),
+    }
     return merged

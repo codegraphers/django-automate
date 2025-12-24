@@ -8,7 +8,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -94,21 +93,15 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "name",
-                    models.CharField(
-                        help_text="Display name for this MCP server", max_length=100
-                    ),
+                    models.CharField(help_text="Display name for this MCP server", max_length=100),
                 ),
                 (
                     "slug",
-                    models.SlugField(
-                        help_text="Unique identifier (e.g., 'shopify-mcp')", unique=True
-                    ),
+                    models.SlugField(help_text="Unique identifier (e.g., 'shopify-mcp')", unique=True),
                 ),
                 (
                     "endpoint_url",
-                    models.URLField(
-                        help_text="Base URL of the MCP server (e.g., http://localhost:3000)"
-                    ),
+                    models.URLField(help_text="Base URL of the MCP server (e.g., http://localhost:3000)"),
                 ),
                 (
                     "auth_type",
@@ -142,9 +135,7 @@ class Migration(migrations.Migration):
                 ("enabled", models.BooleanField(db_index=True, default=True)),
                 (
                     "last_synced",
-                    models.DateTimeField(
-                        blank=True, help_text="Last time tools were synced", null=True
-                    ),
+                    models.DateTimeField(blank=True, help_text="Last time tools were synced", null=True),
                 ),
                 (
                     "last_error",
@@ -203,9 +194,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "content",
-                    models.TextField(
-                        help_text="Jinja2 supported. Use {{ event.payload.id }} etc."
-                    ),
+                    models.TextField(help_text="Jinja2 supported. Use {{ event.payload.id }} etc."),
                 ),
                 ("input_schema", models.JSONField(blank=True, default=dict)),
                 ("version", models.IntegerField(default=1)),
@@ -404,9 +393,7 @@ class Migration(migrations.Migration):
                 ("description", models.TextField(help_text="What this tool does")),
                 (
                     "input_schema",
-                    models.JSONField(
-                        default=dict, help_text="JSON Schema for tool parameters"
-                    ),
+                    models.JSONField(default=dict, help_text="JSON Schema for tool parameters"),
                 ),
                 (
                     "enabled",
@@ -418,9 +405,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "call_count",
-                    models.IntegerField(
-                        default=0, help_text="Number of times this tool was called"
-                    ),
+                    models.IntegerField(default=0, help_text="Number of times this tool was called"),
                 ),
                 ("last_called", models.DateTimeField(blank=True, null=True)),
                 ("discovered_at", models.DateTimeField(auto_now_add=True)),

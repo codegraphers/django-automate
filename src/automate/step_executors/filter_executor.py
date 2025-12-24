@@ -3,6 +3,7 @@ Filter/Condition Step Executor
 
 Evaluates conditions using JSON Logic and determines if workflow should continue.
 """
+
 import logging
 import time
 from typing import Any
@@ -16,11 +17,11 @@ logger = logging.getLogger(__name__)
 class FilterStepExecutor(BaseStepExecutor):
     """
     Evaluate a condition and decide whether to continue.
-    
+
     Config:
         condition: dict - JSON Logic condition
         on_fail: str - "stop" (default), "continue", "branch_id"
-        
+
     Example conditions (JSON Logic):
         {">=": [{"var": "event.payload.amount"}, 100]}
         {"and": [{"==": [{"var": "event.type"}, "order"]}, {">": [{"var": "event.payload.total"}, 50]}]}
@@ -52,7 +53,7 @@ class FilterStepExecutor(BaseStepExecutor):
                     success=True,
                     output={"passed": True, "condition_result": result},
                     duration_ms=duration_ms,
-                    metadata={"on_fail": on_fail}
+                    metadata={"on_fail": on_fail},
                 )
             # Condition failed
             elif on_fail == "stop":
@@ -60,39 +61,34 @@ class FilterStepExecutor(BaseStepExecutor):
                     success=False,
                     output={"passed": False, "action": "stopped"},
                     error="Condition not met - workflow stopped",
-                    duration_ms=duration_ms
+                    duration_ms=duration_ms,
                 )
             elif on_fail == "continue":
                 return StepResult(
-                    success=True,
-                    output={"passed": False, "action": "continued"},
-                    duration_ms=duration_ms
+                    success=True, output={"passed": False, "action": "continued"}, duration_ms=duration_ms
                 )
             else:
                 # Branch to a specific step
                 return StepResult(
                     success=True,
                     output={"passed": False, "action": "branch", "branch_to": on_fail},
-                    duration_ms=duration_ms
+                    duration_ms=duration_ms,
                 )
 
         except Exception as e:
             logger.exception(f"Filter evaluation failed: {e}")
-            return StepResult(
-                success=False,
-                output=None,
-                error=str(e)
-            )
+            return StepResult(success=False, output=None, error=str(e))
 
     def _evaluate_condition(self, condition: dict[str, Any], data: dict[str, Any]) -> bool:
         """
         Evaluate JSON Logic condition.
-        
+
         Falls back to a simple implementation if json_logic is not installed.
         """
         try:
             # Try to use json_logic package
             from json_logic import jsonLogic
+
             return jsonLogic(condition, data)
         except ImportError:
             # Fallback to simple evaluation

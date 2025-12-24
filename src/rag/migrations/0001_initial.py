@@ -7,7 +7,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = []
@@ -102,9 +101,7 @@ class Migration(migrations.Migration):
                 ("name", models.CharField(max_length=255)),
                 (
                     "slug",
-                    models.SlugField(
-                        help_text="Used in API URL: /api/rag/{slug}/query", unique=True
-                    ),
+                    models.SlugField(help_text="Used in API URL: /api/rag/{slug}/query", unique=True),
                 ),
                 (
                     "retrieval_provider_key",
@@ -132,9 +129,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "rate_limit",
-                    models.IntegerField(
-                        default=100, help_text="Max queries per minute"
-                    ),
+                    models.IntegerField(default=100, help_text="Max queries per minute"),
                 ),
                 (
                     "status",
@@ -188,9 +183,7 @@ class Migration(migrations.Migration):
                 ("user", models.CharField(db_index=True, max_length=150)),
                 (
                     "query_hash",
-                    models.CharField(
-                        help_text="SHA256 hash of query (for privacy)", max_length=64
-                    ),
+                    models.CharField(help_text="SHA256 hash of query (for privacy)", max_length=64),
                 ),
                 (
                     "latency_ms",
@@ -198,9 +191,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "results_meta",
-                    models.JSONField(
-                        default=dict, help_text="Metadata: doc_ids, scores, count"
-                    ),
+                    models.JSONField(default=dict, help_text="Metadata: doc_ids, scores, count"),
                 ),
                 (
                     "policy_decisions",

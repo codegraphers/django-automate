@@ -8,6 +8,7 @@ from ..executions.models import SideEffectLog
 
 logger = logging.getLogger(__name__)
 
+
 class SideEffectManager:
     """
     Guarantees exactly-once execution of external side handling.
@@ -39,10 +40,7 @@ class SideEffectManager:
         """
         try:
             return SideEffectLog.objects.create(
-                tenant_id=tenant_id,
-                key=key,
-                external_id=external_id,
-                response_payload=response_payload
+                tenant_id=tenant_id, key=key, external_id=external_id, response_payload=response_payload
             )
         except IntegrityError:
             # Race condition: Step retry happened in parallel?

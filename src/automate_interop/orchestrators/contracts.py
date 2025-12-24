@@ -12,6 +12,7 @@ class StartResult:
     error: str | None = None
     meta: dict[str, Any] = None
 
+
 @dataclass
 class OrchestratorCapabilities:
     webhook_start: bool = False
@@ -19,6 +20,7 @@ class OrchestratorCapabilities:
     status_poll_supported: bool = False
     supports_templates_host: bool = False
     supports_import_export: bool = False
+
 
 class ExternalOrchestrator(ABC):
     """

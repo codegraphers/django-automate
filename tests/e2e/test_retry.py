@@ -29,7 +29,6 @@ def test_dispatcher_retry_logic():
     # 2. Mock Failure
     # We patch TriggerMatchingService to raise an exception
     with patch("automate.services.trigger.TriggerMatchingService.matches", side_effect=Exception("Simulated Failure")):
-
         # Attempt 1
         dispatcher.dispatch_batch()
         entry.refresh_from_db()
@@ -44,7 +43,6 @@ def test_dispatcher_retry_logic():
         # Move time forward
         future = timezone.now() + datetime.timedelta(seconds=10)
         with patch("django.utils.timezone.now", return_value=future):
-
             # Attempt 2 (Should be picked up)
             dispatcher.dispatch_batch()
             entry.refresh_from_db()
@@ -52,7 +50,7 @@ def test_dispatcher_retry_logic():
 
             # Attempt 3 (Max Retries = 3 default)
             # Need to force next attempt time again
-            entry.next_attempt_at = future - datetime.timedelta(seconds=1) # allow immediate pickup for test speed
+            entry.next_attempt_at = future - datetime.timedelta(seconds=1)  # allow immediate pickup for test speed
             entry.save()
 
             dispatcher.dispatch_batch()

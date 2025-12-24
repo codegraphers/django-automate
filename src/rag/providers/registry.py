@@ -4,6 +4,7 @@ RAG Provider Registry
 Central registry for retrieval providers.
 Providers register themselves on app startup.
 """
+
 import logging
 
 from .base import RetrievalProvider

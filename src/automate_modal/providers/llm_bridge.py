@@ -14,8 +14,10 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
+
 class SecretResolverAdapter:
     """Adapts automate_modal.contracts.SecretsResolver to automate_governance.SecretResolver."""
+
     def __init__(self, modal_resolver):
         self._resolver = modal_resolver
 
@@ -24,8 +26,9 @@ class SecretResolverAdapter:
             return ""
         return self._resolver.resolve(secret_ref)
 
+
 class LLMBridgeCapability(Capability):
-    def __init__(self, task_type: str, provider_instance: 'LLMBridgeProvider'):
+    def __init__(self, task_type: str, provider_instance: "LLMBridgeProvider"):
         self.task_type = task_type
         self.parent = provider_instance
 
@@ -38,13 +41,13 @@ class LLMBridgeCapability(Capability):
         provider_slug = config.get("upstream_provider")
 
         if not provider_slug:
-             raise ValueError("Bridge configuration missing 'upstream_provider'")
+            raise ValueError("Bridge configuration missing 'upstream_provider'")
 
         if not get_provider_class:
             raise RuntimeError("automate_llm package not found")
 
-        ProviderCls = get_provider_class(provider_slug)
-        if not ProviderCls:
+        provider_cls = get_provider_class(provider_slug)
+        if not provider_cls:
             raise ValueError(f"LLM Provider '{provider_slug}' not found in automate_llm registry")
 
         resolver = SecretResolverAdapter(ctx.secrets)
@@ -53,11 +56,7 @@ class LLMBridgeCapability(Capability):
             api_key_ref = config.get("api_key_ref", config.get("api_key"))
             org_id_ref = config.get("org_id_ref", config.get("org_id"))
 
-            return ProviderCls(
-                secret_resolver=resolver,
-                api_key_ref=api_key_ref,
-                org_id_ref=org_id_ref
-            )
+            return ProviderCls(secret_resolver=resolver, api_key_ref=api_key_ref, org_id_ref=org_id_ref)
         except TypeError:
             # Fallback
             return ProviderCls(config=config, secret_resolver=resolver)
@@ -71,7 +70,7 @@ class LLMBridgeCapability(Capability):
             temperature=req.get("temperature", 0.7),
             max_tokens=req.get("max_tokens", 1000),
             stop=req.get("stop"),
-            stream=False
+            stream=False,
         )
 
         response = provider.chat_complete(request)
@@ -80,16 +79,18 @@ class LLMBridgeCapability(Capability):
             task_type=self.task_type,
             outputs={"content": response.content},
             usage=response.usage,
-            raw_provider_meta=response.raw_response
+            raw_provider_meta=response.raw_response,
         )
 
     def stream(self, req: dict[str, Any], ctx: ExecutionCtx) -> Iterable[StreamEvent]:
         raise NotImplementedError("Streaming not supported for bridged LLM providers yet")
 
+
 class LLMBridgeProvider(ProviderBase):
     """
     Bridges automate_modal to automate_llm's providers.
     """
+
     key = "llm-bridge"
     display_name = "Legacy LLM Bridge"
     config = {}
@@ -103,14 +104,12 @@ class LLMBridgeProvider(ProviderBase):
                 "upstream_provider": {"type": "string", "enum": ["openai", "anthropic"]},
                 "api_key_ref": {"type": "string"},
                 "org_id_ref": {"type": "string"},
-            }
+            },
         }
 
     @property
     def capabilities(self) -> list[Capability]:
-        return [
-            LLMBridgeCapability(ModalTaskType.LLM_CHAT, self)
-        ]
+        return [LLMBridgeCapability(ModalTaskType.LLM_CHAT, self)]
 
     def build_client(self, cfg: dict, ctx: ExecutionCtx) -> Any:
         pass

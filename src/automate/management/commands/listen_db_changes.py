@@ -8,6 +8,7 @@ Usage:
     python manage.py listen_db_changes
     python manage.py listen_db_changes --channel=table_changes
 """
+
 import asyncio
 import json
 import logging
@@ -24,16 +25,9 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "--channel",
-            type=str,
-            default="automate_table_changes",
-            help="PostgreSQL channel to listen on"
+            "--channel", type=str, default="automate_table_changes", help="PostgreSQL channel to listen on"
         )
-        parser.add_argument(
-            "--use-psycopg",
-            action="store_true",
-            help="Use psycopg3 instead of asyncpg (synchronous)"
-        )
+        parser.add_argument("--use-psycopg", action="store_true", help="Use psycopg3 instead of asyncpg (synchronous)")
 
     def handle(self, *args, **options):
         channel = options["channel"]
@@ -60,11 +54,7 @@ class Command(BaseCommand):
             try:
                 asyncio.run(self._listen_asyncpg(channel))
             except ImportError:
-                self.stdout.write(
-                    self.style.WARNING(
-                        "asyncpg not installed, falling back to psycopg3..."
-                    )
-                )
+                self.stdout.write(self.style.WARNING("asyncpg not installed, falling back to psycopg3..."))
                 self._listen_psycopg(channel)
 
     async def _listen_asyncpg(self, channel: str):
@@ -75,8 +65,10 @@ class Command(BaseCommand):
             raise ImportError("asyncpg required: pip install asyncpg") from e
 
         db_settings = connection.settings_dict
-        dsn = (f"postgresql://{db_settings['USER']}:{db_settings['PASSWORD']}@"
-               f"{db_settings['HOST']}:{db_settings.get('PORT', 5432)}/{db_settings['NAME']}")
+        dsn = (
+            f"postgresql://{db_settings['USER']}:{db_settings['PASSWORD']}@"
+            f"{db_settings['HOST']}:{db_settings.get('PORT', 5432)}/{db_settings['NAME']}"
+        )
 
         conn = await asyncpg.connect(dsn)
 
@@ -131,9 +123,7 @@ class Command(BaseCommand):
     async def _process_notification(self, payload: str):
         """Process notification async - create Event and dispatch."""
         # Run in thread pool to use Django ORM
-        await asyncio.get_event_loop().run_in_executor(
-            None, self._process_notification_sync, payload
-        )
+        await asyncio.get_event_loop().run_in_executor(None, self._process_notification_sync, payload)
 
     def _process_notification_sync(self, payload: str):
         """Process notification - create Event in database."""
@@ -148,12 +138,10 @@ class Command(BaseCommand):
                 source="postgres_trigger",
                 payload=data.get("data", {}),
                 idempotency_key=f"pg_{data.get('table')}_{data.get('action')}_{data.get('data', {}).get('id', '')}_"
-                                f"{data.get('timestamp', '')}"
+                f"{data.get('timestamp', '')}",
             )
 
-            self.stdout.write(
-                self.style.SUCCESS(f"    ✅ Created Event: {event.id}")
-            )
+            self.stdout.write(self.style.SUCCESS(f"    ✅ Created Event: {event.id}"))
 
         except json.JSONDecodeError as e:
             logger.error(f"Invalid JSON payload: {e}")

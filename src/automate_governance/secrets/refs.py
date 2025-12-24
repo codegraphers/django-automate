@@ -19,6 +19,7 @@ class SecretRef:
         secretref://env/stripe/prod/api_key
         secretref://encrypted_db/openai/prod/key?version=3
     """
+
     backend: str
     namespace: str
     name: str

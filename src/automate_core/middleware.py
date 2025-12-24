@@ -7,6 +7,7 @@ from .context import set_current_actor, set_current_correlation_id, set_current_
 
 logger = logging.getLogger(__name__)
 
+
 class AutomateContextMiddleware(MiddlewareMixin):
     """
     Extracts multi-tenancy and tracing context from headers or session.
@@ -24,7 +25,7 @@ class AutomateContextMiddleware(MiddlewareMixin):
             tenant_id = "default"
 
         if not tenant_id:
-            tenant_id = "default" # Fallback for dev/simple setups
+            tenant_id = "default"  # Fallback for dev/simple setups
 
         set_current_tenant(tenant_id)
 

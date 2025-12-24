@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("automate_datachat", "0001_add_chat_session_message"),
     ]
@@ -26,9 +25,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "name",
-                    models.CharField(
-                        help_text="Display name for this embed config", max_length=100
-                    ),
+                    models.CharField(help_text="Display name for this embed config", max_length=100),
                 ),
                 (
                     "api_key",
@@ -63,15 +60,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "rate_limit_per_minute",
-                    models.IntegerField(
-                        default=10, help_text="Max requests per minute per session"
-                    ),
+                    models.IntegerField(default=10, help_text="Max requests per minute per session"),
                 ),
                 (
                     "max_queries_per_session",
-                    models.IntegerField(
-                        default=100, help_text="Max total queries per session"
-                    ),
+                    models.IntegerField(default=100, help_text="Max total queries per session"),
                 ),
                 (
                     "theme",

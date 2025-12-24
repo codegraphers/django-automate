@@ -9,6 +9,7 @@ class TriggerMatchingService:
     P0.4: Strict Trigger Matching Service.
     Eliminates accidental runs by enforcing strict type checks.
     """
+
     def validate_config(self, trigger: TriggerSpec):
         """
         P0.4: Validate TriggerSpec.config by JSONSchema.
@@ -18,9 +19,9 @@ class TriggerMatchingService:
                 "type": "object",
                 "properties": {
                     "model": {"type": "string", "pattern": r"^\w+\.\w+$"},
-                    "action": {"type": "string", "enum": ["created", "updated", "deleted"]}
+                    "action": {"type": "string", "enum": ["created", "updated", "deleted"]},
                 },
-                "required": ["model"]
+                "required": ["model"],
             }
             try:
                 jsonschema.validate(instance=trigger.config, schema=schema)
@@ -28,8 +29,8 @@ class TriggerMatchingService:
                 raise ValidationError(f"Invalid config for model_signal: {e.message}")
 
         elif trigger.type == TriggerTypeChoices.WEBHOOK:
-             # Basic webhook config might require a custom slug if we implement dedicated endpoints
-             pass
+            # Basic webhook config might require a custom slug if we implement dedicated endpoints
+            pass
 
     def matches(self, trigger: TriggerSpec, event: Event) -> bool:
         if trigger.type == TriggerTypeChoices.MODEL_SIGNAL:
@@ -39,10 +40,10 @@ class TriggerMatchingService:
         elif trigger.type == TriggerTypeChoices.MANUAL:
             return self._match_manual(trigger, event)
         elif trigger.type == TriggerTypeChoices.SCHEDULE:
-             # Schedules are processed by celery beat, not event stream usually?
-             # Or event stream "schedule.tick"?
-             # For now, safe default is False or specific match if we have schedule events.
-             return event.event_type == "schedule.tick"
+            # Schedules are processed by celery beat, not event stream usually?
+            # Or event stream "schedule.tick"?
+            # For now, safe default is False or specific match if we have schedule events.
+            return event.event_type == "schedule.tick"
 
         return False
 
@@ -79,10 +80,7 @@ class TriggerMatchingService:
         # No, "optional model label" means label is one of the matching criteria.
         # Let's support optional action filter.
         req_action = conf.get("action")
-        if req_action and req_action != action:
-            return False
-
-        return True
+        return not (req_action and req_action != action)
 
     def _match_webhook(self, trigger: TriggerSpec, event: Event) -> bool:
         # Event type: webhook
@@ -91,5 +89,5 @@ class TriggerMatchingService:
         return event.event_type == "webhook"
 
     def _match_manual(self, trigger: TriggerSpec, event: Event) -> bool:
-         # Event type: manual
-         return event.event_type == "manual"
+        # Event type: manual
+        return event.event_type == "manual"

@@ -1,4 +1,3 @@
-
 from django.contrib import admin
 from django.db import models, transaction
 from django.urls import path
@@ -30,23 +29,26 @@ class TriggerSpecInline(admin.StackedInline):
     model = TriggerSpec
     extra = 0
     formfield_overrides = {
-        models.JSONField: {'widget': JSONEditorWidget},
+        models.JSONField: {"widget": JSONEditorWidget},
     }
+
 
 class RuleInline(admin.StackedInline):
     model = Rule
     extra = 0
     formfield_overrides = {
-        models.JSONField: {'widget': JSONEditorWidget},
+        models.JSONField: {"widget": JSONEditorWidget},
     }
+
 
 @admin.register(TriggerSpec)
 class TriggerSpecAdmin(admin.ModelAdmin):
     list_display = ["automation", "type", "is_active"]
     list_filter = ["type", "is_active", "automation"]
     formfield_overrides = {
-        models.JSONField: {'widget': JSONEditorWidget},
+        models.JSONField: {"widget": JSONEditorWidget},
     }
+
 
 class ExecutionStepInline(admin.TabularInline):
     model = ExecutionStep
@@ -58,6 +60,7 @@ class ExecutionStepInline(admin.TabularInline):
     def has_add_permission(self, request, obj=None):
         return False
 
+
 @admin.register(ExecutionStep)
 class ExecutionStepAdmin(admin.ModelAdmin):
     # Canonical StepRun
@@ -68,6 +71,7 @@ class ExecutionStepAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request):
         return False
+
 
 @admin.register(Automation)
 class AutomationAdmin(admin.ModelAdmin):
@@ -83,12 +87,14 @@ class AutomationAdmin(admin.ModelAdmin):
         urls = super().get_urls()
         from .views.prompt_eval import PromptEvalView, prompt_test_api  # noqa: PLC0415
         from .views.wizard import AutomationWizardView  # noqa: PLC0415
+
         custom_urls = [
             path("wizard/", self.admin_site.admin_view(AutomationWizardView().as_view), name="automation_wizard"),
             path("prompt-eval/", self.admin_site.admin_view(PromptEvalView.as_view()), name="prompt_eval"),
             path("prompt-eval/test/", prompt_test_api, name="prompt_test_api"),
         ]
         return custom_urls + urls
+
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
@@ -97,11 +103,12 @@ class EventAdmin(admin.ModelAdmin):
     ordering = ["-created_at"]
     readonly_fields = ["created_at", "processed_at"]
     formfield_overrides = {
-        models.JSONField: {'widget': JSONEditorWidget},
+        models.JSONField: {"widget": JSONEditorWidget},
     }
 
     def has_add_permission(self, request):
         return False
+
 
 @admin.register(Execution)
 class ExecutionAdmin(admin.ModelAdmin):
@@ -126,7 +133,7 @@ class ExecutionAdmin(admin.ModelAdmin):
             for execution in queryset:
                 # 1. Reset State
                 execution.status = "queued"
-                execution.attempt = 0 # Reset attempts for fresh start
+                execution.attempt = 0  # Reset attempts for fresh start
                 execution.context["replay_reason"] = "admin_action"
                 # Clear error state
                 if "error" in execution.context:
@@ -143,32 +150,38 @@ class ExecutionAdmin(admin.ModelAdmin):
                     payload={"execution_id": str(execution.id)},
                     status="PENDING",
                     priority=execution.priority,
-                    created_at=timezone.now()
+                    created_at=timezone.now(),
                 )
                 success_count += 1
 
         self.message_user(request, f"Reliably re-queued {success_count} executions via Outbox.")
+
 
 @admin.register(PromptRelease)
 class PromptReleaseAdmin(admin.ModelAdmin):
     list_display = ["prompt_version", "environment", "deployed_at", "deployed_by"]
     list_filter = ["environment"]
 
+
 @admin.register(BudgetPolicy)
 class BudgetPolicyAdmin(admin.ModelAdmin):
     list_display = ["name", "scope", "current_usage_cost", "max_cost_per_day_usd"]
+
 
 @admin.register(LLMModelConfig)
 class LLMModelConfigAdmin(admin.ModelAdmin):
     list_display = ["provider", "name", "temperature"]
 
+
 @admin.register(LLMProvider)
 class LLMProviderAdmin(admin.ModelAdmin):
     list_display = ["name", "slug", "base_url"]
 
+
 @admin.register(Prompt)
 class PromptAdmin(admin.ModelAdmin):
     list_display = ["name", "slug"]
+
 
 @admin.register(PromptVersion)
 class PromptVersionAdmin(admin.ModelAdmin):
@@ -176,9 +189,8 @@ class PromptVersionAdmin(admin.ModelAdmin):
     list_filter = ["status", "prompt"]
     readonly_fields = ["created_at"]
     formfield_overrides = {
-        models.JSONField: {'widget': JSONEditorWidget},
+        models.JSONField: {"widget": JSONEditorWidget},
     }
-
 
 
 @admin.register(Workflow)
@@ -186,7 +198,7 @@ class WorkflowAdmin(admin.ModelAdmin):
     list_display = ["automation", "version", "is_live", "created_at"]
     list_filter = ["automation", "is_live"]
     formfield_overrides = {
-        models.JSONField: {'widget': JSONEditorWidget},
+        models.JSONField: {"widget": JSONEditorWidget},
     }
 
     def get_context_data(self, **kwargs):
@@ -200,8 +212,9 @@ class TemplateAdmin(admin.ModelAdmin):
     list_filter = ["type"]
     search_fields = ["name", "content"]
     formfield_overrides = {
-        models.JSONField: {'widget': JSONEditorWidget},
+        models.JSONField: {"widget": JSONEditorWidget},
     }
+
 
 @admin.register(ConnectionProfile)
 class ConnectionProfileAdmin(admin.ModelAdmin):
@@ -210,16 +223,16 @@ class ConnectionProfileAdmin(admin.ModelAdmin):
     search_fields = ["name", "slug"]
     prepopulated_fields = {"slug": ("name",)}
     formfield_overrides = {
-        models.JSONField: {'widget': JSONEditorWidget},
+        models.JSONField: {"widget": JSONEditorWidget},
     }
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         form.base_fields["encrypted_secrets"].help_text = (
-            "🔒 SECURE: Use 'env://VAR_NAME' references here. "
-            "Never paste plaintext secrets in production."
+            "🔒 SECURE: Use 'env://VAR_NAME' references here. Never paste plaintext secrets in production."
         )
         return form
+
 
 @admin.register(Outbox)
 class OutboxAdmin(admin.ModelAdmin):
@@ -229,12 +242,14 @@ class OutboxAdmin(admin.ModelAdmin):
 
     def event_id_display(self, obj):
         return obj.payload.get("event_id", "-")
+
     event_id_display.short_description = "Event ID"
 
 
 # ============================================================================
 # MCP Server Admin
 # ============================================================================
+
 
 class MCPToolInline(admin.TabularInline):
     model = MCPTool
@@ -258,24 +273,15 @@ class MCPServerAdmin(admin.ModelAdmin):
     actions = ["sync_tools"]
 
     fieldsets = [
-        (None, {
-            "fields": ["name", "slug", "description", "enabled"]
-        }),
-        ("Connection", {
-            "fields": ["endpoint_url"]
-        }),
-        ("Authentication", {
-            "fields": ["auth_type", "auth_secret_ref", "auth_header_name"],
-            "classes": ["collapse"]
-        }),
-        ("Status", {
-            "fields": ["last_synced", "last_error"],
-            "classes": ["collapse"]
-        }),
+        (None, {"fields": ["name", "slug", "description", "enabled"]}),
+        ("Connection", {"fields": ["endpoint_url"]}),
+        ("Authentication", {"fields": ["auth_type", "auth_secret_ref", "auth_header_name"], "classes": ["collapse"]}),
+        ("Status", {"fields": ["last_synced", "last_error"], "classes": ["collapse"]}),
     ]
 
     def tool_count(self, obj):
         return obj.tools.filter(enabled=True).count()
+
     tool_count.short_description = "Active Tools"
 
     @admin.action(description="Sync tools from selected servers")
@@ -304,6 +310,5 @@ class MCPToolAdmin(admin.ModelAdmin):
     search_fields = ["name", "description"]
     readonly_fields = ["server", "name", "description", "input_schema", "call_count", "last_called", "discovered_at"]
     formfield_overrides = {
-        models.JSONField: {'widget': JSONEditorWidget},
+        models.JSONField: {"widget": JSONEditorWidget},
     }
-

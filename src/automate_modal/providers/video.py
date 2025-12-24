@@ -10,8 +10,9 @@ from automate_modal.security.ssrf import safe_download
 
 logger = logging.getLogger(__name__)
 
+
 class VideoSTTCapability(Capability):
-    def __init__(self, parent: 'VideoPipelineProvider'):
+    def __init__(self, parent: "VideoPipelineProvider"):
         self.task_type = ModalTaskType.VIDEO_STT
         self.parent = parent
 
@@ -28,7 +29,9 @@ class VideoSTTCapability(Capability):
 
         # OpenAI Whisper API limit is 25MB
         if artifact.size_bytes > 25 * 1024 * 1024:
-            raise ValueError(f"Video size {artifact.size_bytes} exceeds OpenAI Whisper limit of 25MB. Chunking not yet implemented.")
+            raise ValueError(
+                f"Video size {artifact.size_bytes} exceeds OpenAI Whisper limit of 25MB. Chunking not yet implemented."
+            )
 
         # 2. Transcribe
         # We use a simplified Whisper call here directly, reusing OpenAI key
@@ -44,7 +47,7 @@ class VideoSTTCapability(Capability):
         file_obj = ctx.blob.open(artifact.uri)
 
         files = {
-            "file": ("video.mp4", file_obj, "application/octet-stream") # Whisper handles video formats usually
+            "file": ("video.mp4", file_obj, "application/octet-stream")  # Whisper handles video formats usually
         }
         data = {"model": "whisper-1", "response_format": "verbose_json"}
         headers = {"Authorization": f"Bearer {api_key}"}
@@ -59,7 +62,7 @@ class VideoSTTCapability(Capability):
             data=text.encode("utf-8"),
             mime="text/plain",
             filename=f"{ctx.request_id}_transcript.txt",
-            meta={"source_video": url}
+            meta={"source_video": url},
         )
 
         return ModalResult(
@@ -67,7 +70,7 @@ class VideoSTTCapability(Capability):
             outputs={"text": text, "video_size": artifact.size_bytes},
             artifacts=[artifact, trans_artifact],
             usage={"duration": result.get("duration")},
-            raw_provider_meta=result
+            raw_provider_meta=result,
         )
 
     def stream(self, req: dict[str, Any], ctx: ExecutionCtx) -> Iterable[StreamEvent]:
@@ -76,6 +79,7 @@ class VideoSTTCapability(Capability):
         # unless we break it down or use callbacks.
         # For job execution, the engine might poll?
         pass
+
 
 class VideoPipelineProvider(ProviderBase):
     key = "video-pipeline"
@@ -86,10 +90,10 @@ class VideoPipelineProvider(ProviderBase):
     def config_schema(cls) -> dict:
         return {
             "type": "object",
-            "required": ["api_key_ref"], # Reusing OpenAI key for STT
+            "required": ["api_key_ref"],  # Reusing OpenAI key for STT
             "properties": {
                 "api_key_ref": {"type": "string"},
-            }
+            },
         }
 
     @property

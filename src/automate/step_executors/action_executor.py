@@ -3,6 +3,7 @@ Action Step Executor
 
 Executes actions: MCP tools, HTTP calls, Slack messages, etc.
 """
+
 import logging
 import time
 
@@ -15,20 +16,20 @@ logger = logging.getLogger(__name__)
 class ActionStepExecutor(BaseStepExecutor):
     """
     Execute an action step.
-    
+
     Config:
         action_type: str - "mcp_tool", "http", "slack"
-        
+
         For MCP Tools:
             tool_name: str
             tool_args: dict
-            
+
         For HTTP:
             method: str
             url: str
             headers: dict
             body: dict
-            
+
         For Slack:
             channel: str
             message: str
@@ -48,11 +49,7 @@ class ActionStepExecutor(BaseStepExecutor):
         elif action_type == "slack":
             return self._execute_slack(context)
         else:
-            return StepResult(
-                success=False,
-                output=None,
-                error=f"Unknown action type: {action_type}"
-            )
+            return StepResult(success=False, output=None, error=f"Unknown action type: {action_type}")
 
     def _execute_mcp_tool(self, context: StepContext) -> StepResult:
         """Execute an MCP tool."""
@@ -74,18 +71,14 @@ class ActionStepExecutor(BaseStepExecutor):
                     resolved_args[key] = value
 
             # Find the tool
-            tool = MCPTool.objects.select_related("server").filter(
-                name=tool_name,
-                enabled=True,
-                server__enabled=True
-            ).first()
+            tool = (
+                MCPTool.objects.select_related("server")
+                .filter(name=tool_name, enabled=True, server__enabled=True)
+                .first()
+            )
 
             if not tool:
-                return StepResult(
-                    success=False,
-                    output=None,
-                    error=f"MCP tool not found: {tool_name}"
-                )
+                return StepResult(success=False, output=None, error=f"MCP tool not found: {tool_name}")
 
             # Execute
             client = MCPClient(tool.server)
@@ -93,6 +86,7 @@ class ActionStepExecutor(BaseStepExecutor):
 
             # Update stats
             from django.utils import timezone
+
             tool.call_count += 1
             tool.last_called = timezone.now()
             tool.save(update_fields=["call_count", "last_called"])
@@ -101,7 +95,7 @@ class ActionStepExecutor(BaseStepExecutor):
                 success=True,
                 output=result,
                 duration_ms=int((time.time() - start_time) * 1000),
-                metadata={"tool": tool_name, "server": tool.server.slug}
+                metadata={"tool": tool_name, "server": tool.server.slug},
             )
 
         except MCPClientError as e:
@@ -109,19 +103,16 @@ class ActionStepExecutor(BaseStepExecutor):
                 success=False,
                 output=None,
                 error=f"MCP tool error: {e}",
-                duration_ms=int((time.time() - start_time) * 1000)
+                duration_ms=int((time.time() - start_time) * 1000),
             )
         except Exception as e:
             logger.exception(f"MCP tool execution failed: {e}")
-            return StepResult(
-                success=False,
-                output=None,
-                error=str(e)
-            )
+            return StepResult(success=False, output=None, error=str(e))
 
     def _execute_http(self, context: StepContext) -> StepResult:
         """Execute an HTTP request."""
         import httpx
+
         start_time = time.time()
 
         try:
@@ -132,8 +123,7 @@ class ActionStepExecutor(BaseStepExecutor):
 
             # Resolve templates in headers and body
             resolved_headers = {
-                k: self._resolve_template(v, context) if isinstance(v, str) else v
-                for k, v in headers.items()
+                k: self._resolve_template(v, context) if isinstance(v, str) else v for k, v in headers.items()
             }
             resolved_body = {}
             for k, v in body.items():
@@ -146,11 +136,7 @@ class ActionStepExecutor(BaseStepExecutor):
                 if method == "GET":
                     response = client.get(url, headers=resolved_headers, params=resolved_body)
                 else:
-                    response = client.request(
-                        method, url,
-                        headers=resolved_headers,
-                        json=resolved_body
-                    )
+                    response = client.request(method, url, headers=resolved_headers, json=resolved_body)
 
                 response.raise_for_status()
 
@@ -163,7 +149,7 @@ class ActionStepExecutor(BaseStepExecutor):
                     success=True,
                     output=output,
                     duration_ms=int((time.time() - start_time) * 1000),
-                    metadata={"status_code": response.status_code, "url": url}
+                    metadata={"status_code": response.status_code, "url": url},
                 )
 
         except httpx.HTTPStatusError as e:
@@ -171,18 +157,15 @@ class ActionStepExecutor(BaseStepExecutor):
                 success=False,
                 output=None,
                 error=f"HTTP {e.response.status_code}: {e.response.text[:200]}",
-                duration_ms=int((time.time() - start_time) * 1000)
+                duration_ms=int((time.time() - start_time) * 1000),
             )
         except Exception as e:
-            return StepResult(
-                success=False,
-                output=None,
-                error=str(e)
-            )
+            return StepResult(success=False, output=None, error=str(e))
 
     def _execute_slack(self, context: StepContext) -> StepResult:
         """Send a Slack message via webhook or API."""
         import httpx
+
         start_time = time.time()
 
         try:
@@ -194,53 +177,43 @@ class ActionStepExecutor(BaseStepExecutor):
                 # Use incoming webhook
                 with httpx.Client(timeout=10.0) as client:
                     response = client.post(
-                        webhook_url,
-                        json={"text": message, "channel": channel} if channel else {"text": message}
+                        webhook_url, json={"text": message, "channel": channel} if channel else {"text": message}
                     )
                     response.raise_for_status()
 
                 return StepResult(
                     success=True,
                     output={"message": "Sent to Slack via webhook"},
-                    duration_ms=int((time.time() - start_time) * 1000)
+                    duration_ms=int((time.time() - start_time) * 1000),
                 )
             else:
                 # Use Slack Web API (requires SLACK_BOT_TOKEN env var)
                 import os
+
                 token = os.environ.get("SLACK_BOT_TOKEN")
                 if not token:
                     return StepResult(
-                        success=False,
-                        output=None,
-                        error="SLACK_BOT_TOKEN not set and no webhook_url provided"
+                        success=False, output=None, error="SLACK_BOT_TOKEN not set and no webhook_url provided"
                     )
 
                 with httpx.Client(timeout=10.0) as client:
                     response = client.post(
                         "https://slack.com/api/chat.postMessage",
                         headers={"Authorization": f"Bearer {token}"},
-                        json={"channel": channel, "text": message}
+                        json={"channel": channel, "text": message},
                     )
                     data = response.json()
 
                     if not data.get("ok"):
-                        return StepResult(
-                            success=False,
-                            output=None,
-                            error=f"Slack API error: {data.get('error')}"
-                        )
+                        return StepResult(success=False, output=None, error=f"Slack API error: {data.get('error')}")
 
                     return StepResult(
                         success=True,
                         output=data,
                         duration_ms=int((time.time() - start_time) * 1000),
-                        metadata={"channel": channel, "ts": data.get("ts")}
+                        metadata={"channel": channel, "ts": data.get("ts")},
                     )
 
         except Exception as e:
             logger.exception(f"Slack action failed: {e}")
-            return StepResult(
-                success=False,
-                output=None,
-                error=str(e)
-            )
+            return StepResult(success=False, output=None, error=str(e))

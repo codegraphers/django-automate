@@ -7,11 +7,12 @@ from automate_modal.engine import engine
 
 logger = logging.getLogger(__name__)
 
+
 @register_step_executor("modal")
 class ModalExecuteStep(BaseStepExecutor):
     """
     Workflow step to execute a Multi-Modal Gateway task.
-    
+
     Configuration:
         endpoint: str (slug)
         task_type: str (e.g. "llm.chat")
@@ -39,7 +40,7 @@ class ModalExecuteStep(BaseStepExecutor):
                     endpoint_slug=endpoint_slug,
                     task_type=task_type,
                     req=input_payload,
-                    actor_id=f"workflow:{context.execution_id}"
+                    actor_id=f"workflow:{context.execution_id}",
                 )
 
                 # Convert artifacts to dicts for JSON serialization safety in workflow context
@@ -47,12 +48,8 @@ class ModalExecuteStep(BaseStepExecutor):
 
                 return StepResult(
                     success=True,
-                    output={
-                        "outputs": result.outputs,
-                        "artifacts": artifacts_data,
-                        "usage": result.usage
-                    },
-                    metadata={"provider": result.raw_provider_meta.get("provider", "unknown")}
+                    output={"outputs": result.outputs, "artifacts": artifacts_data, "usage": result.usage},
+                    metadata={"provider": result.raw_provider_meta.get("provider", "unknown")},
                 )
             else:
                 # Async Job Submission
@@ -60,22 +57,16 @@ class ModalExecuteStep(BaseStepExecutor):
                     endpoint_slug=endpoint_slug,
                     task_type=task_type,
                     req=input_payload,
-                    actor_id=f"workflow:{context.execution_id}"
+                    actor_id=f"workflow:{context.execution_id}",
                 )
 
                 return StepResult(
-                    success=True,
-                    output={"job_id": job_id, "status": "queued"},
-                    metadata={"mode": "async"}
+                    success=True, output={"job_id": job_id, "status": "queued"}, metadata={"mode": "async"}
                 )
 
         except Exception as e:
             logger.exception("Modal execution failed")
-            return StepResult(
-                success=False,
-                output=None,
-                error=str(e)
-            )
+            return StepResult(success=False, output=None, error=str(e))
 
     def _resolve_nested(self, data: Any, context: StepContext) -> Any:
         if isinstance(data, dict):
@@ -92,5 +83,5 @@ class ModalExecuteStep(BaseStepExecutor):
             "uri": artifact.uri,
             "mime": artifact.mime,
             "size_bytes": artifact.size_bytes,
-            "meta": artifact.meta
+            "meta": artifact.meta,
         }

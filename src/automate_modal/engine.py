@@ -8,6 +8,7 @@ Orchestrates:
 4. Capability execution (Sync/Async/Stream)
 5. Result persistence
 """
+
 import logging
 import time
 import uuid
@@ -25,15 +26,17 @@ from .secrets.env import EnvSecretsResolver
 
 logger = logging.getLogger(__name__)
 
-class ExecutionEngine:
 
+class ExecutionEngine:
     def __init__(self):
         # In a real app, these would be injected or loaded from settings
         self.secrets = EnvSecretsResolver()
         self.blob = LocalBlobStore()
         self.queue = CeleryJobQueue()
 
-    def execute(self, *, endpoint_slug: str, task_type: str, req: dict[str, Any], actor_id: str | None = None) -> ModalResult:
+    def execute(
+        self, *, endpoint_slug: str, task_type: str, req: dict[str, Any], actor_id: str | None = None
+    ) -> ModalResult:
         """
         Synchronous execution.
         """
@@ -68,7 +71,9 @@ class ExecutionEngine:
             self._audit_log(endpoint, task_type, ctx, "error", start_ts, error=str(e))
             raise
 
-    def stream(self, *, endpoint_slug: str, task_type: str, req: dict[str, Any], actor_id: str | None = None) -> Generator[StreamEvent, None, None]:
+    def stream(
+        self, *, endpoint_slug: str, task_type: str, req: dict[str, Any], actor_id: str | None = None
+    ) -> Generator[StreamEvent, None, None]:
         """
         Streaming execution generator.
         """
@@ -80,14 +85,15 @@ class ExecutionEngine:
             capability.validate(req)
             iterator = capability.stream(req, ctx)
 
-            for event in iterator:
-                yield event
+            yield from iterator
 
         except Exception as e:
             logger.exception("Stream failed")
             yield StreamEvent(type="error", data={"message": str(e)}, ts=time.time())
 
-    def submit_job(self, *, endpoint_slug: str, task_type: str, req: dict[str, Any], actor_id: str | None = None) -> str:
+    def submit_job(
+        self, *, endpoint_slug: str, task_type: str, req: dict[str, Any], actor_id: str | None = None
+    ) -> str:
         """
         Submit async job. Returns job_id.
         """
@@ -101,14 +107,11 @@ class ExecutionEngine:
             scheduled_at=timezone.now(),
             # TODO: Redact payload
             payload_redacted=req,
-            correlation_id=str(uuid.uuid4()) # or from trace context
+            correlation_id=str(uuid.uuid4()),  # or from trace context
         )
 
         # Enqueue
-        self.queue.enqueue(
-            job_name="automate_modal.tasks.execute_job",
-            payload={"job_id": job.job_id}
-        )
+        self.queue.enqueue(job_name="automate_modal.tasks.execute_job", payload={"job_id": job.job_id})
 
         return job.job_id
 
@@ -121,7 +124,7 @@ class ExecutionEngine:
             raise ValueError(f"Endpoint '{slug}' not found or disabled")
 
         if task_type not in endpoint.allowed_task_types:
-             raise ValueError(f"Task '{task_type}' not allowed for endpoint '{slug}'")
+            raise ValueError(f"Task '{task_type}' not allowed for endpoint '{slug}'")
 
         return endpoint
 
@@ -142,14 +145,14 @@ class ExecutionEngine:
     def _build_ctx(self, endpoint: ModalEndpoint, actor_id: str = None) -> ExecutionCtx:
         return ExecutionCtx(
             request_id=str(uuid.uuid4()),
-            correlation_id=str(uuid.uuid4()), # TODO: propagation
+            correlation_id=str(uuid.uuid4()),  # TODO: propagation
             actor_id=actor_id,
             tenant_id=None,
             policy=endpoint.access_policy,
             secrets=self.secrets,
             blob=self.blob,
             logger=logger,
-            now_ts=time.time()
+            now_ts=time.time(),
         )
 
     def _audit_log(self, endpoint, task_type, ctx, outcome, start_ts, error=None):
@@ -164,13 +167,14 @@ class ExecutionEngine:
                 "task_type": task_type,
                 "outcome": outcome,
                 "duration_ms": int((time.time() - start_ts) * 1000),
-                "error": error
-            }
+                "error": error,
+            },
         )
 
     def _persist_artifacts(self, refs: list[ArtifactRef]):
         # Optional: verify blob existence or create DB records
         pass
+
 
 # Singleton
 engine = ExecutionEngine()

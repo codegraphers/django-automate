@@ -6,6 +6,7 @@ Usage:
     python manage.py sync_mcp_tools --server=my-mcp  # Sync specific server
     python manage.py sync_mcp_tools --all        # Sync all servers (including disabled)
 """
+
 from django.core.management.base import BaseCommand, CommandError
 
 from automate.models import MCPServer
@@ -16,16 +17,8 @@ class Command(BaseCommand):
     help = "Sync tools from registered MCP servers"
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            "--server",
-            type=str,
-            help="Slug of specific server to sync"
-        )
-        parser.add_argument(
-            "--all",
-            action="store_true",
-            help="Include disabled servers"
-        )
+        parser.add_argument("--server", type=str, help="Slug of specific server to sync")
+        parser.add_argument("--all", action="store_true", help="Include disabled servers")
 
     def handle(self, *args, **options):
         server_slug = options.get("server")
@@ -56,20 +49,14 @@ class Command(BaseCommand):
                 created, updated, schema = sync_mcp_tools(server)
                 total_created += created
                 total_updated += updated
-                self.stdout.write(
-                    self.style.SUCCESS(f"  ✓ {created} new, {updated} updated tools (schema: {schema})")
-                )
+                self.stdout.write(self.style.SUCCESS(f"  ✓ {created} new, {updated} updated tools (schema: {schema})"))
             except MCPClientError as e:
                 errors.append(server.name)
-                self.stdout.write(
-                    self.style.ERROR(f"  ✗ {str(e)}")
-                )
+                self.stdout.write(self.style.ERROR(f"  ✗ {str(e)}"))
 
         # Summary
         self.stdout.write("")
         self.stdout.write(f"Total: {total_created} created, {total_updated} updated")
 
         if errors:
-            self.stdout.write(
-                self.style.ERROR(f"Failed: {', '.join(errors)}")
-            )
+            self.stdout.write(self.style.ERROR(f"Failed: {', '.join(errors)}"))

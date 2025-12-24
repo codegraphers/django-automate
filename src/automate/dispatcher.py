@@ -11,7 +11,8 @@ from .models import Event, Execution, ExecutionStatusChoices, Outbox, OutboxStat
 
 logger = logging.getLogger(__name__)
 
-LOCK_TTL = getattr(settings, "AUTOMATE_OUTBOX_LOCK_TTL", 60) # seconds
+LOCK_TTL = getattr(settings, "AUTOMATE_OUTBOX_LOCK_TTL", 60)  # seconds
+
 
 class Dispatcher:
     """
@@ -48,35 +49,33 @@ class Dispatcher:
             # 3. RETRY with upcoming attempt
 
             qs = Outbox.objects.filter(
-                Q(status=OutboxStatusChoices.PENDING) |
-                Q(status=OutboxStatusChoices.RUNNING, lease_expires_at__lt=now) |
-                Q(status=OutboxStatusChoices.RETRY, next_attempt_at__lte=now)
+                Q(status=OutboxStatusChoices.PENDING)
+                | Q(status=OutboxStatusChoices.RUNNING, lease_expires_at__lt=now)
+                | Q(status=OutboxStatusChoices.RETRY, next_attempt_at__lte=now)
             )
 
             # SQLite does not support skip_locked
             if "sqlite" in settings.DATABASES["default"]["ENGINE"]:
-               qs = qs.select_for_update().order_by("priority", "created_at")[:batch_size]
+                qs = qs.select_for_update().order_by("priority", "created_at")[:batch_size]
             else:
-               qs = qs.select_for_update(skip_locked=True).order_by("priority", "created_at")[:batch_size]
+                qs = qs.select_for_update(skip_locked=True).order_by("priority", "created_at")[:batch_size]
 
             locked_entries = list(qs)
 
             if locked_entries:
-                Outbox.objects.filter(
-                    id__in=[e.id for e in locked_entries]
-                ).update(
+                Outbox.objects.filter(id__in=[e.id for e in locked_entries]).update(
                     lease_expires_at=now + datetime.timedelta(seconds=LOCK_TTL),
                     lease_owner=worker_id,
-                    status=OutboxStatusChoices.RUNNING
+                    status=OutboxStatusChoices.RUNNING,
                 )
 
             return locked_entries
 
     def _dispatch_event(self, entry: Outbox):  # noqa: C901, PLR0912, PLR0915
         if entry.kind != "event":
-             # Only dispatch events for now
-             return
-             
+            # Only dispatch events for now
+            return
+
         event_id = entry.payload.get("event_id")
         if not event_id:
             logger.error(f"Outbox entry {entry.id} missing event_id in payload")
@@ -91,14 +90,15 @@ class Dispatcher:
             entry.status = OutboxStatusChoices.DLQ
             entry.save()
             return
-            
+
         try:
             # P0.4: Use Strict Matching Service
             from .services.trigger import TriggerMatchingService  # noqa: PLC0415
+
             matcher = TriggerMatchingService()
 
             triggers = TriggerSpec.objects.filter(is_active=True)
-            matched_automations = {} # Deduplicate by ID
+            matched_automations = {}  # Deduplicate by ID
 
             for trigger in triggers:
                 if matcher.matches(trigger, event):
@@ -122,22 +122,22 @@ class Dispatcher:
                     workflow = automation.workflows.order_by("-version").first()
 
                 if workflow:
-                     # P0.2: Snapshot workflow.version
-                     Execution.objects.get_or_create(
+                    # P0.2: Snapshot workflow.version
+                    Execution.objects.get_or_create(
                         tenant_id=event.tenant_id,
                         event=event,
                         automation=automation,
                         workflow_version=workflow.version,
                         defaults={
                             "status": ExecutionStatusChoices.QUEUED,
-                        }
+                        },
                     )
-                     count += 1
+                    count += 1
                 else:
                     logger.warning(f"Automation {automation.id} matched but has no workflows.")
 
             entry.status = OutboxStatusChoices.DONE
-            entry.updated_at = timezone.now() # Generic uses updated_at, kept processed_at removed?
+            entry.updated_at = timezone.now()  # Generic uses updated_at, kept processed_at removed?
             # OutboxItem doesn't have processed_at, using updated_at implicitly
             entry.save()
             logger.info(f"Dispatched event {event.id} to {count} automations")
@@ -162,7 +162,8 @@ class Dispatcher:
 
                 # Exponential Backoff + Jitter
                 import random  # noqa: PLC0415
-                backoff = 2 ** (entry.attempt_count - 1) # 1, 2, 4
+
+                backoff = 2 ** (entry.attempt_count - 1)  # 1, 2, 4
                 jitter = random.uniform(0, 1)
                 delay = backoff + jitter
 

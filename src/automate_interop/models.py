@@ -8,6 +8,7 @@ class InteropMapping(models.Model):
     Maps a local django_automate workflow to an external orchestrator workflow.
     Tracks drift/sync state.
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     local_workflow_id = models.CharField(max_length=255, help_text="ID/Slug of local workflow")
     orchestrator_instance = models.CharField(max_length=255, default="n8n:primary")
@@ -25,15 +26,18 @@ class InteropMapping(models.Model):
             models.Index(fields=["remote_workflow_id"]),
         ]
 
+
 class TemplateCollection(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     rank = models.IntegerField(default=0)
 
+
 class TemplateWorkflow(models.Model):
     """
     A stored template served via the Template Host API.
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)

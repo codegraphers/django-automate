@@ -9,12 +9,14 @@ class PriceRate:
     output_usd_per_1k: float
     min_tokens: int = 0
 
+
 # Static fallback table
 _STATIC_PRICING_TABLE: dict[str, PriceRate] = {
     "gpt-4o-mini": PriceRate(0.00015, 0.0006),
     "gpt-4o": PriceRate(0.0025, 0.01),
     "claude-3-5-sonnet": PriceRate(0.003, 0.015),
 }
+
 
 class ModelPricing:
     """
@@ -30,7 +32,7 @@ class ModelPricing:
         key = model.lower()
         for known_key, rate in _STATIC_PRICING_TABLE.items():
             if known_key in key:
-                 return rate
+                return rate
 
         return None
 

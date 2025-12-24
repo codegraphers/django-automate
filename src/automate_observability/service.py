@@ -22,5 +22,5 @@ def log_audit_event(
         object_type=obj_type,
         object_id=obj_id,
         trace_id=get_trace_id() or "unknown",
-        details=details or {}
+        details=details or {},
     )

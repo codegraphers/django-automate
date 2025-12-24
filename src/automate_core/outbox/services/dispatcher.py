@@ -10,6 +10,7 @@ from ..models import OutboxItem
 
 logger = logging.getLogger(__name__)
 
+
 class OutboxDispatcher:
     """
     Service to reliably process the Outbox table and push tasks to async workers.
@@ -23,10 +24,11 @@ class OutboxDispatcher:
         now = timezone.now()
 
         # Items ready to run (Pending or Retry due)
-        qs = OutboxItem.objects.filter(
-            status__in=["PENDING", "RETRY"],
-            next_attempt_at__lte=now
-        ).select_for_update(skip_locked=True).order_by("priority", "created_at")[:batch_size]
+        qs = (
+            OutboxItem.objects.filter(status__in=["PENDING", "RETRY"], next_attempt_at__lte=now)
+            .select_for_update(skip_locked=True)
+            .order_by("priority", "created_at")[:batch_size]
+        )
 
         success_count = 0
 

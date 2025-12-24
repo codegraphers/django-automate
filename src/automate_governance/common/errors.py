@@ -9,6 +9,7 @@ class ErrorInfo:
     Canonical error descriptor used across Governance components.
     Persist this (redacted) for audit/replay/debugging.
     """
+
     code: str
     message: str
     detail: str | None = None
