@@ -2,11 +2,12 @@
 
 <div align="center">
 
-[![CI](https://github.com/example/django-automate/actions/workflows/ci.yml/badge.svg)](https://github.com/example/django-automate/actions)
-[![PyPI](https://img.shields.io/pypi/v/django-automate)](https://pypi.org/project/django-automate/)
-[![Python](https://img.shields.io/pypi/pyversions/django-automate)](https://pypi.org/project/django-automate/)
-[![License](https://img.shields.io/pypi/l/django-automate)](https://github.com/example/django-automate/blob/main/LICENSE)
-[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![CI](https://github.com/codegraphers/django-automate/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/codegraphers/django-automate/actions/workflows/ci.yml)
+[![License](https://img.shields.io/github/license/codegraphers/django-automate.svg)](https://github.com/codegraphers/django-automate/blob/main/LICENSE)
+[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://pypi.org/project/django-automate/)
+[![Ruff](https://img.shields.io/badge/lint-ruff-2b9348.svg)](https://github.com/astral-sh/ruff)
+<!-- [![PyPI](https://img.shields.io/pypi/v/django-automate.svg)](https://pypi.org/project/django-automate/) -->
+<!-- [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/django-automate.svg)](https://pypi.org/project/django-automate/) -->
 
 **A secure, extensible automation + multimodal model gateway for Django.**
 
