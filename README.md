@@ -9,93 +9,146 @@
 <!-- [![PyPI](https://img.shields.io/pypi/v/django-automate.svg)](https://pypi.org/project/django-automate/) -->
 <!-- [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/django-automate.svg)](https://pypi.org/project/django-automate/) -->
 
-**A secure, extensible automation + multimodal model gateway for Django.**
+# The Enterprise AI Gateway for Django
 
-[Documentation](docs/) • [Quickstart](#quickstart) • [Examples](examples/) • [Contributing](CONTRIBUTING.md) • [Releasing](docs/deployment/pypi_setup.md)
+**Orchestrate Multi-Modal AI, RAG Pipelines, and Async Workflows with Production-Grade Security.**
+
+[Documentation](docs/) • [Quickstart](#-quickstart) • [Architecture](#-architecture) • [Contributing](CONTRIBUTING.md)
 
 </div>
 
 ---
 
-**Django Automate** turns your Django project into a production-grade AI platform. It provides a unified gateway for LLMs, Audio, and Video models, backed by a robust automation engine.
+**Django Automate** bridges the gap between proof-of-concept AI scripts and reliable enterprise platforms. It provides a unified, secure gateway to manage LLMs, Audio (TTS/STT), Video processing, and RAG pipelines—all integrated natively into Django's ORM and Admin interface.
 
-## 🚀 Features
+Stop gluing together random Python scripts. Build on a framework designed for governance, scalability, and observability.
 
-*   **Multi-Modal Gateway**: Unified API for Text (GPT-4), Audio (TTS/Whisper), and Image/Video.
-*   **Automation Engine**: Workflow orchestration with Celery/Redis backing.
-*   **Enterprise Security**: SecretRef-only credentials, SSRF protection, RBAC, and Audit Logs.
-*   **Admin-First**: Manage providers, test capabilities, and view job logs directly in Django Admin.
+## 🚀 Why Django Automate?
+
+| Feature | Description |
+| :--- | :--- |
+| **🤖 Multi-Modal Gateway** | Unified API for **Text** (GPT-4, Claude), **Audio** (Deepgram, OpenAI), and **Video** (FFmpeg, Whisper). Switch providers with zero code changes. |
+| **🧠 RAG Subsystem** | Built-in simplified **RAG pipelines**. Manage knowledge bases, vector stores (Milvus, PGVector), and embeddings directly from the admin panel. |
+| **🛡️ Enterprise Security** | **SSRF Protection** for all outbound requests. **SecretRef** architecture ensures API keys are never exposed in code or logs. **RBAC** and **Budget Limits** per endpoint. |
+| **⚡ Async Automation** | Scalable execution engine powered by **Celery & Redis**. Handle long-running video transcripts or massive batch jobs without blocking your API. |
+| **📊 Observability** | Full audit trails, job history, and cost tracking stored in your database. Debug AI interactions with the built-in **Test Console**. |
+
+## 🏗️ Architecture
+
+```mermaid
+graph TD
+    User[User / API Client] -->|REST API| Django[Django Automate Gateway]
+    
+    subgraph "Core Engine"
+        Django --> Auth[Auth & Governance]
+        Django --> Queue[Celery Task Queue]
+        Queue --> Worker[Async Worker]
+    end
+    
+    subgraph "Provider Layer"
+        Worker -->|Text/Chat| OpenAI[OpenAI / Anthropic]
+        Worker -->|Vector Search| Milvus[Milvus / PGVector]
+        Worker -->|Video Proc| FFmpeg[Internal Video Pipeline]
+    end
+    
+    Worker -->|Store Artifacts| Blob[S3 / Local Blob Store]
+    Worker -->|Log Events| DB[(PostgreSQL)]
+```
 
 ## ⚡ Quickstart
 
-1.  **Install**:
-    ```bash
-    pip install django-automate[celery]
-    ```
+Get up and running in minutes.
 
-2.  **Try the Standalone Script**:
-    ```bash
-    python examples/scripts/quickstart.py
-    ```
+### 1. Install
+django-automate is modular. Install the core with standard dependencies:
 
-3.  **Run the Full Demo (Docker)**:
-    ```bash
-    cd examples/docker
-    docker-compose up --build
-    ```
+```bash
+pip install django-automate[celery,rag]
+```
 
-## 📦 What's Included
+### 2. Configure Settings
+Add the apps to your `INSTALLED_APPS` and configure the broker:
 
-| Package | Description |
-| ------- | ----------- |
-| `automate_modal` | **Core Gateway**. Providers, Jobs, Artifacts. |
-| `automate_llm` | **Legacy Support**. Bridge to existing text-only pipelines. |
-| `rag` | **RAG Subsystem**. Documents, Embeddings, Vector Store management. |
-| `automate_governance` | **Policy Engine**. RBAC, Secrets, Redaction. |
+```python
+# settings.py
+INSTALLED_APPS = [
+    # ... django apps
+    "rest_framework",
+    "django_filters",
+    "automate",           # Core
+    "automate_modal",     # AI Gateway
+    "rag",                # RAG System
+]
+
+# Use Redis + Celery for robust queuing
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+```
+
+### 3. Run the "Quickstart" Script
+We include a zero-config script to verify your environment. It spins up a temporary in-memory environment to test the engine.
+
+```bash
+python examples/scripts/quickstart.py
+```
+
+*Output:*
+```text
+✅ Engine initialized.
+🚀 Dispatching EchoJob...
+✨ Result: {'msg': 'Echo from provider', 'input': 'Hello World'}
+```
+
+## 💡 Use Cases
+
+### 1. The "Netflix" Video Pipeline
+Upload a raw video file -> Download securely (SSRF check) -> Extract Audio -> Transcribe (Whisper) -> Summarize (GPT-4) -> Generate Tags.
+*   **How:** Use `automate_modal` with the `VideoPipelineProvider`.
+*   **Result:** A fully indexed video accessible via API, with all intermediate artifacts stored in S3.
+
+### 2. Enterprise RAG Knowledge Base
+Upload internal PDF policies -> Chunk & Embed -> Store in Milvus -> Question Answering API.
+*   **How:** Use the `rag` app to define a `KnowledgeSource` and `RAGEndpoint`.
+*   **Result:** A secure, internal search engine that strictly respects document access permissions.
+
+### 3. Multi-Provider Router
+Avoid vendor lock-in. Define a generic "Chat" capability.
+*   **How:** Configure `OpenAI` as primary and `Anthropic` as fallback in the `ProviderConfig` admin.
+*   **Result:** Seamlessly switch traffic or A/B test models without redeploying code.
 
 ## 📦 Project Structure
 
-```
-├── src/                    # Source code (all packages)
-│   ├── automate/           # Core app & signals
-│   ├── automate_modal/     # Multi-Modal Gateway
-│   ├── automate_llm/       # Legacy LLM support
-│   └── ...
+We follow a professional `src/` layout for clean packaging.
+
+```text
+├── src/
+│   ├── automate/           # Core framework (Signals, Registry)
+│   ├── automate_modal/     # The AI Gateway (Models, Jobs, Providers)
+│   ├── automate_llm/       # Legacy LLM support (Bridge)
+│   └── rag/                # RAG (Embeddings, Vector Stores)
 ├── examples/
-│   ├── demo_app/           # Full Django reference project
-│   ├── scripts/            # Standalone runnable scripts
-│   └── docker/             # Production Docker stack
-├── tests/                  # Pytest suite
-├── docs/                   # Documentation (MkDocs)
-└── .github/workflows/      # CI/CD Pipelines
+│   └── docker/             # Production-ready Docker Compose stack
+├── docs/                   # MkDocs source files
+└── .github/workflows/      # CI/CD (TestPyPI, OIDC Publishing)
 ```
 
-## 🔧 Environment Variables
+## 🔧 Deployment
 
-Copy `.env.example` to `.env`. Key variables:
+Django Automate is built for containerized environments.
 
-| Variable | Description |
-| -------- | ----------- |
-| `OPENAI_API_KEY` | Needed for OpenAI providers. |
-| `CELERY_BROKER_URL` | Redis URL for async tasks. |
-| `POSTGRES_*` | Database credentials (if using docker). |
+1.  **Environment Variables**: Secure your deployments with `SecretRef`.
+    *   `OPENAI_API_KEY`: Managed via Django Admin or env vars.
+    *   `CELERY_BROKER_URL`: Point to your managed Redis.
+    *   `DATABASE_URL`: Point to PostgreSQL.
 
-## 📚 Documentation
-
-Full documentation is available in the `docs/` directory.
-You can browse it locally:
-
-```bash
-pip install mkdocs-material
-mkdocs serve
-```
-
-It is also hosted on [GitHub Pages](https://example.com).
+2.  **Docker**:
+    See `examples/docker/` for a reference `docker-compose.yml` that orchestrates Django, Celery Workers, Redis, and Postgres.
 
 ## 🤝 Contributing
 
-We welcome contributions! Please check [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions.
+We are building the standard for Python AI Automation.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for dev setup and guidelines.
 
 ## 📄 License
 
-MIT License. See [LICENSE](LICENSE) for details.
+MIT License. Free for commercial and private use.
+Copyright (c) 2024 CodeGraphers.
