@@ -8,10 +8,23 @@ from django.utils.translation import gettext_lazy as _
 # CORE SHIM LAYER (Area C Refactor)
 # =============================================================================
 # These models are now canonical in `src/automate_core`.
-# We import them here to maintain backward compatibility for imports,
-# but the database tables are now owned by `automate_core`.
+# We import them here to maintain backward compatibility for imports.
+from automate_core.models import (
+    Automation,
+    Event,
+    Execution,
+    ExecutionStatusChoices,
+    ExecutionStep,
+    OutboxItem as Outbox,  # Renamed for historical compat if needed, or if Outbox existed
+    OutboxStatusChoices,
+    RuleSpec as Rule,  # Shim RuleSpec as Rule
+    Trigger,
+    Trigger as TriggerSpec,  # Shim Trigger as TriggerSpec for legacy compat
+    TriggerTypeChoices,
+    Workflow,
+)
+
 # Re-export choices if needed for compat (though explicit import is better)
-# EventStatusChoices = Event.Status # If we implemented it that way
 # For now, relying on consumers to update or use string values which match.
 
 # =============================================================================
@@ -305,3 +318,29 @@ class MCPTool(models.Model):
 
     def __str__(self):
         return f"{self.server.slug}/{self.name}"
+
+__all__ = [
+    "Automation",
+    "BudgetPolicy",
+    "ConnectionProfile",
+    "Event",
+    "Execution",
+    "ExecutionStatusChoices",
+    "ExecutionStep",
+    "LLMModelConfig",
+    "LLMProvider",
+    "MCPServer",
+    "MCPTool",
+    "Outbox",
+    "OutboxStatusChoices",
+    "Prompt",
+    "PromptRelease",
+    "PromptStatusChoices",
+    "PromptVersion",
+    "Rule",
+    "Template",
+    "Trigger",
+    "TriggerSpec",
+    "TriggerTypeChoices",
+    "Workflow",
+]

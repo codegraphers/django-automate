@@ -104,6 +104,7 @@ ignore = ["PLR2004", "PLR0913"]
 "src/automate_datachat/intelligence.py" = ["PLC0415"]
 "examples/demo_app/manage.py" = ["PLC0415"]
 "examples/demo_app/example_project/apps.py" = ["E501"]
+"src/automate/models.py" = ["I001"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["automate", "automate_core", "automate_governance", "automate_llm", "automate_connectors", "automate_interop"]
