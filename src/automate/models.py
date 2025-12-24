@@ -24,6 +24,16 @@ from automate_core.models import (
     Workflow,
 )
 
+# Phase 1: Robust Queue Abstraction (New Canonical Models)
+from automate_core.jobs.models import (
+    BackendTypeChoices,
+    Job,
+    JobEvent,
+    JobEventTypeChoices,
+    JobKindChoices,
+    JobStatusChoices,
+)
+
 # Re-export choices if needed for compat (though explicit import is better)
 # For now, relying on consumers to update or use string values which match.
 
@@ -321,12 +331,18 @@ class MCPTool(models.Model):
 
 __all__ = [
     "Automation",
+    "BackendTypeChoices",
     "BudgetPolicy",
     "ConnectionProfile",
     "Event",
     "Execution",
     "ExecutionStatusChoices",
     "ExecutionStep",
+    "Job",
+    "JobEvent",
+    "JobEventTypeChoices",
+    "JobKindChoices",
+    "JobStatusChoices",
     "LLMModelConfig",
     "LLMProvider",
     "MCPServer",
