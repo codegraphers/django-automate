@@ -150,5 +150,5 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for dev setup and guidelines.
 
 ## 📄 License
 
-MIT License. Free for commercial and private use.
-Copyright (c) 2024 CodeGraphers.
+Apache License 2.0.
+Copyright (c) 2025 CodeGraphers.
