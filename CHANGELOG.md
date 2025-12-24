@@ -22,4 +22,5 @@ All notable changes to this project will be documented in this file.
 - Resolved over 300 linting errors including whitespace, unused imports (`F401`), and logic issues (`B904` exception chaining, `F821` undefined names).
 - Configured targeted `ruff` ignores for legacy modules (`automate_core`, `step_executors`) to pass CI without risky refactors.
 - Fixed `ImportError` in `automate.models` by properly shimming and exporting core models (`Automation`, `Event`, etc.) in `__all__`.
+- Fixed `test_outbox_concurrency` failures on SQLite by improved retry logic in `Dispatcher` and robust worker test loops.
 - Removed `.DS_Store` file which caused CI failures.

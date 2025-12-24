@@ -15,7 +15,10 @@ def test_outbox_concurrency():
     """
     # Setup
     auto = Automation.objects.create(name="Concurrency Test", slug="concurrency-test")
-    TriggerSpec.objects.create(automation=auto, type=TriggerTypeChoices.MANUAL, filter_config={})
+    # Create dummy workflow to avoid warnings (and actually create executions if we checked for them)
+    # But for this test, we just check Outbox -> DONE.
+    from automate.models import Workflow
+    Workflow.objects.create(automation=auto, version=1, is_live=True, graph={})
 
     # Ingest 50 events to ensure collision checking
     for i in range(50):
@@ -25,19 +28,27 @@ def test_outbox_concurrency():
 
     # Define Worker
     def worker(wid):
+        import time 
+        import random
         # Clean connections for thread
         connections.close_all()
         dispatcher = Dispatcher()
         # Process until empty
         # dispatch_batch returns list of entries processed
+        
+        empty_retries = 10  # Retry a few times if we get empty result (transient lock)
+        
         while True:
             processed = dispatcher.dispatch_batch(batch_size=5, worker_id=wid)
             if not processed:
-                # Check if any pending left?
-                # It might be that other worker took them.
-                # Just loop until DB really empty of pending?
-                # Or simplistic check.
+                if empty_retries > 0:
+                    empty_retries -= 1
+                    time.sleep(random.uniform(0.1, 0.3))
+                    continue
                 break
+            else:
+                empty_retries = 10  # Reset on success
+            
         connections.close_all()
 
     t1 = threading.Thread(target=worker, args=("worker-1",))
@@ -50,5 +61,5 @@ def test_outbox_concurrency():
 
     # Assertions
     assert Outbox.objects.filter(status=OutboxStatusChoices.DONE).count() == 50
-    assert Outbox.objects.filter(status=OutboxStatusChoices.LOCKED).count() == 0
+    assert Outbox.objects.filter(status=OutboxStatusChoices.RUNNING).count() == 0
     assert Outbox.objects.filter(status=OutboxStatusChoices.PENDING).count() == 0

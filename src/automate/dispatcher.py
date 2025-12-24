@@ -42,34 +42,55 @@ class Dispatcher:
         now = timezone.now()
         # ttl_cutoff = now - datetime.timedelta(seconds=LOCK_TTL)
 
-        with transaction.atomic():
-            # Filter logic:
-            # 1. PENDING
-            # 2. RUNNING but lease expired (Steal)
-            # 3. RETRY with upcoming attempt
+        from django.conf import settings  # Ensure settings is available
 
-            qs = Outbox.objects.filter(
-                Q(status=OutboxStatusChoices.PENDING)
-                | Q(status=OutboxStatusChoices.RUNNING, lease_expires_at__lt=now)
-                | Q(status=OutboxStatusChoices.RETRY, next_attempt_at__lte=now)
-            )
+        # Robustness: Retry on SQLite locks to allow concurrency tests to pass
+        is_sqlite = "sqlite" in settings.DATABASES["default"]["ENGINE"]
+        max_retries = 5 if is_sqlite else 1
 
-            # SQLite does not support skip_locked
-            if "sqlite" in settings.DATABASES["default"]["ENGINE"]:
-                qs = qs.select_for_update().order_by("priority", "created_at")[:batch_size]
-            else:
-                qs = qs.select_for_update(skip_locked=True).order_by("priority", "created_at")[:batch_size]
+        for attempt in range(max_retries):
+            try:
+                with transaction.atomic():
+                    # Filter logic:
+                    # 1. PENDING
+                    # 2. RUNNING but lease expired (Steal)
+                    # 3. RETRY with upcoming attempt
 
-            locked_entries = list(qs)
+                    qs = Outbox.objects.filter(
+                        Q(status=OutboxStatusChoices.PENDING)
+                        | Q(status=OutboxStatusChoices.RUNNING, lease_expires_at__lt=now)
+                        | Q(status=OutboxStatusChoices.RETRY, next_attempt_at__lte=now)
+                    )
 
-            if locked_entries:
-                Outbox.objects.filter(id__in=[e.id for e in locked_entries]).update(
-                    lease_expires_at=now + datetime.timedelta(seconds=LOCK_TTL),
-                    lease_owner=worker_id,
-                    status=OutboxStatusChoices.RUNNING,
-                )
+                    # SQLite does not support skip_locked
+                    if is_sqlite:
+                        qs = qs.select_for_update().order_by("priority", "created_at")[:batch_size]
+                    else:
+                        qs = qs.select_for_update(skip_locked=True).order_by("priority", "created_at")[:batch_size]
 
-            return locked_entries
+                    locked_entries = list(qs)
+
+                    if locked_entries:
+                        # Mark as RUNNING
+                        Outbox.objects.filter(id__in=[e.id for e in locked_entries]).update(
+                            lease_expires_at=now + datetime.timedelta(seconds=LOCK_TTL),
+                            lease_owner=worker_id,
+                            status=OutboxStatusChoices.RUNNING,
+                        )
+
+                    return locked_entries
+
+            except Exception as e:
+                # Catch SQLite locking errors specifically
+                if is_sqlite and "database table is locked" in str(e):
+                    if attempt < max_retries - 1:
+                        import time
+                        import random
+                        time.sleep(random.uniform(0.05, 0.2))  # Backoff
+                        continue
+                raise e
+
+        return []
 
     def _dispatch_event(self, entry: Outbox):  # noqa: C901, PLR0912, PLR0915
         if entry.kind != "event":
