@@ -32,7 +32,7 @@ def subscribe(request):
     try:
         data = json.loads(request.body)
         target_url = data.get("target_url")
-        event = data.get("event")
+        # event = data.get("event")
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON"}, status=400)
 
@@ -41,7 +41,7 @@ def subscribe(request):
 
     # P0.5: Validate Callback URL (SSRF)
     # We use the hardened HttpFetchTool from automate_llm to validate the URL
-    from automate_llm.tools.http import HttpFetchTool
+    from automate_llm.tools.http import HttpFetchTool  # noqa: PLC0415
 
     validator = HttpFetchTool()
     if not validator._is_safe_url(target_url):

@@ -13,7 +13,8 @@ from django.views.decorators.http import require_http_methods
 def create_workflow(request):
     """
     POST /api/automate/workflows/
-    
+    POST /api/automate/workflows/
+
     Create a new automation with a workflow from the canvas UI.
     
     Request body:
@@ -26,9 +27,9 @@ def create_workflow(request):
         }
     """
     try:
-        from django.utils.text import slugify
+        from django.utils.text import slugify  # noqa: PLC0415
 
-        from automate.models import Automation, TriggerSpec, Workflow
+        from automate.models import Automation, TriggerSpec, Workflow  # noqa: PLC0415
 
         data = json.loads(request.body)
         name = data.get("name", "Untitled Workflow")
@@ -70,7 +71,7 @@ def create_workflow(request):
 
             # Enforce DB Trigger if applicable
             if trigger_config.get("event_type") == "db_change" and trigger_config.get("table"):
-                from django.core.management import call_command
+                from django.core.management import call_command  # noqa: PLC0415
                 try:
                     call_command("setup_db_trigger", trigger_config.get("table"))
                 except Exception as e:
@@ -110,9 +111,9 @@ def workflow_detail(request, id):
     GET /api/automate/workflows/{id}/ - Retrieve a workflow.
     PUT /api/automate/workflows/{id}/ - Update a workflow.
     """
-    from django.shortcuts import get_object_or_404
+    from django.shortcuts import get_object_or_404  # noqa: PLC0415
 
-    from automate.models import Automation, TriggerSpec, Workflow
+    from automate.models import Automation, TriggerSpec, Workflow  # noqa: PLC0415
 
     automation = get_object_or_404(Automation, id=id)
 
@@ -168,7 +169,7 @@ def workflow_detail(request, id):
 
                 # Enforce DB Trigger
                 if trigger_config.get("event_type") == "db_change" and trigger_config.get("table"):
-                    from django.core.management import call_command
+                    from django.core.management import call_command  # noqa: PLC0415
                     try:
                         call_command("setup_db_trigger", trigger_config.get("table"))
                     except Exception as e:

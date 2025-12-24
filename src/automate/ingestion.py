@@ -21,8 +21,9 @@ class EventIngestionService:
         and the Outbox entry to ensure it gets processed.
         P0.3: Robust idempotency using DB constraints.
         """
-        from django.utils import timezone
-        
+        """
+        from django.utils import timezone  # noqa: PLC0415
+
         if idempotency_key:
             # First check efficiently
             existing = Event.objects.filter(tenant_id=tenant_id, idempotency_key=idempotency_key).first()
@@ -35,7 +36,6 @@ class EventIngestionService:
                 context = {}
                 if actor_id:
                     context["actor_id"] = actor_id
-                    
                 event = Event.objects.create(
                     tenant_id=tenant_id,
                     event_type=event_type,

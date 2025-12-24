@@ -8,9 +8,9 @@ class ExampleProjectConfig(AppConfig):
     def ready(self):
         # Register models for Data Chat
         try:
-            from django.contrib.auth.models import Group, User
+            from django.contrib.auth.models import Group, User  # noqa: PLC0415
 
-            from automate_datachat.registry import DataChatRegistry
+            from automate_datachat.registry import DataChatRegistry  # noqa: PLC0415
 
             # Auth models
             DataChatRegistry.register(
@@ -25,13 +25,11 @@ class ExampleProjectConfig(AppConfig):
             )
 
             # Automate models
-            from automate.models import (
+            from automate.models import (  # noqa: PLC0415
                 Automation,
                 BudgetPolicy,
-                ConnectionProfile,
                 Event,
                 Execution,
-                ExecutionStep,
                 LLMModelConfig,
                 LLMProvider,
                 Prompt,
@@ -65,7 +63,8 @@ class ExampleProjectConfig(AppConfig):
             )
             DataChatRegistry.register(
                 Execution,
-                include_fields=["id", "automation_id", "status", "started_at", "finished_at", "duration_ms", "attempts"],
+                include_fields=["id", "automation_id", "status", "started_at", "finished_at", "duration_ms",
+                                "attempts"],
                 tags=["automation", "execution"]
             )
             DataChatRegistry.register(
@@ -80,15 +79,16 @@ class ExampleProjectConfig(AppConfig):
             )
 
             # LLM Request logs
-            from automate_llm.governance.models import LLMRequest
+            from automate_llm.governance.models import LLMRequest  # noqa: PLC0415
             DataChatRegistry.register(
                 LLMRequest,
-                include_fields=["id", "provider", "model", "prompt_slug", "purpose", "status", "input_tokens", "output_tokens", "latency_ms", "cost_usd", "created_at"],
+                include_fields=["id", "provider", "model", "prompt_slug", "purpose", "status", "input_tokens",
+                                "output_tokens", "latency_ms", "cost_usd", "created_at"],
                 tags=["llm", "logs"]
             )
 
             # DataChat models
-            from automate_datachat.models import DataChatMessage, DataChatSession
+            from automate_datachat.models import DataChatMessage, DataChatSession  # noqa: PLC0415
             DataChatRegistry.register(
                 DataChatSession,
                 include_fields=["id", "user_id", "session_key", "created_at", "updated_at"],
@@ -105,12 +105,13 @@ class ExampleProjectConfig(AppConfig):
 
         # Seed Data Chat prompts with improved templates
         try:
-            from automate.models import Prompt, PromptVersion
+            from automate.models import Prompt, PromptVersion  # noqa: PLC0415
 
             # SQL Generator Prompt - IMPROVED
             sql_prompt, created = Prompt.objects.get_or_create(
                 slug="datachat_sql_generator",
-                defaults={"name": "Data Chat SQL Generator", "description": "Generates SQL from natural language questions"}
+                defaults={"name": "Data Chat SQL Generator",
+                          "description": "Generates SQL from natural language questions"}
             )
 
             # Always update to version 4 with session context support
@@ -191,7 +192,9 @@ User: {{ question }}"""
                     version=2,
                     defaults={
                         "status": "approved",
-                        "system_template": "You are a helpful data analyst. Provide clear, concise summaries of query results. If there's an error, explain what went wrong in plain language.",
+                        "system_template": "You are a helpful data analyst. Provide clear, concise summaries of "
+                                           "query results. If there's an error, explain what went wrong in plain "
+                                           "language.",
                         "user_template": """Question: {{ question }}
 SQL: {{ sql }}
 Results ({{ row_count }} rows): {{ results }}

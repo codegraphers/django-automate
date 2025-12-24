@@ -7,11 +7,11 @@ class AutomateConfig(AppConfig):
     verbose_name = "Django Automate"
 
     def ready(self):
-        from django.apps import apps
-        from django.conf import settings
-        from django.db.models.signals import post_save
+        from django.apps import apps  # noqa: PLC0415
+        from django.conf import settings  # noqa: PLC0415
+        from django.db.models.signals import post_save  # noqa: PLC0415
 
-        from .signals import model_change_handler
+        from .signals import model_change_handler  # noqa: PLC0415
 
         watched_models = getattr(settings, 'AUTOMATE_WATCHED_MODELS', [])
         for model_path in watched_models:

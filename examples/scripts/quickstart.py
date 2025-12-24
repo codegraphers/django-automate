@@ -19,14 +19,14 @@ if not settings.configured:
     django.setup()
 
 # 2. Setup DB
-from django.core.management import call_command
+from django.core.management import call_command  # noqa: E402
 
 print("⚡ Initializing Database...")
 call_command('migrate', verbosity=0)
 
 # 3. Create Demo Data
-from automate_modal.models import ModalEndpoint, ModalProviderConfig
-from automate_modal.providers.echo import EchoProvider
+from automate_modal.models import ModalEndpoint, ModalProviderConfig  # noqa: E402
+from automate_modal.providers.echo import EchoProvider  # noqa: E402
 
 print("⚡ Creating Configuration...")
 config = ModalProviderConfig.objects.create(
@@ -44,7 +44,7 @@ endpoint = ModalEndpoint.objects.create(
 )
 
 # 4. Run Task
-from automate_modal.engine import engine
+from automate_modal.engine import engine  # noqa: E402
 
 print(f"⚡ Executing Task on endpoint: {endpoint.slug}...")
 result = engine.execute(

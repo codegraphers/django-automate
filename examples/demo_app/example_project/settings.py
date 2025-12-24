@@ -11,7 +11,10 @@ SECRET_KEY = 'django-insecure-test-key-do-not-use-in-production'
 
 DEBUG = True
 
-ALLOWED_HOSTS = ["https://fiddle.jshell.net", "5b09691d33d9.ngrok-free.app", "localhost", "127.0.0.1", "::1", "0.0.0.0", "0.0.0.0:8000", "localhost:8000", "127.0.0.1:8000"]
+ALLOWED_HOSTS = [
+    "https://fiddle.jshell.net", "5b09691d33d9.ngrok-free.app", "localhost", "127.0.0.1", "::1", "0.0.0.0",
+    "0.0.0.0:8000", "localhost:8000", "127.0.0.1:8000"
+]
 
 INSTALLED_APPS = [
     'automate_datachat', # Top priority for template overrides

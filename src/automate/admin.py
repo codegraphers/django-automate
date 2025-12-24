@@ -81,8 +81,8 @@ class AutomationAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super().get_urls()
-        from .views.prompt_eval import PromptEvalView, prompt_test_api
-        from .views.wizard import AutomationWizardView
+        from .views.prompt_eval import PromptEvalView, prompt_test_api  # noqa: PLC0415
+        from .views.wizard import AutomationWizardView  # noqa: PLC0415
         custom_urls = [
             path("wizard/", self.admin_site.admin_view(AutomationWizardView().as_view), name="automation_wizard"),
             path("prompt-eval/", self.admin_site.admin_view(PromptEvalView.as_view()), name="prompt_eval"),
@@ -117,9 +117,9 @@ class ExecutionAdmin(admin.ModelAdmin):
 
     @admin.action(description="Replay selected executions (Safe)")
     def replay_execution(self, request, queryset):
-        from django.utils import timezone
+        from django.utils import timezone  # noqa: PLC0415
 
-        from automate_core.outbox.models import OutboxItem
+        from automate_core.outbox.models import OutboxItem  # noqa: PLC0415
 
         success_count = 0
         with transaction.atomic():
@@ -280,7 +280,7 @@ class MCPServerAdmin(admin.ModelAdmin):
 
     @admin.action(description="Sync tools from selected servers")
     def sync_tools(self, request, queryset):
-        from automate_llm.mcp_client import MCPClientError, sync_mcp_tools
+        from automate_llm.mcp_client import MCPClientError, sync_mcp_tools  # noqa: PLC0415
 
         success = 0
         errors = []

@@ -34,7 +34,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        from automate.step_executors.workflow_executor import run_pending_executions
+        from automate.step_executors.workflow_executor import run_pending_executions  # noqa: PLC0415
 
         limit = options["limit"]
         daemon = options.get("daemon")

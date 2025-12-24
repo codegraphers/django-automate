@@ -15,7 +15,7 @@ class Command(BaseCommand):
             defaults={"name": "Welcome New User", "tenant_id": "default"}
         )
 
-        from automate.models import TriggerTypeChoices
+        from automate.models import TriggerTypeChoices  # noqa: PLC0415
         TriggerSpec.objects.get_or_create(
             automation=a1,
             type=TriggerTypeChoices.MODEL_SIGNAL,
@@ -31,8 +31,10 @@ class Command(BaseCommand):
                 "is_live": True,
                 "graph": {
                     "nodes": [
-                        {"id": "log", "type": "logging", "config": {"message": "New User Created"}, "next": ["slack_notify"]},
-                        {"id": "slack_notify", "type": "slack", "config": {"channel": "C123", "message": "User joined!"}, "next": []}
+                        {"id": "log", "type": "logging", "config": {"message": "New User Created"},
+                         "next": ["slack_notify"]},
+                        {"id": "slack_notify", "type": "slack",
+                         "config": {"channel": "C123", "message": "User joined!"}, "next": []}
                     ]
                 }
             }

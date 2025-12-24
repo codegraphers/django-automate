@@ -70,12 +70,13 @@ class Command(BaseCommand):
     async def _listen_asyncpg(self, channel: str):
         """Async listener using asyncpg (recommended for production)."""
         try:
-            import asyncpg
-        except ImportError:
-            raise ImportError("asyncpg required: pip install asyncpg")
+            import asyncpg  # noqa: PLC0415
+        except ImportError as e:
+            raise ImportError("asyncpg required: pip install asyncpg") from e
 
         db_settings = connection.settings_dict
-        dsn = f"postgresql://{db_settings['USER']}:{db_settings['PASSWORD']}@{db_settings['HOST']}:{db_settings.get('PORT', 5432)}/{db_settings['NAME']}"
+        dsn = (f"postgresql://{db_settings['USER']}:{db_settings['PASSWORD']}@"
+               f"{db_settings['HOST']}:{db_settings.get('PORT', 5432)}/{db_settings['NAME']}")
 
         conn = await asyncpg.connect(dsn)
 
@@ -104,7 +105,7 @@ class Command(BaseCommand):
 
     def _listen_psycopg(self, channel: str):
         """Synchronous listener using psycopg3 or Django's connection."""
-        import select
+        import select  # noqa: PLC0415
 
         with connection.cursor() as cursor:
             cursor.execute(f"LISTEN {channel};")
@@ -136,7 +137,7 @@ class Command(BaseCommand):
 
     def _process_notification_sync(self, payload: str):
         """Process notification - create Event in database."""
-        from automate.ingestion import ingest_event
+        from automate.ingestion import ingest_event  # noqa: PLC0415
 
         try:
             data = json.loads(payload)
@@ -146,7 +147,8 @@ class Command(BaseCommand):
                 event_type=f"db.{data.get('table', 'unknown')}.{data.get('action', 'change').lower()}",
                 source="postgres_trigger",
                 payload=data.get("data", {}),
-                idempotency_key=f"pg_{data.get('table')}_{data.get('action')}_{data.get('data', {}).get('id', '')}_{data.get('timestamp', '')}"
+                idempotency_key=f"pg_{data.get('table')}_{data.get('action')}_{data.get('data', {}).get('id', '')}_"
+                                f"{data.get('timestamp', '')}"
             )
 
             self.stdout.write(

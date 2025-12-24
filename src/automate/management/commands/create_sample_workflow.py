@@ -12,7 +12,7 @@ class Command(BaseCommand):
     help = "Create a sample workflow for testing the execution system"
 
     def handle(self, *args, **options):
-        from automate.models import Automation, Prompt, PromptVersion, Rule, TriggerSpec, Workflow
+        from automate.models import Automation, Prompt, PromptVersion, Rule, TriggerSpec, Workflow  # noqa: PLC0415
 
         # 1. Create or get test automation
         automation, created = Automation.objects.get_or_create(

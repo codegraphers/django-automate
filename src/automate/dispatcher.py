@@ -39,7 +39,7 @@ class Dispatcher:
         Implements Lock Stealing (TTL).
         """
         now = timezone.now()
-        ttl_cutoff = now - datetime.timedelta(seconds=LOCK_TTL)
+        # ttl_cutoff = now - datetime.timedelta(seconds=LOCK_TTL)
 
         with transaction.atomic():
             # Filter logic:
@@ -72,7 +72,7 @@ class Dispatcher:
 
             return locked_entries
 
-    def _dispatch_event(self, entry: Outbox):
+    def _dispatch_event(self, entry: Outbox):  # noqa: C901, PLR0912, PLR0915
         if entry.kind != "event":
              # Only dispatch events for now
              return
@@ -94,7 +94,7 @@ class Dispatcher:
             
         try:
             # P0.4: Use Strict Matching Service
-            from .services.trigger import TriggerMatchingService
+            from .services.trigger import TriggerMatchingService  # noqa: PLC0415
             matcher = TriggerMatchingService()
 
             triggers = TriggerSpec.objects.filter(is_active=True)
@@ -147,9 +147,9 @@ class Dispatcher:
 
             # P0.3: Retry Logic (Backoff + DLQ)
             entry.attempt_count += 1
-            MAX_RETRIES = getattr(settings, "AUTOMATE_MAX_RETRIES", 3)
+            max_retries = getattr(settings, "AUTOMATE_MAX_RETRIES", 3)
 
-            if entry.attempt_count >= MAX_RETRIES:
+            if entry.attempt_count >= max_retries:
                 logger.error(f"Event {event.id} exhausted retries. Moving to DLQ.")
                 entry.status = OutboxStatusChoices.DLQ
                 entry.last_error_message = str(e)
@@ -161,7 +161,7 @@ class Dispatcher:
                 entry.status = OutboxStatusChoices.RETRY
 
                 # Exponential Backoff + Jitter
-                import random
+                import random  # noqa: PLC0415
                 backoff = 2 ** (entry.attempt_count - 1) # 1, 2, 4
                 jitter = random.uniform(0, 1)
                 delay = backoff + jitter

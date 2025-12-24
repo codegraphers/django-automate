@@ -12,8 +12,9 @@ class DeadLetter(models.Model):
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
-    execution = models.OneToOneField(Execution, on_delete=models.CASCADE, related_name="dead_letter", null=True, blank=True)
-    from .outbox import Outbox
+    execution = models.OneToOneField(Execution, on_delete=models.CASCADE, related_name="dead_letter", null=True,
+                                     blank=True)
+    from .outbox import Outbox  # noqa: PLC0415
     outbox = models.OneToOneField(Outbox, on_delete=models.CASCADE, related_name="dead_letter", null=True, blank=True)
 
     # Reason for failure (Category)

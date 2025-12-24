@@ -15,9 +15,10 @@ def main():
 
     # Add the package source to sys.path so we can run without installing
     # This simulates "editable" install
-    BASE_DIR = Path(__file__).resolve().parent
-    PACKAGE_DIR = BASE_DIR.parent / "packages" / "django_automate" / "src"
-    sys.path.insert(0, str(PACKAGE_DIR))
+    base_dir = Path(__file__).resolve().parent
+    package_dir = base_dir.parent / "packages" / "django_automate" / "src"
+    if str(package_dir) not in sys.path:
+        sys.path.insert(0, str(package_dir))
 
     try:
         from django.core.management import execute_from_command_line

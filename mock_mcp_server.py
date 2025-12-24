@@ -100,7 +100,7 @@ class MCPHandler(BaseHTTPRequestHandler):
                     # Safe eval for math only
                     answer = eval(expr, {"__builtins__": {}}, {})
                     result = {"success": True, "data": {"expression": expr, "result": answer}}
-                except:
+                except Exception:
                     result = {"success": False, "error": "Invalid expression"}
             elif tool_name == "get_stock_price":
                 symbol = args.get("symbol", "UNKNOWN")
