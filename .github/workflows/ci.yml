@@ -53,6 +53,8 @@ jobs:
           # python -m ruff format --check .
 
       - name: Tests
+        env:
+          PYTHONPATH: src
         run: |
           python -m pytest -q
 
