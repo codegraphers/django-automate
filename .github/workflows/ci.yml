@@ -45,7 +45,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install pytest pytest-django pytest-cov factory-boy
-          python -m pip install django djangorestframework celery pydantic jsonschema jinja2 requests django-json-widget django-import-export drf-spectacular python-dotenv
+          python -m pip install django djangorestframework celery pydantic jsonschema jinja2 requests django-json-widget django-import-export drf-spectacular python-dotenv sqlglot openai
 
       - name: Lint
         run: |
