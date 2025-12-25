@@ -2,7 +2,7 @@ import pytest
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 
-from automate_llm.models import Prompt, PromptStatus, PromptVersion
+from automate_llm.prompts.models import Prompt, PromptStatus, PromptVersion
 
 
 @pytest.mark.django_db
