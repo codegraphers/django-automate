@@ -59,13 +59,10 @@ class MemoryVectorStore(VectorStore):
                     continue
 
             # Cosine Sim
-            dot = sum(a*b for a, b in zip(vector, item.vector))
+            dot = sum(a*b for a, b in zip(vector, item.vector, strict=False))
             item_norm = math.sqrt(sum(x*x for x in item.vector))
 
-            if target_norm * item_norm == 0:
-                score = 0.0
-            else:
-                score = dot / (target_norm * item_norm)
+            score = 0.0 if target_norm * item_norm == 0 else dot / (target_norm * item_norm)
 
             scores.append(VectorHit(id=vid, score=score, metadata=item.metadata))
 

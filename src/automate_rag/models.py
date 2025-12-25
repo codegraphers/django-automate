@@ -61,7 +61,9 @@ class Document(models.Model):
     source = models.ForeignKey(KnowledgeSource, on_delete=models.SET_NULL, null=True, related_name="documents")
 
     external_ref = models.CharField(max_length=1024, blank=True, help_text="URL, File Path, ID")
-    content_artifact_id = models.CharField(max_length=255, blank=True, help_text="Pointer to raw content in Artifact Store")
+    content_artifact_id = models.CharField(
+        max_length=255, blank=True, help_text="Pointer to raw content in Artifact Store"
+    )
     content_hash = models.CharField(max_length=64, blank=True, db_index=True)
     mime_type = models.CharField(max_length=100, blank=True)
 

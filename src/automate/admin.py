@@ -200,7 +200,9 @@ class LLMProviderAdmin(admin.ModelAdmin):
 
         url = reverse("admin:automate_llmprovider_test", args=[obj.pk])
         return format_html(
-            '<a class="button" href="{}" style="background-color: #417690; color: white; padding: 5px 10px; border-radius: 4px;">Open Test Console</a>',
+            '<a class="button" href="{}" style="background-color: #417690; '
+            'color: white; padding: 5px 10px; border-radius: 4px;">'
+            'Open Test Console</a>',
             url
         )
 

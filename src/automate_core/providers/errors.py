@@ -58,9 +58,14 @@ def requests_exception_to_automate_error(exc: Any, provider: str) -> AutomateErr
             # Try to parse Retry-After
             retry = None
             if hasattr(exc.response, 'headers'):
-                 ra = exc.response.headers.get('Retry-After')
-                 if ra and ra.isdigit(): retry = int(ra)
-            return AutomateError(ErrorCodes.RATE_LIMITED, "Rate Limited", True, retry_after_s=retry, provider=provider, http_status=429, original_exception=exc)
+                ra = exc.response.headers.get('Retry-After')
+                if ra and ra.isdigit():
+                    retry = int(ra)
+            return AutomateError(
+                ErrorCodes.RATE_LIMITED, "Rate Limited", True,
+                retry_after_s=retry, provider=provider, http_status=429,
+                original_exception=exc
+            )
         if status >= 500:
              return AutomateError(ErrorCodes.PROVIDER_UNAVAILABLE, f"Provider Error {status}", True, provider=provider, http_status=status, original_exception=exc)
 

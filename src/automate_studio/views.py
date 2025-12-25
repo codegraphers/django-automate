@@ -1,5 +1,11 @@
+"""Views for Admin Studio."""
+
+import json
+
 from django.contrib.admin.views.decorators import staff_member_required
+from django.db.models import Count
 from django.shortcuts import get_object_or_404, render
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import TemplateView
@@ -9,15 +15,15 @@ from automate_core.jobs.models import Job
 from automate_governance.models import AuditLog
 
 
-# Helper to normalize timestamps for sorting
 def get_timestamp(obj):
-    if hasattr(obj, "occurred_at"): return obj.occurred_at
-    if hasattr(obj, "created_at"): return obj.created_at
-    if hasattr(obj, "started_at"): return obj.started_at
+    """Helper to normalize timestamps for sorting."""
+    if hasattr(obj, "occurred_at"):
+        return obj.occurred_at
+    if hasattr(obj, "created_at"):
+        return obj.created_at
+    if hasattr(obj, "started_at"):
+        return obj.started_at
     return None
-
-import json
-import time
 
 
 @method_decorator(staff_member_required, name='dispatch')
@@ -32,9 +38,6 @@ class TestProviderView(View):
         provider = get_object_or_404(LLMProvider, pk=provider_id)
         input_text = request.POST.get("input", "Hello world")
 
-        # Simulate check (In real life, call provider backend)
-        start = time.time()
-
         # Mock result for V1
         success = True
         latency_ms = 150
@@ -46,11 +49,12 @@ class TestProviderView(View):
         context = {
             "success": success,
             "latency_ms": latency_ms,
-            "request_preview": json.dumps({"messages": [{"role": "user", "content": input_text}]}, indent=2),
+            "request_preview": json.dumps(
+                {"messages": [{"role": "user", "content": input_text}]}, indent=2
+            ),
             "response_preview": json.dumps(response_data, indent=2),
             "provider": provider
         }
-
 
         # HTMX partial render
         return render(request, "studio/components/test_result.html", context)
@@ -67,26 +71,26 @@ class CorrelationExplorerView(View):
         if query:
             # 1. Search Audit Logs
             audits = list(AuditLog.objects.filter(correlation_id=query))
-            for a in audits: a.object_type = "AuditLog"; a.timestamp = a.occurred_at
+            for a in audits:
+                a.object_type = "AuditLog"
+                a.timestamp = a.occurred_at
 
             # 2. Search Executions
             execs = list(Execution.objects.filter(correlation_id=query))
-            for e in execs: e.object_type = "Execution"; e.timestamp = e.started_at
+            for e in execs:
+                e.object_type = "Execution"
+                e.timestamp = e.started_at
 
             # 3. Search Jobs
             jobs = list(Job.objects.filter(correlation_id=query))
-            for j in jobs: j.object_type = "Job"; j.timestamp = j.created_at
-
-            # 4. Search Events (if payload has correlation_id or trace_id?)
-            # Usually events initiate the correlation, so they might not have it unless enriched.
-            # We'll check rudimentary matches
+            for j in jobs:
+                j.object_type = "Job"
+                j.timestamp = j.created_at
 
             results = audits + execs + jobs
             results.sort(key=lambda x: x.timestamp if x.timestamp else timezone.now())
 
         return render(request, self.template_name, {"query": query, "results": results})
-
-from django.db.models import Count
 
 
 @method_decorator(staff_member_required, name='dispatch')
@@ -98,12 +102,9 @@ class DashboardView(View):
         job_stats = Job.objects.values('status').annotate(count=Count('id'))
         jobs_dict = {x['status']: x['count'] for x in job_stats}
 
-        # 2. Execution Stats (Last 24h usually, but simplified for V1)
+        # 2. Execution Stats
         exec_stats = Execution.objects.values('status').annotate(count=Count('id'))
         exec_dict = {x['status']: x['count'] for x in exec_stats}
-
-        # 3. Queue Lag (Proxy: count of 'queued' jobs created long ago)
-        # Simplified: just showing raw counts
 
         context = {
             "jobs_stats": jobs_dict,
@@ -131,4 +132,3 @@ class RuleTesterView(TemplateView):
         ctx = super().get_context_data(**kwargs)
         ctx["title"] = "Rule Tester"
         return ctx
-

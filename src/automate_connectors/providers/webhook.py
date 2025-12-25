@@ -71,9 +71,9 @@ class WebhookConnector(Connector):
 
     def _send_request(self, data: dict[str, Any]):
         url = data.get("url")
-        method = data.get("method", "POST")
-        payload = data.get("payload")
-        headers = data.get("headers", {})
+        _method = data.get("method", "POST")  # noqa: F841
+        _payload = data.get("payload")  # noqa: F841
+        _headers = data.get("headers", {})  # noqa: F841
 
         if not url:
             raise AutomateError(ErrorCodes.INVALID_ARGUMENT, "URL required")

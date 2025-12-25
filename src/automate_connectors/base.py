@@ -21,7 +21,7 @@ class TriggerSpec(BaseModel):
 
 class Connector(BaseProvider):
     """
-    Base class for all connectors. 
+    Base class for all connectors.
     Extends BaseProvider to reuse registry and configuration logic.
     """
 

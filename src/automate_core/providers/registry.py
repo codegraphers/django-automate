@@ -109,15 +109,18 @@ class ProviderRegistry:
             print(f"Warning: Failed to inspect provider class {cls}: {e}")
 
     def list(self) -> list[ProviderDescriptor]:
-        if not self._loaded: self.load()
+        if not self._loaded:
+            self.load()
         return list(self._providers.values())
 
     def get(self, key: str) -> ProviderDescriptor | None:
-        if not self._loaded: self.load()
+        if not self._loaded:
+            self.load()
         return self._providers.get(key)
 
     def resolve_for(self, capability: str) -> builtins.list[ProviderDescriptor]:
-        if not self._loaded: self.load()
+        if not self._loaded:
+            self.load()
         keys = self._capabilities_index.get(capability, [])
         return [self._providers[k] for k in keys if k in self._providers]
 

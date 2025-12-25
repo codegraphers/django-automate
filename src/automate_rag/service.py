@@ -24,7 +24,7 @@ class IngestionService:
             doc.save()
 
             # 3. Embed & Index
-            vectors = self._embed_and_index(doc, chunks)
+            self._embed_and_index(doc, chunks)
             doc.status = DocumentStatus.INDEXED
             doc.save()
 

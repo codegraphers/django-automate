@@ -28,7 +28,7 @@ def test_prompt_versioning():
                 version=1, # Duplicate
                 system_template="Diff"
             )
-        assert False, "Should have raised IntegrityError"
+        pytest.fail("Should have raised IntegrityError")
     except IntegrityError:
         pass
 
@@ -49,7 +49,7 @@ def test_prompt_unique_key_per_tenant():
     try:
         with transaction.atomic():
             Prompt.objects.create(tenant_id="t1", key="uniq.key")
-        assert False, "Should have raised IntegrityError"
+        pytest.fail("Should have raised IntegrityError")
     except IntegrityError:
         pass
 

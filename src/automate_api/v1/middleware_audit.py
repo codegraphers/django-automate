@@ -1,3 +1,4 @@
+import contextlib
 import json
 import logging
 
@@ -17,11 +18,9 @@ class AuditMiddleware(MiddlewareMixin):
         # Eagerly read body for modifying requests to cache it for audit
         # This allows accessing it in process_response even if DRF consumed stream
         if request.method in ("POST", "PUT", "PATCH") and request.content_type == "application/json":
-            try:
+            with contextlib.suppress(Exception):
                 # Accessing .body forces Django to read and cache it
                 _ = request.body
-            except Exception:
-                pass
 
     def process_response(self, request, response):
         # 1. Filter: Valid for API only?
