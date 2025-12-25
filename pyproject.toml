@@ -31,6 +31,7 @@ dependencies = [
     "django-json-widget>=1.1.1",
     "django-import-export>=3.3",
     "drf-spectacular>=0.26",
+    "python-dotenv>=1.0",
 ]
 
 [tool.hatch.build.targets.wheel]
