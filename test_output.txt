@@ -1,0 +1,85 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.13.5, pytest-8.3.4, pluggy-1.6.0
+django: version: 6.0, settings: tests.settings (from ini)
+rootdir: /Users/ahmedjawed/.gemini/antigravity/scratch/django_automate
+configfile: pyproject.toml
+plugins: django-4.11.1, Faker-39.0.0, anyio-4.7.0, cov-7.0.0
+collected 4 items
+
+tests/api/v1/test_full_surface.py F...
+
+=================================== FAILURES ===================================
+________________________ test_api_routing_and_envelope _________________________
+
+api_client = <rest_framework.test.APIClient object at 0x16878aba0>
+
+    @pytest.mark.django_db
+    def test_api_routing_and_envelope(api_client):
+        """Verify v1 routing and error envelope."""
+        url = "/api/v1/jobs/nonexistent-id/"
+        response = api_client.get(url)
+    
+        assert response.status_code == 404
+        data = response.json()
+        if "error" not in data:
+            print(f"\nResponse Payload: {data}")
+        assert "error" in data
+>       assert data["error"]["code"] == "not_found"
+E       AssertionError: assert 'error' == 'not_found'
+E         
+E         - not_found
+E         + error
+
+tests/api/v1/test_full_surface.py:24: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  django.request:log.py:249 Not Found: /api/v1/jobs/nonexistent-id/
+================================ tests coverage ================================
+_______________ coverage: platform darwin, python 3.13.5-final-0 _______________
+
+Name                                                                                  Stmts   Miss  Cover   Missing
+-------------------------------------------------------------------------------------------------------------------
+src/automate/__init__.py                                                                  1      0   100%
+src/automate/admin.py                                                                   180     45    75%   61, 73, 87-96, 110, 123, 127-157, 205-206, 230-234, 244, 262, 283, 289-303
+src/automate/api/auth.py                                                                 15      7    53%   12-23
+src/automate/api/schema.py                                                               15     10    33%   28-50
+src/automate/api/v1/auth.py                                                              12      0   100%
+src/automate/api/v1/exceptions.py                                                        26     16    38%   22-27, 30-33, 36-42, 51-69
+src/automate/api/v1/permissions.py                                                       16      7    56%   12-23, 32
+src/automate/api/v1/router.py                                                            15      0   100%
+src/automate/api/v1/views/artifacts.py                                                   22      3    86%   33-40
+src/automate/api/v1/views/endpoints.py                                                   32      1    97%   77
+src/automate/api/v1/views/executions.py                                                  16      1    94%   30
+src/automate/api/v1/views/ingestion.py                                                   20      6    70%   22-36
+src/automate/api/v1/views/jobs.py                                                        54      8    85%   45-53, 89-90
+src/automate/api/v1/views/providers.py                                                   18      2    89%   34-36
+src/automate/api/workflows.py                                                            79     69    13%   30-94, 104-191
+src/automate/api/zapier.py                                                               33     16    52%   17-21, 33-56, 64
+src/automate/apps.py                                                                     18      5    72%   18-22
+src/automate/dispatcher.py                                                              116    116     0%   1-209
+src/automate/dlq.py                                                                      15     15     0%   1-35
+src/automate/ingestion.py                                                                29     22    24%   25-70
+src/automate/migrations/0001_initial.py                                                   8      0   100%
+src/automate/migrations/0002_remove_outbox_event_delete_deadletter_delete_outbox.py       4      0   100%
+src/automate/migrations/__init__.py                                                       0      0   100%
+src/automate/models.py                                                                  136     11    92%   52, 67, 70-71, 81, 149, 206, 234, 293-294, 330
+src/automate/outbox.py                                                                   24     24     0%   1-43
+src/automate/registry.py                                                                 25      5    80%   24, 29, 33, 36, 39
+src/automate/rules.py                                                                    39     39     0%   1-85
+src/automate/runtime.py                                                                  85     85     0%   1-171
+src/automate/secrets_backend.py                                                          22     22     0%   1-49
+src/automate/signals.py                                                                  16     11    31%   11-16, 26-46
+src/automate/step_executors/__init__.py                                                   0      0   100%
+src/automate/step_executors/action_executor.py                                           97     97     0%   7-219
+src/automate/step_executors/base.py                                                      56     56     0%   7-125
+src/automate/step_executors/filter_executor.py                                           88     88     0%   7-160
+src/automate/step_executors/llm_executor.py                                              77     77     0%   7-152
+src/automate/step_executors/workflow_executor.py                                        105    105     0%   7-235
+src/automate/throttling.py                                                               31     31     0%   1-60
+src/automate/urls.py                                                                      5      0   100%
+src/automate/views/manual.py                                                             18      6    67%   29-39
+src/automate/workflow_compiler.py                                                        36     36     0%   1-62
+-------------------------------------------------------------------------------------------------------------------
+TOTAL                                                                                  1604   1042    35%
+=========================== short test summary info ============================
+FAILED tests/api/v1/test_full_surface.py::test_api_routing_and_envelope - Ass...
+==================== 1 failed, 3 passed in 61.29s (0:01:01) ====================

@@ -11,7 +11,7 @@ class ExecutionSerializer(serializers.ModelSerializer):
         model = Execution
         fields = [
             "id", "tenant_id", "automation", "workflow_version",
-            "status", "created_at", "updated_at", "result_data"
+            "status", "started_at", "finished_at", "context"
         ]
         read_only_fields = fields
 
@@ -20,7 +20,7 @@ class ExecutionViewSet(
     mixins.ListModelMixin,
     viewsets.GenericViewSet
 ):
-    queryset = Execution.objects.all().order_by("-created_at")
+    queryset = Execution.objects.all().order_by("-started_at")
     serializer_class = ExecutionSerializer
     authentication_classes = [BearerTokenAuthentication]
     permission_classes = [IsTenantMember]

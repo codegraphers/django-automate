@@ -1,0 +1,71 @@
+{% extends "studio/base.html" %}
+
+{% block title %}Correlation Explorer{% endblock %}
+
+{% block studio_content %}
+<div class="studio-card">
+    <form method="get" action=".">
+        <div style="display: flex; gap: 10px;">
+            <input type="text" name="q" value="{{ query }}" placeholder="Enter Correlation ID (UUID)..."
+                style="flex: 1; padding: 10px; font-family: monospace;">
+            <button type="submit" class="btn-studio">Search Trace</button>
+        </div>
+    </form>
+</div>
+
+{% if query %}
+{% if results %}
+<div class="studio-card">
+    <h3>Trace Timeline</h3>
+    <table style="width: 100%; text-align: left; border-collapse: collapse;">
+        <thead>
+            <tr style="border-bottom: 2px solid #eee;">
+                <th style="padding: 10px;">Timestamp</th>
+                <th style="padding: 10px;">Type</th>
+                <th style="padding: 10px;">Details</th>
+                <th style="padding: 10px;">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in results %}
+            <tr style="border-bottom: 1px solid #f0f0f0;">
+                <td style="padding: 10px; white-space: nowrap; color: #666;">
+                    {{ item.timestamp|date:"H:i:s.u" }}
+                </td>
+                <td style="padding: 10px;">
+                    <span
+                        style="background: #eef; color: #44a; padding: 2px 6px; border-radius: 4px; font-size: 0.9em;">
+                        {{ item.object_type }}
+                    </span>
+                </td>
+                <td style="padding: 10px;">
+                    {% if item.object_type == "AuditLog" %}
+                    <strong>{{ item.action }}</strong>
+                    <div style="font-size: 0.85em; color: #666;">{{ item.resource|truncatechars:50 }}</div>
+                    {% elif item.object_type == "Execution" %}
+                    <a href="/admin/automate/execution/{{ item.id }}/change/">Execution {{ item.id|truncatechars:8
+                        }}</a>
+                    <div style="font-size: 0.85em;">{{ item.automation.name }}</div>
+                    {% elif item.object_type == "Job" %}
+                    Job {{ item.id|truncatechars:8 }} ({{ item.status }})
+                    {% endif %}
+                </td>
+                <td style="padding: 10px;">
+                    {% if item.status %}
+                    {{ item.status }}
+                    {% elif item.result %}
+                    {{ item.result }}
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="studio-card" style="text-align: center; color: #666;">
+    No records found for distinct correlation ID <code>{{ query }}</code>.
+</div>
+{% endif %}
+{% endif %}
+{% endblock %}

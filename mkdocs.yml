@@ -1,51 +1,101 @@
 site_name: Django Automate
-site_description: Production-grade automation for Django.
-site_url: https://codegraphers.github.io/django-automate/
-repo_url: https://github.com/codegraphers/django-automate
-repo_name: codegraphers/django-automate
+site_description: Admin-first automation framework for LLM, RAG, and Connectors.
+site_url: https://github.com/codegraphers/django-automate
+
 theme:
         name: material
         features:
-                - navigation.expand
+                - navigation.tabs
+                - navigation.sections
                 - content.code.copy
-                - property.headers
-                - navigation.indexes
+        palette:
+                - scheme: default
+                  primary: indigo
+                  accent: indigo
+                - scheme: slate
+                  primary: indigo
+                  accent: indigo
+                  toggle:
+                          icon: material/brightness-4
+                          name: Switch to dark mode
+
+plugins:
+        - search
+        - mkdocstrings:
+                  default_handler: python
+                  handlers:
+                          python:
+                                  paths: [src]
+                                  options:
+                                          show_root_heading: true
+                                          show_source: true
 
 nav:
-        - Welcome: index.md
+        - Home: index.md
+
+        - Overview:
+                  - Introduction: 00_index.md
+                  - Quickstart: 01_quickstart.md
+                  - Concepts: 02_concepts.md
+                  - Tutorials: 03_tutorials.md
+                  - How-To Guides: 04_how_to_guides.md
+                  - Reference Overview: 05_reference.md
+                  - Extending: 06_extending.md
+                  - Admin Studio: 07_admin_studio.md
+                  - Observability & Security: 08_observability_security.md
+                  - Deployment: 09_deployment.md
+                  - Examples: 10_examples.md
+                  - Changelog: 09_changelog.md
+
         - Quickstart:
-                  - Install: quickstart/install.md
                   - First Automation: quickstart/first-automation.md
+                  - Installation: quickstart/install.md
+
         - Concepts:
+                  - Architecture: concepts/architecture.md
                   - Mental Model: concepts/mental-model.md
+                  - General Concepts: concepts.md
+
         - Features:
-                  - Data Chat (Text-to-SQL): features/datachat.md
-                  - RAG Subsystem: features/rag.md
-                  - MCP Integration: features/mcp-integration.md
-                  - Embeddable Widget: features/embeddable-widget.md
-        - How-To Guides:
-                  - Rules: how-to/rules/jsonlogic-subset.md
-                  - LLM Providers: how-to/llm/provider-profiles.md
-                  - Secrets: how-to/secrets/secretref.md
-                  - Connectors: how-to/connectors/write-custom-connector.md
+                  - Overview: features.md
+                  - Data Chat: features/datachat.md
+                  - Widgets: features/embeddable-widget.md
+                  - MCP: features/mcp-integration.md
+                  - RAG: features/rag.md
+                  - LLM Gateway: llm_gateway.md
+                  - LLM: llm.md
+
+        - Guides:
+                  - Customization & Integration: guides/customization.md
+                  - Graph Schema: guides/graph_schema.md
+                  - Rules (JSONLogic): how-to/rules/jsonlogic-subset.md
+                  - Secrets: how-to/secrets/backends.md
+
+        - Connectors:
+                  - Overview: reference/connectors.md
+                  - Slack: connectors/slack.md
+                  - Zapier: connectors/zapier.md
+                  - N8N: connectors/n8n.md
+                  - Custom Connectors: how-to/connectors/write-custom-connector.md
+
         - Reference:
                   - Settings: reference/settings.md
-                  - Python API:
-                            - Overview: reference/python-api/index.md
-                            - Rules: reference/python-api/rules.md
-                            - LLM: reference/python-api/llm.md
-                  - REST API: reference/rest-api/index.md
+                  - Extension Points: reference/extension-points.md
                   - Data Models: reference/data-models/index.md
-        - Extending:
-                  - Plugins: extending/plugin-system.md
-                  - Contracts: extending/contracts/connector-adapter.md
-        - Studio:
-                  - Overview: studio/overview.md
-                  - Execution Explorer: studio/execution-explorer.md
+                  - Python API: reference/python-api/index.md
+                  - REST API: reference/rest-api/index.md
+                  - Views: reference/views.md
+                  - Models: reference/models.md
+
         - Security:
                   - Threat Model: security/threat-model.md
                   - Webhook Signatures: security/webhook-signatures.md
+                  - Governance: governance.md
+
         - Deployment:
-                  - Operations: deployment/checklist.md
+                  - Checklist: deployment/checklist.md
+                  - PyPI Setup: deployment/pypi_setup.md
+
         - Contributing:
+                  - Guide: contributing.md
                   - Style Guide: contributing/docs-style-guide.md

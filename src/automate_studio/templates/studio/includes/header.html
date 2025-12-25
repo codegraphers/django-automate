@@ -1,0 +1,22 @@
+<div class="flex items-center justify-between py-4 border-b mb-6">
+    <div class="flex items-center gap-4">
+        <a href="{% url 'studio_dashboard' %}" class="text-xl font-bold text-gray-800">Automate Studio</a>
+        <nav class="flex gap-4 text-sm font-medium text-gray-500">
+            <a href="{% url 'studio_dashboard' %}" class="hover:text-gray-900">Dashboard</a>
+            <a href="{% url 'studio_correlation' %}" class="hover:text-gray-900">Correlation Explorer</a>
+            <a href="/admin/" class="hover:text-gray-900">Django Admin</a>
+        </nav>
+    </div>
+    <div class="text-sm text-gray-400">
+        {{ user.username }}
+    </div>
+</div>
+{% if messages %}
+<div class="space-y-2 mb-6">
+    {% for message in messages %}
+    <div class="p-3 rounded {{ message.tags }} bg-gray-100 text-sm">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}

@@ -19,6 +19,7 @@ def standard_exception_handler(exc, context):
         }
     }
     """
+    # print(f"DEBUG: standard_exception_handler called with {type(exc)}")
     # Call REST framework's default exception handler first to get the standard Response
     response = exception_handler(exc, context)
 
@@ -30,9 +31,14 @@ def standard_exception_handler(exc, context):
 
         # Handle DRF's standard validation error dict
         if isinstance(data, dict):
-            # If it's a detail message, use it
-            message = data.get("detail", str(data))
-            code = data.get("code", "error")
+            detail = data.get("detail")
+            message = str(detail) if detail else str(data)
+
+            # Extract code from ErrorDetail objects if present
+            if hasattr(detail, "code"):
+                code = detail.code
+            else:
+                code = data.get("code", "error")
         elif isinstance(data, list):
             message = str(data)
             code = "validation_error"
@@ -40,14 +46,16 @@ def standard_exception_handler(exc, context):
             message = str(data)
             code = "error"
 
-        response.data = {
+        new_data = {
             "error": {
                 "code": code,
                 "message": message,
                 "correlation_id": correlation_id,
             }
         }
-        return response
+
+        # Return a new Response to ensure clean rendering
+        return Response(new_data, status=response.status_code, headers=response.headers)
 
     # If response is None, it's an unhandled exception (500)
     logger.exception(f"Unhandled API exception: {exc}")

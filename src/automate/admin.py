@@ -176,6 +176,36 @@ class LLMModelConfigAdmin(admin.ModelAdmin):
 @admin.register(LLMProvider)
 class LLMProviderAdmin(admin.ModelAdmin):
     list_display = ["name", "slug", "base_url"]
+    readonly_fields = ["test_provider_button"]
+
+    def get_urls(self):
+        urls = super().get_urls()
+        from automate_studio.views import TestProviderView
+
+        # Route: admin/automate/llmprovider/<id>/test/
+        custom_urls = [
+            path(
+                "<path:provider_id>/test/",
+                self.admin_site.admin_view(TestProviderView.as_view()),
+                name="automate_llmprovider_test"
+            ),
+        ]
+        return custom_urls + urls
+
+    def test_provider_button(self, obj):
+        from django.urls import reverse
+        from django.utils.html import format_html
+        if not obj.pk:
+            return "-"
+
+        url = reverse("admin:automate_llmprovider_test", args=[obj.pk])
+        return format_html(
+            '<a class="button" href="{}" style="background-color: #417690; color: white; padding: 5px 10px; border-radius: 4px;">Open Test Console</a>',
+            url
+        )
+
+    test_provider_button.short_description = "Studio Console"
+    test_provider_button.allow_tags = True
 
 
 @admin.register(Prompt)
@@ -293,9 +323,9 @@ class MCPServerAdmin(admin.ModelAdmin):
 
         for server in queryset:
             try:
-                created, updated = sync_mcp_tools(server)
+                created, updated, schema = sync_mcp_tools(server)
                 success += 1
-                self.message_user(request, f"{server.name}: {created} new, {updated} updated tools")
+                self.message_user(request, f"{server.name}: {created} new, {updated} updated tools (schema: {schema})")
             except MCPClientError as e:
                 errors.append(f"{server.name}: {str(e)}")
 

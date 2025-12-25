@@ -1,21 +1,16 @@
 # Connectors Reference
 
-::: automate.connectors.base
+## Base Connector
+::: automate_connectors.base
     options:
       show_root_heading: true
-      show_source: true
 
-::: automate.connectors.slack
+## Slack Connector
+::: automate_connectors.providers.slack
     options:
       show_root_heading: true
-      show_source: true
 
-::: automate.connectors.webhook
+## Webhook Connector
+::: automate_connectors.providers.webhook
     options:
       show_root_heading: true
-      show_source: true
-
-::: automate.connectors.n8n
-    options:
-      show_root_heading: true
-      show_source: true

@@ -1,13 +1,15 @@
-from datetime import datetime
 from dataclasses import dataclass
-from typing import Protocol, Optional
+from datetime import datetime
+from typing import Protocol
+
 
 @dataclass
 class QueueReceipt:
     backend: str                # celery, rq, outbox-db
-    backend_task_id: str | None # celery task id if exists
+    backend_task_id: str | None  # celery task id if exists
     queue: str
     enqueued_at: datetime
+
 
 @dataclass
 class CancelResult:
@@ -15,6 +17,7 @@ class CancelResult:
     canceled_in_db: bool
     backend_revoked: bool
     message: str
+
 
 class JobQueue(Protocol):
     """
@@ -25,14 +28,14 @@ class JobQueue(Protocol):
         *,
         job_id: str,
         queue: str,
-        eta: Optional[datetime] = None,
-        priority: Optional[int] = None,
-        dedupe_key: Optional[str] = None,
+        eta: datetime | None = None,
+        priority: int | None = None,
+        dedupe_key: str | None = None,
     ) -> QueueReceipt:
         """Enqueue delivery of execute_job(job_id). Returns receipt with backend task id."""
         ...
 
-    def cancel(self, *, job_id: str, backend_task_id: Optional[str] = None) -> CancelResult:
+    def cancel(self, *, job_id: str, backend_task_id: str | None = None) -> CancelResult:
         """Best-effort. Marks canceled in DB; may revoke backend task if supported."""
         ...
 

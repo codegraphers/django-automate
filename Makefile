@@ -1,37 +1,41 @@
-.PHONY: install test lint format build clean up down logs worker
+.PHONY: dev test lint format check doctor clean help
 
-install:
-	pip install -e .
-	pip install -r requirements-dev.txt
+# Configuration
+PYTHON ?= python
+DOCKER_COMPOSE ?= docker compose
+
+help:
+	@echo "Django Automate DX Makefile"
+	@echo "---------------------------"
+	@echo "make dev      - Start the full stack (Core + DB + Redis)"
+	@echo "make test     - Run unit tests"
+	@echo "make lint     - Run linters (ruff, mypy)"
+	@echo "make format   - Run formatters (ruff format)"
+	@echo "make doctor   - Check system health"
+	@echo "make clean    - Remove artifacts"
+
+dev:
+	@echo "Starting local stack..."
+	$(DOCKER_COMPOSE) --profile core up -d
+	@echo "Applying migrations..."
+	$(PYTHON) manage.py migrate
+	@echo "Stack ready. Web: http://localhost:8000"
 
 test:
-	pytest tests
+	$(PYTHON) -m pytest tests/
 
 lint:
-	ruff check src
+	ruff check .
+	mypy src/
 
 format:
-	ruff format src
+	ruff format .
+	ruff check --fix .
 
-typecheck:
-	mypy src
+doctor:
+	$(PYTHON) manage.py doctor
 
 clean:
-	rm -rf .pytest_cache
-	rm -rf build/
-	rm -rf dist/
-	find . -name "*.pyc" -delete
-
-# Infrastructure & DX
-up:
-	docker-compose up -d
-
-down:
-	docker-compose down
-
-logs:
-	docker-compose logs -f
-
-worker:
-	celery -A automate worker -l info
-
+	find . -type d -name "__pycache__" -exec rm -rf {} +
+	find . -type d -name ".pytest_cache" -exec rm -rf {} +
+	find . -type d -name ".mypy_cache" -exec rm -rf {} +

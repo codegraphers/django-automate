@@ -2,6 +2,5 @@ from django.apps import AppConfig
 
 
 class AutomateObservabilityConfig(AppConfig):
-    name = "automate_observability"
-    label = "automate_observability"
-    verbose_name = "Automate Observability"
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'automate_observability'

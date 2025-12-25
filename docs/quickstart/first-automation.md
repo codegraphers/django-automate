@@ -1,62 +1,58 @@
-# First Automation
+# Your First Automation
 
-## 1. What you'll build
-A simple "Welcome User" workflow that logs a message when a new User is created in Django.
+In this guide, we will build a simple "Webhook -> LLM -> Log" automation.
 
-## 2. Prerequisites
-*   Usage of `auth.User` model in your project.
-*   Completed [Installation](install.md).
+## Prerequisites
 
-## 3. Steps
-
-### Create the Workflow (JSON)
-You can define workflows programmatically. Create a script or run in `python manage.py shell`:
-
-```python
-from automate_core.models import Workflow
-
-Workflow.objects.create(
-    name="Welcome New User",
-    trigger_spec={
-        "type": "signal",
-        "config": {
-            "model": "auth.User",
-            "signal": "post_save",
-            "condition": "created == true"
-        }
-    },
-    steps=[
-        {
-            "id": "log_action",
-            "action": "core.log",
-            "config": {
-                "level": "INFO",
-                "message": "New user registered: {{ event.instance.username }}"
-            }
-        }
-    ]
-)
-```
-
-### Run the Worker
-Open a terminal and start the development worker:
+Ensure you have a running stack:
 ```bash
-python manage.py automate_worker
+make dev
 ```
 
-### Trigger the Event
-In a separate terminal or the Django Admin:
-1.  Create a new User.
-2.  The `post_save` signal triggers the workflow.
+## Step 1: Create Automation
 
-## 4. Expected Output
-In the worker console, you should see:
-```text
-[INFO] New user registered: myuser123
+1. Open **Admin Studio**: [http://localhost:8000/admin/](http://localhost:8000/admin/)
+2. Navigate to **Automations** > **Add Automation**.
+3. Name: `Welcome Bot`, Slug: `welcome-bot`.
+4. Tenant ID: `default`.
+
+## Step 2: Add Trigger
+
+1. Navigate to **Triggers** > **Add Trigger**.
+2. Automation: `Welcome Bot`.
+3. Type: `Webhook`.
+4. Event Type: `user.signup`.
+5. Save.
+
+## Step 3: Define Workflow
+
+1. Navigate to **Workflows** > **Add Workflow**.
+2. Automation: `Welcome Bot`.
+3. Version: `1`.
+4. Graph (JSON):
+   ```json
+   {
+     "steps": [
+       {
+         "id": "stats",
+         "action": "llm.chat",
+         "params": {
+           "prompt": "Say hello to {{ event.payload.name }}",
+           "model": "gpt-4"
+         }
+       }
+     ]
+   }
+   ```
+5. Check `Is Live` and Save.
+
+## Step 4: Test
+
+Send a webhook:
+```bash
+curl -X POST http://localhost:8000/api/v1/webhooks/default/user.signup \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Alice"}'
 ```
 
-In the [Execution Explorer](../../studio/execution-explorer.md), you will see a green "COMPLETED" run.
-
-## 5. Next Steps
-*   [Add a Webhook Trigger](../tutorials/triggers/inbound-webhooks.md)
-*   [Configure Secrets](../how-to/secrets/secretref.md)
+Check the **Dashboard** or **Executions** tab in Admin Studio to see the result!

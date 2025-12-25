@@ -1,0 +1,21 @@
+{% extends "studio/base.html" %}
+
+{% block title %}Test Provider: {{ provider.name }}{% endblock %}
+
+{% block studio_content %}
+<div class="studio-card">
+    <form hx-post="." hx-target="#result-area" hx-swap="innerHTML">
+        {% csrf_token %}
+        <div style="margin-bottom: 15px;">
+            <label for="input">Test Input:</label>
+            <input type="text" name="input" id="input" value="Hello, World!"
+                style="width: 100%; padding: 8px; margin-top: 5px;">
+        </div>
+        <button type="submit" class="btn-studio">Run Test</button>
+    </form>
+</div>
+
+<div id="result-area">
+    <!-- Results will appear here via HTMX -->
+</div>
+{% endblock %}

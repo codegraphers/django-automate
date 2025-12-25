@@ -1,7 +1,8 @@
 import uuid
+
 from django.db import models
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+
 
 class JobStatusChoices(models.TextChoices):
     CREATED = "created", _("Created")
@@ -13,6 +14,7 @@ class JobStatusChoices(models.TextChoices):
     DLQ = "dlq", _("Dead Letter Queue")
     CANCELED = "canceled", _("Canceled")
 
+
 class JobKindChoices(models.TextChoices):
     EXECUTION = "execution", _("Execution")
     STEP = "step", _("Step")
@@ -21,11 +23,13 @@ class JobKindChoices(models.TextChoices):
     CONNECTOR = "connector", _("Connector Sync")
     CUSTOM = "custom", _("Custom")
 
+
 class BackendTypeChoices(models.TextChoices):
     CELERY = "celery", _("Celery")
     OUTBOX_DB = "outbox-db", _("DB Outbox")
     RQ = "rq", _("Redis Queue")
     SQS = "sqs", _("SQS Direct")
+
 
 class Job(models.Model):
     """
@@ -38,18 +42,18 @@ class Job(models.Model):
     # Classification
     kind = models.CharField(max_length=50, choices=JobKindChoices.choices, default=JobKindChoices.CUSTOM)
     topic = models.CharField(max_length=255, help_text="e.g. execution.run, step.run")
-    
+
     # Data
     payload_redacted = models.JSONField(default=dict, help_text="Redacted payload for execution")
 
     # State & Scheduling
     status = models.CharField(
-        max_length=50, 
-        choices=JobStatusChoices.choices, 
+        max_length=50,
+        choices=JobStatusChoices.choices,
         default=JobStatusChoices.CREATED,
         db_index=True
     )
-    
+
     queue_name = models.CharField(max_length=100, default="default")
     priority = models.IntegerField(default=10, help_text="Lower is higher priority (1-100)")
 
@@ -75,7 +79,7 @@ class Job(models.Model):
     # Tracing
     correlation_id = models.CharField(max_length=255, null=True, blank=True, db_index=True)
     created_by = models.CharField(max_length=255, null=True, blank=True)
-    
+
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -107,12 +111,12 @@ class JobEvent(models.Model):
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name="events")
-    
+
     seq = models.IntegerField(help_text="Monotonic sequence number for this job")
     type = models.CharField(max_length=50, choices=JobEventTypeChoices.choices)
-    
+
     data = models.JSONField(default=dict)
-    
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

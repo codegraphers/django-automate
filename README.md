@@ -1,27 +1,10 @@
 # Django Automate
 
-<div align="center">
+**The admin-first automation framework for LLM + RAG + connectors.**
 
-[![CI](https://github.com/codegraphers/django-automate/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/codegraphers/django-automate/actions/workflows/ci.yml)
-[![License](https://img.shields.io/github/license/codegraphers/django-automate.svg)](https://github.com/codegraphers/django-automate/blob/main/LICENSE)
-[![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://pypi.org/project/django-automate/)
-[![Ruff](https://img.shields.io/badge/lint-ruff-2b9348.svg)](https://github.com/astral-sh/ruff)
-<!-- [![PyPI](https://img.shields.io/pypi/v/django-automate.svg)](https://pypi.org/project/django-automate/) -->
-<!-- [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/django-automate.svg)](https://pypi.org/project/django-automate/) -->
+Django Automate bridges the gap between proof-of-concept AI scripts and reliable enterprise platforms. It provides a unified, secure gateway to manage LLMs, Audio (TTS/STT), Video processing, and RAG pipelines—all integrated natively into Django's ORM and Admin interface.
 
-# The Enterprise AI Gateway for Django
-
-**Orchestrate Multi-Modal AI, RAG Pipelines, and Async Workflows with Production-Grade Security.**
-
-[Documentation](docs/) • [Quickstart](#-quickstart) • [Architecture](#-architecture) • [Contributing](CONTRIBUTING.md)
-
-</div>
-
----
-
-**Django Automate** bridges the gap between proof-of-concept AI scripts and reliable enterprise platforms. It provides a unified, secure gateway to manage LLMs, Audio (TTS/STT), Video processing, and RAG pipelines—all integrated natively into Django's ORM and Admin interface.
-
-Stop gluing together random Python scripts. Build on a framework designed for governance, scalability, and observability.
+![Admin Studio](https://placehold.co/800x400?text=Admin+Studio+Preview)
 
 ## 🚀 Why Django Automate?
 
@@ -57,67 +40,52 @@ graph TD
 
 ## ⚡ Quickstart
 
-Get up and running in minutes.
+Get a full stack (App + Postgres + Redis) running in 2 minutes.
 
-### 1. Install
-django-automate is modular. Install the core with standard dependencies:
-
+### 1. Bootstrap
 ```bash
-pip install django-automate[celery,rag]
+# Clone and setup env
+cp .env.example .env
 ```
 
-### 2. Configure Settings
-Add the apps to your `INSTALLED_APPS` and configure the broker:
-
-```python
-# settings.py
-INSTALLED_APPS = [
-    # ... django apps
-    "rest_framework",
-    "django_filters",
-    "automate",           # Core
-    "automate_modal",     # AI Gateway
-    "rag",                # RAG System
-]
-
-# Use Redis + Celery for robust queuing
-CELERY_BROKER_URL = "redis://localhost:6379/0"
-```
-
-### 3. Run the "Quickstart" Script
-We include a zero-config script to verify your environment. It spins up a temporary in-memory environment to test the engine.
-
+### 2. Start Stack
 ```bash
-python examples/scripts/quickstart.py
+make dev
 ```
+*Access the Admin at [http://localhost:8000/admin/](http://localhost:8000/admin/)*
 
-*Output:*
-```text
-✅ Engine initialized.
-🚀 Dispatching EchoJob...
-✨ Result: {'msg': 'Echo from provider', 'input': 'Hello World'}
+### 3. Verify Health
+```bash
+make doctor
 ```
 
 ## 💡 Use Cases
 
 ### 1. The "Netflix" Video Pipeline
 Upload a raw video file -> Download securely (SSRF check) -> Extract Audio -> Transcribe (Whisper) -> Summarize (GPT-4) -> Generate Tags.
-*   **How:** Use `automate_modal` with the `VideoPipelineProvider`.
 *   **Result:** A fully indexed video accessible via API, with all intermediate artifacts stored in S3.
 
 ### 2. Enterprise RAG Knowledge Base
 Upload internal PDF policies -> Chunk & Embed -> Store in Milvus -> Question Answering API.
-*   **How:** Use the `rag` app to define a `KnowledgeSource` and `RAGEndpoint`.
 *   **Result:** A secure, internal search engine that strictly respects document access permissions.
 
 ### 3. Multi-Provider Router
 Avoid vendor lock-in. Define a generic "Chat" capability.
-*   **How:** Configure `OpenAI` as primary and `Anthropic` as fallback in the `ProviderConfig` admin.
 *   **Result:** Seamlessly switch traffic or A/B test models without redeploying code.
 
-## 📦 Project Structure
+## 📚 Documentation
 
-We follow a professional `src/` layout for clean packaging.
+- [**Quickstart Guide**](docs/quickstart/first-automation.md)
+- [**Architecture**](docs/concepts/architecture.md)
+- [**Extension Points**](docs/reference/extension-points.md)
+
+Full documentation available locally:
+```bash
+mkdocs serve
+```
+*Hosted at [http://localhost:8001](http://localhost:8001)*
+
+## 📦 Project Structure
 
 ```text
 ├── src/
@@ -126,29 +94,23 @@ We follow a professional `src/` layout for clean packaging.
 │   ├── automate_llm/       # Legacy LLM support (Bridge)
 │   └── rag/                # RAG (Embeddings, Vector Stores)
 ├── examples/
+│   ├── webhook_to_llm/     # Golden Path Integration Test
 │   └── docker/             # Production-ready Docker Compose stack
 ├── docs/                   # MkDocs source files
 └── .github/workflows/      # CI/CD (TestPyPI, OIDC Publishing)
 ```
 
-## 🔧 Deployment
+## 🔐 Security
 
-Django Automate is built for containerized environments.
-
-1.  **Environment Variables**: Secure your deployments with `SecretRef`.
-    *   `OPENAI_API_KEY`: Managed via Django Admin or env vars.
-    *   `CELERY_BROKER_URL`: Point to your managed Redis.
-    *   `DATABASE_URL`: Point to PostgreSQL.
-
-2.  **Docker**:
-    See `examples/docker/` for a reference `docker-compose.yml` that orchestrates Django, Celery Workers, Redis, and Postgres.
+We take security seriously.
+- **Secrets**: Never stored in plain text (use `SecretRef`).
+- **SSRF**: Outbound requests are validated against allowlists.
+- **RBAC**: Tenant isolation is enforced at the DB level.
 
 ## 🤝 Contributing
 
-We are building the standard for Python AI Automation.
-See [CONTRIBUTING.md](CONTRIBUTING.md) for dev setup and guidelines.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for dev setup.
 
 ## 📄 License
 
-Apache License 2.0.
-Copyright (c) 2025 CodeGraphers.
+Apache 2.0

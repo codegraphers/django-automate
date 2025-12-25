@@ -1,11 +1,10 @@
 from datetime import datetime
-from typing import Optional
 
 from celery import current_app
-from celery.result import AsyncResult
 from django.utils import timezone
 
-from automate_core.jobs.queue import JobQueue, QueueReceipt, CancelResult
+from automate_core.jobs.queue import CancelResult, JobQueue, QueueReceipt
+
 
 class CeleryJobQueue(JobQueue):
     """
@@ -19,11 +18,10 @@ class CeleryJobQueue(JobQueue):
         *,
         job_id: str,
         queue: str,
-        eta: Optional[datetime] = None,
-        priority: Optional[int] = None,
-        dedupe_key: Optional[str] = None,
+        eta: datetime | None = None,
+        priority: int | None = None,
+        dedupe_key: str | None = None,
     ) -> QueueReceipt:
-        
         # Celery options
         options = {
             "queue": queue,
@@ -35,7 +33,7 @@ class CeleryJobQueue(JobQueue):
         # If dedupe_key is supported by a custom Task class or backend, passing it here
         # standard Celery doesn't use it directly without plugins, but passing explicitly helper.
         if dedupe_key:
-            options["task_id"] = dedupe_key # Using dedupe_key as task_id enforces strict de-duplication if supported
+            options["task_id"] = dedupe_key  # Using dedupe_key as task_id enforces strict de-duplication if supported
 
         # Send
         # Payload is JUST the job_id
@@ -52,20 +50,20 @@ class CeleryJobQueue(JobQueue):
             enqueued_at=timezone.now(),
         )
 
-    def cancel(self, *, job_id: str, backend_task_id: Optional[str] = None) -> CancelResult:
+    def cancel(self, *, job_id: str, backend_task_id: str | None = None) -> CancelResult:
         if not backend_task_id:
             return CancelResult(
                 job_id=job_id,
-                canceled_in_db=False, # Managed by caller (Service) usually, but protocol allows return status
+                canceled_in_db=False,  # Managed by caller (Service) usually, but protocol allows return status
                 backend_revoked=False,
                 message="No backend task id provided"
             )
 
         current_app.control.revoke(backend_task_id, terminate=True)
-        
+
         return CancelResult(
             job_id=job_id,
-            canceled_in_db=True, # Caller sets DB status, we confirm backend action
+            canceled_in_db=True,  # Caller sets DB status, we confirm backend action
             backend_revoked=True,
             message=f"Revoked Celery task {backend_task_id}"
         )

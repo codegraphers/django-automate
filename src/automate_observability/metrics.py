@@ -1,26 +1,49 @@
-from abc import ABC, abstractmethod
+try:
+    from prometheus_client import Counter, Gauge, Histogram
+    PROMETHEUS_AVAILABLE = True
+except ImportError:
+    PROMETHEUS_AVAILABLE = False
 
+    # Dummy classes
+    class MetricMock:
+        def labels(self, *args, **kwargs): return self
+        def inc(self, amount=1): pass
+        def observe(self, amount): pass
+        def set(self, value): pass
 
-class MetricsCollector(ABC):
-    @abstractmethod
-    def increment(self, metric: str, tags: dict[str, str] = None, value: float = 1.0):
-        pass
+    Counter = Histogram = Gauge = lambda *args, **kwargs: MetricMock()
 
-    @abstractmethod
-    def timing(self, metric: str, duration_ms: float, tags: dict[str, str] = None):
-        pass
+class MetricsRegistry:
+    # HTTP
+    http_requests_total = Counter(
+        "http_requests_total", "Total HTTP Requests", ["method", "route", "status", "tenant"]
+    )
+    http_request_duration_seconds = Histogram(
+        "http_request_duration_seconds", "HTTP Request Duration", ["method", "route"]
+    )
 
-    @abstractmethod
-    def gauge(self, metric: str, value: float, tags: dict[str, str] = None):
-        pass
+    # Engine
+    executions_started_total = Counter(
+        "executions_started_total", "Executions Started", ["tenant"]
+    )
+    executions_completed_total = Counter(
+        "executions_completed_total", "Executions Completed", ["tenant", "status"]
+    )
 
+    # Provider
+    provider_requests_total = Counter(
+        "provider_requests_total", "Provider Calls", ["provider", "capability", "status"]
+    )
+    provider_latency_seconds = Histogram(
+        "provider_latency_seconds", "Provider Latency", ["provider", "capability"]
+    )
 
-class NoOpCollector(MetricsCollector):
-    def increment(self, metric, tags=None, value=1.0):
-        pass
+    # LLM Cost
+    llm_tokens_total = Counter(
+        "llm_tokens_total", "LLM Tokens", ["provider", "model", "tenant", "type"] # type=prompt/completion
+    )
+    llm_cost_usd_total = Counter(
+        "llm_cost_usd_total", "LLM Cost USD", ["provider", "model", "tenant"]
+    )
 
-    def timing(self, metric, duration_ms, tags=None):
-        pass
-
-    def gauge(self, metric, value, tags=None):
-        pass
+metrics = MetricsRegistry()

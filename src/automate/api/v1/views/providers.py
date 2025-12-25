@@ -10,10 +10,10 @@ from ..auth import BearerTokenAuthentication
 class ProviderSerializer(serializers.ModelSerializer):
     class Meta:
         model = LLMProvider
-        fields = ["id", "provider_type", "name", "base_url", "config_encrypted"]
-        extra_kwargs = {
-            "config_encrypted": {"write_only": True} # Do not show secrets
-        }
+        fields = ["slug", "name", "base_url", "api_key_env_var"]
+        # Hide sensitive vars if needed, though env var name is usually safe-ish
+        # We can treat api_key_env_var as config for now
+
 
 class ProviderViewSet(viewsets.ModelViewSet):
     """

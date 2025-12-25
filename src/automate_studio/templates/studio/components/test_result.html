@@ -1,0 +1,15 @@
+<div class="studio-card" style="border-left: 5px solid {% if success %}#28a745{% else %}#dc3545{% endif %};">
+    <h3>Result: {% if success %}Success{% else %}Failed{% endif %}</h3>
+    <p>Latency: {{ latency_ms }}ms</p>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div>
+            <h4>Request</h4>
+            <div class="studio-console">{{ request_preview }}</div>
+        </div>
+        <div>
+            <h4>Response</h4>
+            <div class="studio-console">{{ response_preview }}</div>
+        </div>
+    </div>
+</div>

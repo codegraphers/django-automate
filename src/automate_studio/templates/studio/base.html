@@ -1,0 +1,21 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'studio/css/studio.css' %}">
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+{% endblock %}
+
+{% block content %}
+<div class="studio-container">
+    {% include "studio/includes/header.html" %}
+    <div id="studio-main">
+        {% block studio_content %}{% endblock %}
+    </div>
+</div>
+{% endblock %}

@@ -11,7 +11,7 @@ from ..permissions import IsTenantMember
 class ArtifactSerializer(serializers.ModelSerializer):
     class Meta:
         model = Artifact
-        fields = ["id", "tenant_id", "key", "kind", "size_bytes", "created_at"]
+        fields = ["id", "tenant_id", "uri", "kind", "size_bytes", "created_at"]
         read_only_fields = fields
 
 class ArtifactViewSet(

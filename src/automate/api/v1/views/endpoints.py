@@ -3,6 +3,8 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import decorators, mixins, serializers, status, viewsets
 from rest_framework.response import Response
 
+from automate_core.jobs.models import Job, JobStatusChoices
+
 # Endpoints are conceptually 'Actions' or 'Workflows' exposed as callable units.
 # For now, we'll map them to Automations or specific labeled triggers.
 # Using a mock-ish implementation since Endpoint model isn't strictly defined in Core yet.
@@ -16,7 +18,7 @@ from ..permissions import IsTenantMember
 class EndpointSerializer(serializers.ModelSerializer):
     class Meta:
         model = Automation
-        fields = ["id", "name", "description", "enabled"]
+        fields = ["id", "name", "description", "is_active"]
 
 class EndpointRunRequest(serializers.Serializer):
     payload = serializers.DictField(default={})
@@ -30,7 +32,7 @@ class EndpointViewSet(
     """
     Exposes Automations as callable Endpoints.
     """
-    queryset = Automation.objects.filter(enabled=True)
+    queryset = Automation.objects.filter(is_active=True)
     serializer_class = EndpointSerializer
     authentication_classes = [BearerTokenAuthentication]
     permission_classes = [IsTenantMember]
@@ -50,7 +52,6 @@ class EndpointViewSet(
 
         # In a real impl, we'd look up the Trigger/Workflow and dispatch.
         # Here we just create a Job for the engine.
-        from automate_core.jobs.models import Job, JobStatusChoices
 
         # Create Job
         job = Job.objects.create(

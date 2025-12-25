@@ -1,4 +1,6 @@
 from pathlib import Path
+from dotenv import load_dotenv
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -7,6 +9,8 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
+    "automate_studio",
+    "automate_datachat",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -15,18 +19,24 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "automate",
     "automate_core",
-    "automate_connectors",
+
     "automate_governance",
     "automate_llm",
     "automate_modal",
     "rag",
+    "automate_rag",
+    "automate_connectors",
+    "automate_observability",
     "django_json_widget",
     "import_export",
     "rest_framework",
     "drf_spectacular",
+    "automate_api",
 ]
 
 MIDDLEWARE = [
+    "automate_api.v1.middleware.CorrelationIdMiddleware",
+    "automate_api.v1.middleware_audit.AuditMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -39,7 +49,7 @@ MIDDLEWARE = [
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": ":memory:",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
 
@@ -48,6 +58,7 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 STATIC_URL = "static/"
+ROOT_URLCONF = "automate.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -70,5 +81,30 @@ CELERY_BROKER_URL = "memory://"
 CELERY_TASK_ALWAYS_EAGER = True
 
 REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "automate_api.v1.auth.BearerTokenAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "automate_api.v1.permissions.IsAuthenticatedAndTenantScoped",
+    ],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_PAGINATION_CLASS": "automate_api.v1.pagination.CursorPagination",
+    "PAGE_SIZE": 50,
+    "DEFAULT_THROTTLE_CLASSES": [
+        "automate_api.v1.throttling.TenantRateThrottle",
+        "automate_api.v1.throttling.TokenRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "tenant": "120/min",
+        "token": "60/min",
+    },
+    "EXCEPTION_HANDLER": "automate_api.v1.errors.api_exception_handler",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Django Automate API",
+    "DESCRIPTION": "Automation execution, endpoints, jobs, artifacts, and providers.",
+    "VERSION": "v1",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "COMPONENT_SPLIT_REQUEST": True,
 }
