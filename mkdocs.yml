@@ -81,6 +81,7 @@ nav:
         - Reference:
                   - Settings: reference/settings.md
                   - Extension Points: reference/extension-points.md
+                  - API Base Classes: reference/api-base-classes.md
                   - Data Models: reference/data-models/index.md
                   - Python API: reference/python-api/index.md
                   - REST API: reference/rest-api/index.md

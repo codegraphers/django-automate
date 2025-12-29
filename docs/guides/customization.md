@@ -1,307 +1,419 @@
-# Customization & Integration Guide
+# Customization Guide
 
-This guide covers all customization points for administrators and developers.
+This guide covers how to customize and extend Django Automate components.
 
----
+## Table of Contents
 
-## Part 1: Admin Customizations (No Code)
-
-All these can be configured directly in Django Admin.
-
-### 1.1 LLM Providers
-**Location**: Admin → Automate → LLM Providers
-
-| Field | Description |
-|-------|-------------|
-| Slug | Unique key (e.g., `openai`) |
-| Name | Display name |
-| Base URL | API endpoint (optional, defaults to provider's standard) |
-| API Key Env Var | Environment variable name (e.g., `OPENAI_API_KEY`) |
-
-### 1.2 Model Configurations
-**Location**: Admin → Automate → LLM Model Configs
-
-| Field | Description |
-|-------|-------------|
-| Provider | FK to LLMProvider |
-| Name | Model name (e.g., `gpt-4o`) |
-| Is Default | ✓ = Used by DataChat |
-| Temperature | 0.0-2.0 |
-| Max Tokens | Response limit |
-
-### 1.3 MCP Server Integration
-**Location**: Admin → Automate → MCP Servers
-
-1. **Add Server**: Enter name, slug, endpoint URL
-2. **Configure Auth**: Bearer token or API key
-3. **Sync Tools**: Select server → Actions → "Sync tools"
-
-### 1.4 Prompts
-**Location**: Admin → Automate → Prompts
-
-Create versioned, environment-promoted prompts:
-
-| Field | Description |
-|-------|-------------|
-| Slug | Unique key (e.g., `datachat_sql_generator`) |
-| System Template | Jinja2 template for system prompt |
-| User Template | Jinja2 template for user message |
-| Status | draft → approved → archived |
-
-**Template Variables:**
-```jinja2
-{{ schema }}    {# Database schema #}
-{{ history }}   {# Conversation history #}
-{{ question }}  {# User's question #}
-{{ tools }}     {# Available MCP tools #}
-{{ context }}   {# Session context (user, time, etc.) #}
-```
-
-### 1.5 Budget Policies
-**Location**: Admin → Automate → Budget Policies
-
-Limit LLM usage per scope (global, user, automation).
-
-### 1.6 Connection Profiles
-**Location**: Admin → Automate → Connection Profiles
-
-Store connector credentials scoped by environment (dev/staging/prod).
+1. [Configuration via Settings](#configuration-via-settings)
+2. [Extending Base Classes](#extending-base-classes)
+3. [Custom ViewSets](#custom-viewsets)
+4. [Custom Serializers](#custom-serializers)
+5. [Custom Permissions](#custom-permissions)
+6. [Service Layer Customization](#service-layer-customization)
+7. [Custom Providers](#custom-providers)
 
 ---
 
-## Part 2: Developer Integration (Code)
+## Configuration via Settings
 
-### 2.1 DataChat Table Registration
+All Django Automate components are configurable via Django settings.
 
-**Option A: In apps.py (recommended)**
+### API Settings
+
 ```python
-# myapp/apps.py
-from django.apps import AppConfig
+# settings.py
 
-class MyAppConfig(AppConfig):
-    name = 'myapp'
+AUTOMATE_API = {
+    # Pagination
+    'PAGINATION_PAGE_SIZE': 50,
     
-    def ready(self):
-        from automate_datachat.registry import DataChatRegistry
-        from .models import Product, Order
-        
-        DataChatRegistry.register(
-            Product,
-            include_fields=["id", "name", "price"],
-            exclude_fields=["internal_notes"],
-            tags=["inventory", "products"]
-        )
-```
-
-**Option B: Decorator**
-```python
-# myapp/models.py
-from automate_datachat.registry import register_model
-
-@register_model(tags=["sales"])
-class Order(models.Model):
-    ...
-```
-
-### 2.2 Custom Connectors
-
-**Step 1: Create the adapter**
-```python
-# myapp/adapters.py
-from automate_connectors.adapters.base import ConnectorAdapter
-
-class ERPConnector(ConnectorAdapter):
-    code = "erp"
-    name = "My ERP System"
+    # Rate Limiting
+    'RATE_LIMIT_PER_MINUTE': 120,
     
-    def execute(self, action: str, params: dict, context: dict):
-        if action == "create_order":
-            return self._create_order(params)
-        raise NotImplementedError(f"Unknown action: {action}")
+    # CORS
+    'CORS_ALLOWED_ORIGINS': ['https://example.com'],
+    'CORS_ALLOWED_METHODS': ['GET', 'POST', 'PUT', 'DELETE'],
+    'CORS_ALLOWED_HEADERS': ['Content-Type', 'Authorization', 'X-API-Key'],
     
-    def _create_order(self, params):
-        # Your implementation
-        return {"order_id": "12345"}
-```
-
-**Step 2: Register via entrypoints**
-```toml
-# pyproject.toml
-[project.entry-points."django_automate.connectors"]
-erp = "myapp.adapters:ERPConnector"
-```
-
-### 2.3 Custom Secrets Backend
-
-```python
-# myapp/secrets.py
-from automate_governance.secrets.interfaces import SecretsBackend
-
-class VaultBackend(SecretsBackend):
-    def get_secret(self, key: str) -> str:
-        # Fetch from HashiCorp Vault
-        return vault_client.read(f"secret/data/{key}")
-```
-
-Register in `pyproject.toml`:
-```toml
-[project.entry-points."django_automate.secrets.backends"]
-vault = "myapp.secrets:VaultBackend"
-```
-
-### 2.4 Custom LLM Provider
-
-```python
-# myapp/llm.py
-from automate_llm.providers.base import BaseLLMProvider
-
-class AnthropicProvider(BaseLLMProvider):
-    slug = "anthropic"
+    # Authentication
+    'API_KEY_HEADER': 'X-API-Key',
+    'BEARER_TOKEN_HEADER': 'Authorization',
     
-    def chat_complete(self, request):
-        # Call Anthropic API
-        return CompletionResponse(content=...)
-```
-
-Register in settings:
-```python
-AUTOMATE_LLM_PROVIDERS = {
-    "anthropic": "myapp.llm.AnthropicProvider",
-}
-```
-
-### 2.5 Extending Admin Templates
-
-Override Django Admin templates in your app:
-
-```
-myapp/
-  templates/
-    admin/
-      index.html          # Custom admin home
-      base_site.html      # Custom header/footer
-      myapp/
-        mymodel/
-          change_form.html  # Custom edit form
-```
-
-### 2.6 Adding Custom Studio Views
-
-```python
-# myapp/views.py
-from django.views.generic import TemplateView
-from django.contrib.admin.views.decorators import staff_member_required
-from django.utils.decorators import method_decorator
-
-@method_decorator(staff_member_required, name='dispatch')
-class MyDashboardView(TemplateView):
-    template_name = "myapp/dashboard.html"
-```
-
-```python
-# automate_studio/urls.py (or your own urls.py)
-path("studio/my-dashboard/", MyDashboardView.as_view(), name="my_dashboard"),
-```
-
----
-
-## Part 3: API Integration
-
-### 3.1 REST API
-
-**Authentication**: Bearer token
-```bash
-curl -H "Authorization: Bearer <token>" \
-     http://localhost:8000/api/v1/jobs/
-```
-
-**Endpoints:**
-| Resource | Methods |
-|----------|---------|
-| `/api/v1/jobs/` | GET, POST |
-| `/api/v1/executions/` | GET |
-| `/api/v1/events/` | POST |
-| `/api/v1/providers/` | GET |
-| `/api/v1/endpoints/` | GET |
-
-### 3.2 DataChat API
-
-```python
-import requests
-
-response = requests.post(
-    "http://localhost:8000/datachat/api/chat/",
-    json={"message": "How many orders this month?"},
-    headers={"Authorization": "Bearer <token>"}
-)
-print(response.json())
-# {"answer": "...", "sql": "SELECT ...", "data": [...]}
-```
-
-### 3.3 MCP Tool Execution
-
-```python
-from automate_llm.mcp_client import MCPClient
-from automate.models import MCPServer
-
-server = MCPServer.objects.get(slug="shopify-mcp")
-client = MCPClient(server)
-
-# Discover tools
-tools = client.discover_tools()
-
-# Execute a tool
-result = client.execute_tool("getProducts", {"limit": 10})
-```
-
----
-
-## Part 4: Configuration Reference
-
-### 4.1 Environment Variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `OPENAI_API_KEY` | OpenAI API key | Required |
-| `DATABASE_URL` | PostgreSQL URL | SQLite |
-| `REDIS_URL` | Redis for Celery | memory:// |
-| `CELERY_BROKER_URL` | Task broker | Redis |
-| `DEBUG` | Debug mode | False |
-
-### 4.2 Django Settings
-
-```python
-# Celery
-CELERY_BROKER_URL = "redis://localhost:6379/0"
-CELERY_TASK_ALWAYS_EAGER = False  # True for testing
-
-# DataChat
-DATACHAT_CONFIG = {
-    "max_results": 1000,
-    "default_provider": "openai",
-}
-
-# REST Framework
-REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "automate_api.v1.auth.BearerTokenAuthentication",
-    ],
-    "DEFAULT_THROTTLE_RATES": {
-        "tenant": "120/min",
-        "token": "60/min",
+    # Schema Inspection
+    'SCHEMA_EXCLUDED_APPS': ['admin', 'contenttypes', 'sessions'],
+    
+    # Throttling
+    'THROTTLE_RATES': {
+        'tenant': '120/min',
+        'token': '60/min',
     },
 }
 ```
 
+### DataChat Settings
+
+```python
+AUTOMATE_DATACHAT = {
+    'HISTORY_PAGE_SIZE': 20,
+    'EMBED_RATE_LIMIT': 60,
+    'EMBED_MAX_MESSAGE_LENGTH': 1000,
+}
+```
+
+### RAG Settings
+
+```python
+AUTOMATE_RAG = {
+    'DEFAULT_TOP_K': 5,
+    'MAX_TOP_K': 100,
+    'QUERY_TIMEOUT_SECONDS': 30,
+}
+```
+
+### LLM Settings
+
+```python
+AUTOMATE_LLM = {
+    'DEFAULT_PROVIDER': 'openai',
+    'DEFAULT_MODEL': 'gpt-4',
+    'MAX_RETRIES': 3,
+    'TIMEOUT_SECONDS': 60,
+}
+```
+
 ---
 
-## Part 5: Troubleshooting
+## Extending Base Classes
 
-### Common Issues
+### BaseViewSet
 
-| Problem | Solution |
-|---------|----------|
-| "No tables exposed" | Register models in `DataChatRegistry` |
-| MCP tools not syncing | Run `python manage.py sync_mcp_tools` |
-| 401 on DataChat | Set `OPENAI_API_KEY` in `.env` |
-| Chat returns SQL for greetings | Create `datachat_sql_generator` Prompt with MCP tool instructions |
+All ViewSets inherit from configurable base classes.
+
+```python
+from automate_api.v1.base import BaseViewSet
+
+class MyCustomViewSet(BaseViewSet):
+    """
+    Custom ViewSet with inherited:
+    - Authentication
+    - Permission checking
+    - Rate limiting
+    - Tenant filtering
+    - Pagination
+    """
+    pass
+```
+
+### Available Base Classes
+
+| Class | Purpose | Features |
+|-------|---------|----------|
+| `BaseAPIView` | Single-endpoint views | Auth, permissions, throttling |
+| `BaseViewSet` | ViewSet operations | + pagination, tenant filter |
+| `BaseModelViewSet` | CRUD operations | + queryset, serializer |
+| `BaseReadOnlyViewSet` | Read-only resources | List and retrieve only |
+
+### Mixins
+
+```python
+from automate_api.v1.base import CORSMixin, TenantFilterMixin, RateLimitMixin
+
+class MyAPIView(CORSMixin, BaseAPIView):
+    """View with CORS support."""
+    cors_allowed_origins = ['https://mysite.com']
+
+class MyViewSet(TenantFilterMixin, BaseViewSet):
+    """ViewSet with automatic tenant filtering."""
+    tenant_field = 'organization_id'  # Custom field name
+
+class RateLimitedView(RateLimitMixin, BaseAPIView):
+    """View with custom rate limiting."""
+    rate_limit_per_minute = 30
+```
+
+---
+
+## Custom ViewSets
+
+### Overriding ChatViewSet
+
+```python
+from automate_datachat.viewsets import ChatViewSet
+from myapp.orchestrators import MyOrchestrator
+
+class MyChatViewSet(ChatViewSet):
+    """Custom chat with different orchestrator."""
+    
+    # Override orchestrator
+    orchestrator_class = MyOrchestrator
+    
+    # Override history page size
+    history_page_size = 25
+    
+    def get_orchestrator_class(self):
+        """Dynamic orchestrator selection."""
+        if self.request.user.is_superuser:
+            return SuperOrchestrator
+        return self.orchestrator_class
+```
+
+### Overriding WorkflowViewSet
+
+```python
+from automate.api.viewsets import WorkflowViewSet
+from myapp.services import MyWorkflowService
+
+class MyWorkflowViewSet(WorkflowViewSet):
+    """Custom workflow handling."""
+    
+    service_class = MyWorkflowService
+    
+    def create(self, request):
+        """Add custom logic before creation."""
+        # Pre-processing
+        self.validate_quota(request.user)
+        
+        # Call parent
+        return super().create(request)
+```
+
+### Overriding RAGQueryViewSet
+
+```python
+from rag.api.viewsets import RAGQueryViewSet
+
+class MyRAGViewSet(RAGQueryViewSet):
+    """Custom RAG with enhanced logging."""
+    
+    default_top_k = 10
+    
+    def build_query_context(self, request, endpoint, trace_id):
+        """Add custom context fields."""
+        ctx = super().build_query_context(request, endpoint, trace_id)
+        ctx.custom_field = request.headers.get('X-Custom')
+        return ctx
+    
+    def log_query(self, **kwargs):
+        """Enhanced logging."""
+        super().log_query(**kwargs)
+        send_to_analytics(kwargs)
+```
+
+---
+
+## Custom Serializers
+
+### Extending Serializers
+
+```python
+from automate_datachat.serializers import ChatRequestSerializer
+
+class ExtendedChatRequestSerializer(ChatRequestSerializer):
+    """Chat request with additional fields."""
+    
+    session_id = serializers.UUIDField(required=False)
+    metadata = serializers.DictField(required=False)
+    
+    def validate_question(self, value):
+        """Custom validation."""
+        if len(value) < 5:
+            raise serializers.ValidationError("Question too short")
+        return value
+```
+
+### Using Custom Serializers
+
+```python
+class MyChatViewSet(ChatViewSet):
+    serializer_class = ExtendedChatRequestSerializer
+```
+
+---
+
+## Custom Permissions
+
+### Creating Permissions
+
+```python
+from rest_framework import permissions
+
+class IsProjectMember(permissions.BasePermission):
+    """Check if user is member of the project."""
+    
+    message = "Must be a project member."
+    
+    def has_permission(self, request, view):
+        project_id = request.headers.get('X-Project-ID')
+        return request.user.projects.filter(id=project_id).exists()
+
+class HasPremiumPlan(permissions.BasePermission):
+    """Check if user has premium plan."""
+    
+    def has_permission(self, request, view):
+        return request.user.subscription.is_premium
+```
+
+### Using Custom Permissions
+
+```python
+class MyViewSet(BaseViewSet):
+    permission_classes = [IsProjectMember, HasPremiumPlan]
+```
+
+### Composing Permissions
+
+```python
+from rest_framework.permissions import AND, OR
+
+class MyViewSet(BaseViewSet):
+    permission_classes = [
+        (IsProjectMember & HasPremiumPlan) | IsSuperUser
+    ]
+```
+
+---
+
+## Service Layer Customization
+
+### Custom Workflow Service
+
+```python
+from automate.services import WorkflowService
+
+class MyWorkflowService(WorkflowService):
+    """Custom workflow logic."""
+    
+    trigger_type_map = {
+        **WorkflowService.trigger_type_map,
+        'custom_event': 'custom',
+    }
+    
+    def create_automation(self, name, slug):
+        """Add custom fields to automation."""
+        automation = super().create_automation(name, slug)
+        automation.custom_field = 'value'
+        automation.save()
+        return automation
+    
+    def create_trigger(self, automation, trigger_config):
+        """Custom trigger setup."""
+        super().create_trigger(automation, trigger_config)
+        
+        if trigger_config.get('event_type') == 'custom_event':
+            self.setup_custom_trigger(automation, trigger_config)
+```
+
+---
+
+## Custom Providers
+
+### LLM Provider
+
+```python
+from automate_llm.providers import BaseLLMProvider
+
+class MyLLMProvider(BaseLLMProvider):
+    """Custom LLM provider."""
+    
+    name = 'my_llm'
+    
+    def generate(self, prompt, **kwargs):
+        """Generate completion."""
+        return my_api.complete(prompt)
+    
+    def validate_config(self, config):
+        """Validate provider config."""
+        if 'api_key' not in config:
+            raise ValueError("API key required")
+```
+
+### Registering Providers
+
+```python
+# In your app's apps.py
+class MyAppConfig(AppConfig):
+    def ready(self):
+        from automate_llm.providers import register_provider
+        from .providers import MyLLMProvider
+        
+        register_provider('my_llm', MyLLMProvider)
+```
+
+### Using Entry Points
+
+```toml
+# pyproject.toml
+[project.entry-points."automate.llm_providers"]
+my_llm = "myapp.providers:MyLLMProvider"
+```
+
+---
+
+## URL Configuration
+
+### Registering Custom ViewSets
+
+```python
+# urls.py
+from django.urls import include, path
+from rest_framework.routers import DefaultRouter
+
+from myapp.viewsets import MyChatViewSet, MyWorkflowViewSet
+
+router = DefaultRouter()
+router.register('chat', MyChatViewSet, basename='custom-chat')
+router.register('workflows', MyWorkflowViewSet, basename='custom-workflows')
+
+urlpatterns = [
+    path('api/v1/', include(router.urls)),
+]
+```
+
+---
+
+## Examples
+
+### Complete Custom Implementation
+
+```python
+# myapp/viewsets.py
+from automate_api.v1.base import BaseViewSet, CORSMixin
+from automate_datachat.viewsets import ChatViewSet
+
+class EnterpriseDataChatViewSet(CORSMixin, ChatViewSet):
+    """Enterprise DataChat with custom features."""
+    
+    # Configuration
+    cors_allowed_origins = ['https://internal.company.com']
+    history_page_size = 50
+    
+    # Custom orchestrator
+    from myapp.orchestrators import EnterpriseOrchestrator
+    orchestrator_class = EnterpriseOrchestrator
+    
+    def check_permissions(self, request):
+        """Add IP whitelist check."""
+        super().check_permissions(request)
+        
+        allowed_ips = ['10.0.0.0/8']
+        client_ip = request.META.get('REMOTE_ADDR')
+        
+        if not is_in_cidr(client_ip, allowed_ips):
+            self.permission_denied(request, message="IP not allowed")
+```
+
+### Settings-Driven Configuration
+
+```python
+# settings.py
+AUTOMATE_API = {
+    'CORS_ALLOWED_ORIGINS': os.environ.get('CORS_ORIGINS', '*').split(','),
+    'RATE_LIMIT_PER_MINUTE': int(os.environ.get('RATE_LIMIT', 60)),
+}
+
+AUTOMATE_DATACHAT = {
+    'HISTORY_PAGE_SIZE': int(os.environ.get('CHAT_HISTORY_SIZE', 15)),
+}
+```
+
+All ViewSets will automatically use these settings without code changes.
