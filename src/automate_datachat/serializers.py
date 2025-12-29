@@ -15,16 +15,16 @@ from rest_framework import serializers
 class ChatRequestSerializer(serializers.Serializer):
     """
     Serializer for chat API requests.
-    
+
     Attributes:
         question: The natural language question to process
         context: Optional additional context for the query
-        
+
     Example:
         serializer = ChatRequestSerializer(data={'question': 'How many users?'})
         serializer.is_valid(raise_exception=True)
     """
-    
+
     question = serializers.CharField(
         required=True,
         min_length=1,
@@ -41,7 +41,7 @@ class ChatRequestSerializer(serializers.Serializer):
 class ChatResponseSerializer(serializers.Serializer):
     """
     Serializer for chat API responses.
-    
+
     Attributes:
         answer: The natural language response
         sql: The generated SQL query (if applicable)
@@ -49,7 +49,7 @@ class ChatResponseSerializer(serializers.Serializer):
         chart: Chart configuration (if applicable)
         error: Error message (if any)
     """
-    
+
     answer = serializers.CharField(allow_blank=True)
     sql = serializers.CharField(allow_blank=True, required=False)
     data = serializers.ListField(child=serializers.DictField(), required=False)
@@ -60,10 +60,10 @@ class ChatResponseSerializer(serializers.Serializer):
 class HistoryMessageSerializer(serializers.Serializer):
     """
     Serializer for chat history messages.
-    
+
     Used for paginated history responses.
     """
-    
+
     id = serializers.IntegerField()
     role = serializers.ChoiceField(choices=['user', 'assistant'])
     content = serializers.CharField()
@@ -78,7 +78,7 @@ class HistoryResponseSerializer(serializers.Serializer):
     """
     Serializer for paginated chat history response.
     """
-    
+
     messages = HistoryMessageSerializer(many=True)
     has_more = serializers.BooleanField()
     total = serializers.IntegerField()
@@ -88,11 +88,11 @@ class HistoryResponseSerializer(serializers.Serializer):
 class EmbedChatRequestSerializer(serializers.Serializer):
     """
     Serializer for embedded widget chat requests.
-    
+
     Similar to ChatRequestSerializer but may have different constraints
     for embedded contexts.
     """
-    
+
     question = serializers.CharField(
         required=True,
         min_length=1,
@@ -104,10 +104,10 @@ class EmbedChatRequestSerializer(serializers.Serializer):
 class EmbedChatResponseSerializer(serializers.Serializer):
     """
     Serializer for embedded widget chat responses.
-    
+
     Simplified response format for embedded contexts.
     """
-    
+
     answer = serializers.CharField()
     sql = serializers.CharField(allow_blank=True, required=False)
     error = serializers.CharField(allow_blank=True, required=False)
@@ -117,7 +117,7 @@ class EmbedConfigSerializer(serializers.Serializer):
     """
     Serializer for embed configuration responses.
     """
-    
+
     theme = serializers.DictField(required=False)
     welcome_message = serializers.CharField()
     require_auth = serializers.BooleanField()

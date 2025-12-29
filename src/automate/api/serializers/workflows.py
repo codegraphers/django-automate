@@ -9,7 +9,7 @@ from rest_framework import serializers
 
 class WorkflowNodeSerializer(serializers.Serializer):
     """Serializer for workflow graph nodes."""
-    
+
     id = serializers.CharField()
     type = serializers.ChoiceField(choices=['trigger', 'action', 'condition', 'transform'])
     config = serializers.DictField(default=dict)
@@ -18,7 +18,7 @@ class WorkflowNodeSerializer(serializers.Serializer):
 
 class WorkflowEdgeSerializer(serializers.Serializer):
     """Serializer for workflow graph edges."""
-    
+
     source = serializers.CharField()
     target = serializers.CharField()
     condition = serializers.CharField(required=False, allow_blank=True)
@@ -26,7 +26,7 @@ class WorkflowEdgeSerializer(serializers.Serializer):
 
 class WorkflowGraphSerializer(serializers.Serializer):
     """Serializer for complete workflow graph."""
-    
+
     nodes = WorkflowNodeSerializer(many=True)
     edges = WorkflowEdgeSerializer(many=True)
 
@@ -34,7 +34,7 @@ class WorkflowGraphSerializer(serializers.Serializer):
 class WorkflowCreateRequestSerializer(serializers.Serializer):
     """
     Serializer for workflow creation requests.
-    
+
     Example:
         {
             "name": "My Workflow",
@@ -44,7 +44,7 @@ class WorkflowCreateRequestSerializer(serializers.Serializer):
             }
         }
     """
-    
+
     name = serializers.CharField(
         max_length=200,
         default="Untitled Workflow",
@@ -57,7 +57,7 @@ class WorkflowCreateRequestSerializer(serializers.Serializer):
 
 class WorkflowCreateResponseSerializer(serializers.Serializer):
     """Serializer for workflow creation response."""
-    
+
     id = serializers.UUIDField()
     slug = serializers.SlugField()
     workflow_version = serializers.IntegerField()
@@ -66,7 +66,7 @@ class WorkflowCreateResponseSerializer(serializers.Serializer):
 
 class WorkflowDetailSerializer(serializers.Serializer):
     """Serializer for workflow detail response."""
-    
+
     id = serializers.UUIDField()
     name = serializers.CharField()
     slug = serializers.SlugField()
@@ -75,13 +75,13 @@ class WorkflowDetailSerializer(serializers.Serializer):
 
 class WorkflowUpdateRequestSerializer(serializers.Serializer):
     """Serializer for workflow update requests."""
-    
+
     name = serializers.CharField(max_length=200, required=False)
     graph = WorkflowGraphSerializer()
 
 
 class WorkflowUpdateResponseSerializer(serializers.Serializer):
     """Serializer for workflow update response."""
-    
+
     id = serializers.UUIDField()
     message = serializers.CharField()

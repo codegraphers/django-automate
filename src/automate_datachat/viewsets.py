@@ -10,11 +10,11 @@ All ViewSets are designed to be:
 
 Example - Custom Chat ViewSet:
     from automate_datachat.viewsets import ChatViewSet
-    
+
     class MyChatViewSet(ChatViewSet):
         # Override orchestrator class
         orchestrator_class = MyCustomOrchestrator
-        
+
         # Override pagination
         history_page_size = 25
 """
@@ -22,7 +22,7 @@ Example - Custom Chat ViewSet:
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 from drf_spectacular.utils import extend_schema
-from rest_framework import status, viewsets
+from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -49,41 +49,41 @@ from .serializers import (
 class ChatViewSet(StaffOnlyMixin, viewsets.ViewSet):
     """
     Admin DataChat API ViewSet.
-    
+
     Provides natural language query interface for admin users.
-    
+
     Class Attributes:
         orchestrator_class: Chat orchestrator to use (default: ChatOrchestrator)
         history_page_size: Messages per history page (default: 15)
-        
+
     Endpoints:
         POST /datachat/chat/ - Send a chat message
         GET /datachat/history/ - Get chat history
-        
+
     Configuration via settings:
         AUTOMATE_DATACHAT = {
             'HISTORY_PAGE_SIZE': 20,
         }
-        
+
     Example - Override orchestrator:
         class MyChatViewSet(ChatViewSet):
             orchestrator_class = MyOrchestrator
     """
-    
+
     permission_classes = [IsStaffMember]
     orchestrator_class = ChatOrchestrator
     history_page_size = 15
-    
+
     def get_orchestrator_class(self):
         """Get orchestrator class. Override to customize."""
         return self.orchestrator_class
-    
+
     def get_history_page_size(self):
         """Get history page size. Override to customize."""
         from django.conf import settings
         datachat_settings = getattr(settings, 'AUTOMATE_DATACHAT', {})
         return datachat_settings.get('HISTORY_PAGE_SIZE', self.history_page_size)
-    
+
     @extend_schema(
         request=ChatRequestSerializer,
         responses=ChatResponseSerializer,
@@ -93,18 +93,18 @@ class ChatViewSet(StaffOnlyMixin, viewsets.ViewSet):
     def chat(self, request):
         """
         Process a chat message.
-        
+
         Returns natural language response with optional SQL and data.
         """
         serializer = ChatRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
+
         orchestrator_class = self.get_orchestrator_class()
         orchestrator = orchestrator_class(request)
         result = orchestrator.chat(serializer.validated_data['question'])
-        
+
         return Response(result)
-    
+
     @extend_schema(
         responses=HistoryResponseSerializer,
         description="Get paginated chat history for current user."
@@ -113,7 +113,7 @@ class ChatViewSet(StaffOnlyMixin, viewsets.ViewSet):
     def history(self, request):
         """
         Get chat history for current user.
-        
+
         Query params:
             page: Page number (default: 1)
             limit: Messages per page (default: 15)
@@ -124,7 +124,7 @@ class ChatViewSet(StaffOnlyMixin, viewsets.ViewSet):
         else:
             session_key = request.session.session_key or ""
             session = DataChatSession.objects.filter(session_key=session_key).first()
-        
+
         if not session:
             return Response({
                 'messages': [],
@@ -132,14 +132,14 @@ class ChatViewSet(StaffOnlyMixin, viewsets.ViewSet):
                 'total': 0,
                 'page': 1
             })
-        
+
         page = int(request.query_params.get('page', 1))
         limit = int(request.query_params.get('limit', self.get_history_page_size()))
-        
+
         all_messages = DataChatMessage.objects.filter(session=session).order_by('-created_at')
         paginator = Paginator(all_messages, limit)
         page_obj = paginator.get_page(page)
-        
+
         messages = []
         for msg in reversed(page_obj.object_list):
             messages.append({
@@ -152,7 +152,7 @@ class ChatViewSet(StaffOnlyMixin, viewsets.ViewSet):
                 'error': msg.error if msg.role == 'assistant' else None,
                 'created_at': msg.created_at.isoformat(),
             })
-        
+
         return Response({
             'messages': messages,
             'has_more': page_obj.has_next(),
@@ -164,53 +164,53 @@ class ChatViewSet(StaffOnlyMixin, viewsets.ViewSet):
 class EmbedViewSet(CORSMixin, viewsets.ViewSet):
     """
     Embeddable Widget API ViewSet.
-    
+
     Provides endpoints for embedding DataChat in external websites.
-    
+
     Class Attributes:
         embed_model: Model class for embed configuration
         widget_template: Template for widget JS (override for customization)
-        
+
     Endpoints:
         GET /datachat/embed/{id}/widget.js - Get widget JavaScript
         POST /datachat/embed/{id}/chat/ - Process chat message
         GET /datachat/embed/{id}/config/ - Get embed configuration
-        
+
     Security:
         - API key validation via EmbedAPIKeyPermission
         - Origin validation via EmbedOriginPermission
         - Rate limiting via EmbedRateLimitPermission
-        
+
     Example - Custom widget template:
         class MyEmbedViewSet(EmbedViewSet):
             def get_widget_template(self, embed):
                 return 'datachat/custom_widget.js'
     """
-    
+
     authentication_classes = []  # Public endpoints
     permission_classes = []  # Permissions handled per-action
     embed_model = ChatEmbed
     embed = None  # Set by dispatch
-    
+
     def get_embed(self, embed_id):
         """Get embed instance. Override to customize lookup."""
         try:
             return self.embed_model.objects.get(id=embed_id, enabled=True)
         except self.embed_model.DoesNotExist:
             return None
-    
+
     def dispatch(self, request, *args, **kwargs):
         """Load embed before dispatching."""
         embed_id = kwargs.get('pk') or kwargs.get('embed_id')
         if embed_id:
             self.embed = self.get_embed(embed_id)
         return super().dispatch(request, *args, **kwargs)
-    
+
     @action(detail=True, methods=['get'], url_path='widget.js')
     def widget_js(self, request, pk=None):
         """
         Get widget JavaScript code.
-        
+
         Returns JavaScript that creates the chat widget on the page.
         """
         if not self.embed:
@@ -220,17 +220,17 @@ class EmbedViewSet(CORSMixin, viewsets.ViewSet):
                 status=404
             )
             return self.add_cors_headers(response)
-        
+
         base_url = request.build_absolute_uri('/').rstrip('/')
         theme = self.embed.theme or {}
         primary_color = theme.get('primaryColor', '#2563eb')
         title = theme.get('title', 'Data Assistant')
-        
+
         js_code = self._get_widget_js(self.embed, base_url, primary_color, title)
-        
+
         response = HttpResponse(js_code, content_type="application/javascript")
         return self.add_cors_headers(response)
-    
+
     def _get_widget_js(self, embed, base_url, primary_color, title):
         """Generate widget JavaScript. Override to customize."""
         return f'''
@@ -386,43 +386,43 @@ class EmbedViewSet(CORSMixin, viewsets.ViewSet):
     }});
 }})();
 '''
-    
+
     @extend_schema(
         request=EmbedChatRequestSerializer,
         responses=EmbedChatResponseSerializer,
         description="Process chat message from embedded widget."
     )
     @action(
-        detail=True, 
+        detail=True,
         methods=['post', 'options'],
         permission_classes=[EmbedAPIKeyPermission, EmbedOriginPermission, EmbedRateLimitPermission]
     )
     def chat(self, request, pk=None):
         """
         Process chat message from embedded widget.
-        
+
         Validates API key, origin, and rate limit before processing.
         """
         if request.method == 'OPTIONS':
             return self.options(request)
-        
+
         if not self.embed:
             return Response({'error': 'Embed not found'}, status=404)
-        
+
         serializer = EmbedChatRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
+
         orchestrator = ChatOrchestrator()
         result = orchestrator.chat(serializer.validated_data['question'])
-        
+
         response_data = {
             'answer': result.get('answer', ''),
             'sql': result.get('sql', '') if not self.embed.allowed_tables else '',
             'error': result.get('error'),
         }
-        
+
         return Response(response_data)
-    
+
     @extend_schema(
         responses=EmbedConfigSerializer,
         description="Get embed configuration."
@@ -432,7 +432,7 @@ class EmbedViewSet(CORSMixin, viewsets.ViewSet):
         """Get embed configuration."""
         if not self.embed:
             return Response({'error': 'Not found'}, status=404)
-        
+
         return Response({
             'theme': self.embed.theme,
             'welcome_message': self.embed.welcome_message,

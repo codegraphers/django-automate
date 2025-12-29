@@ -10,7 +10,7 @@ from rest_framework import serializers
 class RAGQueryRequestSerializer(serializers.Serializer):
     """
     Serializer for RAG query requests.
-    
+
     Example:
         {
             "query": "What is the policy on...",
@@ -18,7 +18,7 @@ class RAGQueryRequestSerializer(serializers.Serializer):
             "filters": {"namespace": "docs"}
         }
     """
-    
+
     query = serializers.CharField(
         required=True,
         min_length=1,
@@ -41,7 +41,7 @@ class RAGQueryRequestSerializer(serializers.Serializer):
 
 class RAGResultSerializer(serializers.Serializer):
     """Serializer for individual RAG result."""
-    
+
     text = serializers.CharField()
     score = serializers.FloatField()
     source_id = serializers.CharField(required=False)
@@ -50,7 +50,7 @@ class RAGResultSerializer(serializers.Serializer):
 
 class RAGQueryResponseSerializer(serializers.Serializer):
     """Serializer for RAG query response."""
-    
+
     results = RAGResultSerializer(many=True)
     trace_id = serializers.UUIDField()
     latency_ms = serializers.IntegerField()
@@ -59,7 +59,7 @@ class RAGQueryResponseSerializer(serializers.Serializer):
 
 class RAGHealthResponseSerializer(serializers.Serializer):
     """Serializer for RAG health check response."""
-    
+
     healthy = serializers.BooleanField()
     message = serializers.CharField()
     endpoint = serializers.CharField()

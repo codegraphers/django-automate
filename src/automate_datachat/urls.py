@@ -15,7 +15,7 @@ router.register(r'chat', ChatViewSet, basename='datachat')
 urlpatterns = [
     # Chat API (ViewSet-based)
     path('api/', include(router.urls)),
-    
+
     # Embed API (custom routing for embed_id)
     path(
         'embed/<uuid:pk>/widget.js',
