@@ -5,7 +5,7 @@ import uuid
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from automate_core.base.models import ValidatableMixin, SignalMixin
+from automate_core.base.models import SignalMixin, ValidatableMixin
 
 
 class Automation(ValidatableMixin, SignalMixin, models.Model):

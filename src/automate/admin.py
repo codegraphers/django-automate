@@ -8,7 +8,6 @@ from automate_core.base import (
     InlineBaseAdmin,
     StackedInlineBaseAdmin,
     TenantScopedAdmin,
-    AuditableModelAdmin,
 )
 
 from .models import (
@@ -55,7 +54,7 @@ class RuleInline(StackedInlineBaseAdmin):
 class TriggerSpecAdmin(BaseModelAdmin):
     """
     Admin for TriggerSpec model.
-    
+
     Override Points:
         - list_display: Customize displayed columns
         - list_filter: Customize filter options
@@ -84,7 +83,7 @@ class ExecutionStepInline(InlineBaseAdmin):
 class ExecutionStepAdmin(BaseModelAdmin):
     """
     Admin for ExecutionStep/StepRun model.
-    
+
     Override Points:
         - list_display: Customize displayed columns
         - readonly_fields: Customize readonly fields
@@ -102,9 +101,9 @@ class ExecutionStepAdmin(BaseModelAdmin):
 class AutomationAdmin(TenantScopedAdmin):
     """
     Admin for Automation model.
-    
+
     Uses TenantScopedAdmin for multi-tenant filtering.
-    
+
     Override Points:
         - list_display: Customize displayed columns
         - inlines: Customize inline models
@@ -132,7 +131,7 @@ class AutomationAdmin(TenantScopedAdmin):
 class EventAdmin(TenantScopedAdmin):
     """
     Admin for Event model.
-    
+
     Uses TenantScopedAdmin for multi-tenant filtering.
     Read-only since events should not be modified.
     """
@@ -152,7 +151,7 @@ class EventAdmin(TenantScopedAdmin):
 class ExecutionAdmin(TenantScopedAdmin):
     """
     Admin for Execution model.
-    
+
     Uses TenantScopedAdmin for multi-tenant filtering.
     Includes replay_execution action for re-queuing.
     """

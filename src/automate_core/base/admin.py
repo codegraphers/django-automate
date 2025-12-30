@@ -22,7 +22,7 @@ Design Principles:
     - Composability: Mixins can be combined freely
 """
 
-from typing import Any, Dict, List, Optional, Tuple, Type
+from typing import Any
 
 from django.conf import settings
 from django.contrib import admin, messages
@@ -30,7 +30,6 @@ from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.urls import reverse
 from django.utils.html import format_html
-from django.utils.safestring import mark_safe
 
 
 def get_admin_setting(key: str, default: Any = None) -> Any:
@@ -69,7 +68,7 @@ class ExportMixin:
     export_fields = None
     export_exclude = []
 
-    def get_export_fields(self, request: HttpRequest) -> List[str]:
+    def get_export_fields(self, request: HttpRequest) -> list[str]:
         """Get fields to export. Override to customize."""
         if self.export_fields:
             return self.export_fields
@@ -81,6 +80,7 @@ class ExportMixin:
     def export_as_csv(self, request: HttpRequest, queryset: QuerySet) -> HttpResponse:
         """Export queryset as CSV."""
         import csv
+
         from django.http import HttpResponse
 
         fields = self.get_export_fields(request)
@@ -101,8 +101,9 @@ class ExportMixin:
     def export_as_json(self, request: HttpRequest, queryset: QuerySet) -> HttpResponse:
         """Export queryset as JSON."""
         import json
-        from django.http import HttpResponse
+
         from django.core.serializers.json import DjangoJSONEncoder
+        from django.http import HttpResponse
 
         fields = self.get_export_fields(request)
         data = []
@@ -120,7 +121,7 @@ class ExportMixin:
 
     export_as_json.short_description = "Export selected as JSON"
 
-    def get_actions(self, request: HttpRequest) -> Dict:
+    def get_actions(self, request: HttpRequest) -> dict:
         """Add export actions."""
         actions = super().get_actions(request)
 
@@ -262,7 +263,7 @@ class SearchMixin:
         request: HttpRequest,
         queryset: QuerySet,
         search_term: str
-    ) -> Tuple[QuerySet, bool]:
+    ) -> tuple[QuerySet, bool]:
         """Enhanced search with field-specific lookups."""
         if not search_term:
             return queryset, False
@@ -296,7 +297,7 @@ class FilterMixin:
     auto_filters = False
     date_filters = []
 
-    def get_list_filter(self, request: HttpRequest) -> List:
+    def get_list_filter(self, request: HttpRequest) -> list:
         """Get list filters with optional auto-generation."""
         filters = list(super().get_list_filter(request) or [])
 
@@ -305,9 +306,7 @@ class FilterMixin:
             for field in model._meta.fields:
                 if field.name in filters:
                     continue
-                if field.choices:
-                    filters.append(field.name)
-                elif field.get_internal_type() == 'BooleanField':
+                if field.choices or field.get_internal_type() == 'BooleanField':
                     filters.append(field.name)
 
         return filters
@@ -385,7 +384,7 @@ class BaseModelAdmin(admin.ModelAdmin):
     timestamp_fields = ['created_at', 'updated_at']
     timestamp_readonly = True
 
-    def get_list_display(self, request: HttpRequest) -> List[str]:
+    def get_list_display(self, request: HttpRequest) -> list[str]:
         """Get list display fields with optional timestamps."""
         display = list(super().get_list_display(request))
 
@@ -396,7 +395,7 @@ class BaseModelAdmin(admin.ModelAdmin):
 
         return display
 
-    def get_readonly_fields(self, request: HttpRequest, obj: Any = None) -> List[str]:
+    def get_readonly_fields(self, request: HttpRequest, obj: Any = None) -> list[str]:
         """Get readonly fields with optional timestamp fields."""
         readonly = list(super().get_readonly_fields(request, obj))
 
@@ -407,7 +406,7 @@ class BaseModelAdmin(admin.ModelAdmin):
 
         return readonly
 
-    def get_ordering(self, request: HttpRequest) -> List[str]:
+    def get_ordering(self, request: HttpRequest) -> list[str]:
         """Get ordering with default fallback."""
         ordering = super().get_ordering(request)
         if not ordering:
@@ -426,7 +425,7 @@ class BaseModelAdmin(admin.ModelAdmin):
         )
         return format_html('<a href="{}">{}</a>', url, label or str(obj))
 
-    def colored_status(self, status: str, colors: Dict[str, str] = None) -> str:
+    def colored_status(self, status: str, colors: dict[str, str] = None) -> str:
         """Render status with color."""
         default_colors = {
             'active': 'green',
@@ -488,7 +487,7 @@ class TenantScopedAdmin(BaseModelAdmin):
 
         return qs
 
-    def get_tenant_for_request(self, request: HttpRequest) -> Optional[str]:
+    def get_tenant_for_request(self, request: HttpRequest) -> str | None:
         """
         Get tenant ID for the current request.
 
@@ -497,13 +496,12 @@ class TenantScopedAdmin(BaseModelAdmin):
         """
         return getattr(request.user, 'tenant_id', None)
 
-    def get_list_display(self, request: HttpRequest) -> List[str]:
+    def get_list_display(self, request: HttpRequest) -> list[str]:
         """Optionally add tenant column."""
         display = super().get_list_display(request)
 
-        if self.show_tenant_column and request.user.is_superuser:
-            if self.tenant_field not in display:
-                display = [self.tenant_field] + list(display)
+        if self.show_tenant_column and request.user.is_superuser and self.tenant_field not in display:
+            display = [self.tenant_field] + list(display)
 
         return display
 
@@ -536,7 +534,7 @@ class AuditableModelAdmin(AuditMixin, BaseModelAdmin):
     audit_fields = ['created_by', 'modified_by', 'created_at', 'updated_at']
     show_audit_fields = True
 
-    def get_readonly_fields(self, request: HttpRequest, obj: Any = None) -> List[str]:
+    def get_readonly_fields(self, request: HttpRequest, obj: Any = None) -> list[str]:
         """Make audit fields readonly."""
         readonly = list(super().get_readonly_fields(request, obj))
 
@@ -615,7 +613,7 @@ class SoftDeleteAdmin(BaseModelAdmin):
 
         return qs
 
-    def get_list_display(self, request: HttpRequest) -> List[str]:
+    def get_list_display(self, request: HttpRequest) -> list[str]:
         """Add deleted status column."""
         display = super().get_list_display(request)
         if 'is_deleted' not in display:
@@ -636,7 +634,7 @@ class SoftDeleteAdmin(BaseModelAdmin):
 
     restore_selected.short_description = "Restore selected"
 
-    def get_actions(self, request: HttpRequest) -> Dict:
+    def get_actions(self, request: HttpRequest) -> dict:
         """Add restore action."""
         actions = super().get_actions(request)
         actions['restore_selected'] = (

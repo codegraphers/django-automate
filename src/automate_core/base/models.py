@@ -22,7 +22,7 @@ Design Principles:
 """
 
 import uuid
-from typing import Any, Dict, Optional
+from typing import Any
 
 from django.conf import settings
 from django.db import models
@@ -115,7 +115,7 @@ class TenantScopedModel(TimeStampedModel):
         abstract = True
 
     @classmethod
-    def get_current_tenant(cls) -> Optional[str]:
+    def get_current_tenant(cls) -> str | None:
         return None
 
 
@@ -129,7 +129,7 @@ class AuditableModel(TimeStampedModel):
         abstract = True
 
     @classmethod
-    def get_current_user(cls) -> Optional[str]:
+    def get_current_user(cls) -> str | None:
         return None
 
 
@@ -277,7 +277,7 @@ class CacheableMixin:
 class ValidatableMixin:
     """Mixin for enhanced validation."""
 
-    def validate_fields(self) -> Dict[str, str]:
+    def validate_fields(self) -> dict[str, str]:
         return {}
 
 

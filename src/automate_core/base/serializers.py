@@ -19,7 +19,7 @@ Design Principles:
     - Configurability: Context-aware behavior
 """
 
-from typing import Any, Dict, List, Optional, Type
+from typing import Any
 
 from django.conf import settings
 from rest_framework import serializers
@@ -54,7 +54,7 @@ class ValidationMixin:
     error_messages = {}
     strict_validation = False
 
-    def validate(self, attrs: Dict) -> Dict:
+    def validate(self, attrs: dict) -> dict:
         """Run validation with custom error handling."""
         attrs = super().validate(attrs)
 
@@ -302,7 +302,7 @@ class BaseModelSerializer(
     readonly_fields = []
     auto_include_timestamps = True
 
-    def get_field_names(self, declared_fields, info) -> List[str]:
+    def get_field_names(self, declared_fields, info) -> list[str]:
         """Get field names with exclusions."""
         fields = super().get_field_names(declared_fields, info)
 
@@ -311,7 +311,7 @@ class BaseModelSerializer(
 
         return fields
 
-    def get_fields(self) -> Dict[str, serializers.Field]:
+    def get_fields(self) -> dict[str, serializers.Field]:
         """Get fields with readonly settings."""
         fields = super().get_fields()
 
@@ -354,11 +354,11 @@ class TenantScopedSerializer(BaseModelSerializer):
         attrs = super().validate(attrs)
 
         # Prevent changing tenant_id on update
-        if self.instance and self.tenant_field in attrs:
-            if attrs[self.tenant_field] != getattr(self.instance, self.tenant_field):
-                raise serializers.ValidationError({
-                    self.tenant_field: "Cannot change tenant"
-                })
+        if (self.instance and self.tenant_field in attrs and
+                attrs[self.tenant_field] != getattr(self.instance, self.tenant_field)):
+            raise serializers.ValidationError({
+                self.tenant_field: "Cannot change tenant"
+            })
 
         return attrs
 
@@ -431,7 +431,7 @@ class NestedWritableSerializer(BaseModelSerializer):
         """Create with nested objects."""
         nested_data = {}
 
-        for field_name, config in self.nested_fields.items():
+        for field_name, _config in self.nested_fields.items():
             if field_name in validated_data:
                 nested_data[field_name] = validated_data.pop(field_name)
 
@@ -453,7 +453,7 @@ class NestedWritableSerializer(BaseModelSerializer):
         """Get the parent field name for nested objects."""
         return self.Meta.model._meta.model_name
 
-    def _create_nested(self, field_name: str, data: Dict) -> Any:
+    def _create_nested(self, field_name: str, data: dict) -> Any:
         """Create a nested object."""
         config = self.nested_fields[field_name]
         serializer_class = config['serializer']
@@ -474,7 +474,7 @@ class ReadOnlySerializer(ContextMixin, serializers.Serializer):
             avg_value = serializers.FloatField()
     """
 
-    def get_fields(self) -> Dict[str, serializers.Field]:
+    def get_fields(self) -> dict[str, serializers.Field]:
         """Make all fields read-only."""
         fields = super().get_fields()
         for field in fields.values():

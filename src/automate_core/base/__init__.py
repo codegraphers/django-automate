@@ -18,6 +18,23 @@ Usage:
 """
 
 # Model base classes
+# Admin base classes
+from .admin import (
+    AuditableModelAdmin,
+    AuditMixin,
+    BaseModelAdmin,
+    BulkActionsMixin,
+    ExportMixin,
+    FilterMixin,
+    ImportExportBaseAdmin,
+    InlineBaseAdmin,
+    PermissionMixin,
+    SearchMixin,
+    SoftDeleteAdmin,
+    StackedInlineBaseAdmin,
+    TenantScopedAdmin,
+    get_admin_setting,
+)
 from .models import (
     AuditableModel,
     CacheableMixin,
@@ -37,24 +54,6 @@ from .models import (
     UUIDModel,
     ValidatableMixin,
     get_model_setting,
-)
-
-# Admin base classes
-from .admin import (
-    AuditableModelAdmin,
-    AuditMixin,
-    BaseModelAdmin,
-    BulkActionsMixin,
-    ExportMixin,
-    FilterMixin,
-    ImportExportBaseAdmin,
-    InlineBaseAdmin,
-    PermissionMixin,
-    SearchMixin,
-    SoftDeleteAdmin,
-    StackedInlineBaseAdmin,
-    TenantScopedAdmin,
-    get_admin_setting,
 )
 
 # Serializer base classes
