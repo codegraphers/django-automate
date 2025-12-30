@@ -3,6 +3,14 @@ from django.db import models, transaction
 from django.urls import path
 from django_json_widget.widgets import JSONEditorWidget
 
+from automate_core.base import (
+    BaseModelAdmin,
+    InlineBaseAdmin,
+    StackedInlineBaseAdmin,
+    TenantScopedAdmin,
+    AuditableModelAdmin,
+)
+
 from .models import (
     Automation,
     BudgetPolicy,
@@ -25,7 +33,8 @@ from .models import (
 )
 
 
-class TriggerSpecInline(admin.StackedInline):
+class TriggerSpecInline(StackedInlineBaseAdmin):
+    """Inline for trigger specifications. Override for customization."""
     model = TriggerSpec
     extra = 0
     formfield_overrides = {
@@ -33,7 +42,8 @@ class TriggerSpecInline(admin.StackedInline):
     }
 
 
-class RuleInline(admin.StackedInline):
+class RuleInline(StackedInlineBaseAdmin):
+    """Inline for rules. Override for customization."""
     model = Rule
     extra = 0
     formfield_overrides = {
@@ -42,7 +52,14 @@ class RuleInline(admin.StackedInline):
 
 
 @admin.register(TriggerSpec)
-class TriggerSpecAdmin(admin.ModelAdmin):
+class TriggerSpecAdmin(BaseModelAdmin):
+    """
+    Admin for TriggerSpec model.
+    
+    Override Points:
+        - list_display: Customize displayed columns
+        - list_filter: Customize filter options
+    """
     list_display = ["automation", "type", "is_active"]
     list_filter = ["type", "is_active", "automation"]
     formfield_overrides = {
@@ -50,7 +67,9 @@ class TriggerSpecAdmin(admin.ModelAdmin):
     }
 
 
-class ExecutionStepInline(admin.TabularInline):
+
+class ExecutionStepInline(InlineBaseAdmin):
+    """Inline for execution steps. Override for customization."""
     model = ExecutionStep
     extra = 0
     # Canonical StepRun: node_key, status, started_at
@@ -62,8 +81,14 @@ class ExecutionStepInline(admin.TabularInline):
 
 
 @admin.register(ExecutionStep)
-class ExecutionStepAdmin(admin.ModelAdmin):
-    # Canonical StepRun
+class ExecutionStepAdmin(BaseModelAdmin):
+    """
+    Admin for ExecutionStep/StepRun model.
+    
+    Override Points:
+        - list_display: Customize displayed columns
+        - readonly_fields: Customize readonly fields
+    """
     list_display = ["execution_id", "node_key", "status", "started_at"]
     list_filter = ["status", "started_at"]
     search_fields = ["execution__id", "node_key"]
@@ -74,13 +99,20 @@ class ExecutionStepAdmin(admin.ModelAdmin):
 
 
 @admin.register(Automation)
-class AutomationAdmin(admin.ModelAdmin):
+class AutomationAdmin(TenantScopedAdmin):
+    """
+    Admin for Automation model.
+    
+    Uses TenantScopedAdmin for multi-tenant filtering.
+    
+    Override Points:
+        - list_display: Customize displayed columns
+        - inlines: Customize inline models
+    """
     list_display = ["name", "slug", "is_active", "created_at"]
     list_filter = ["is_active"]
     search_fields = ["name", "slug"]
     prepopulated_fields = {"slug": ("name",)}
-    # inlines = [TriggerSpecInline, RuleInline] # Rule is gone from models? RuleSpec exist.
-    # We shimmed RuleSpec as Rule.
     inlines = [TriggerSpecInline, RuleInline]
 
     def get_urls(self):
@@ -97,7 +129,13 @@ class AutomationAdmin(admin.ModelAdmin):
 
 
 @admin.register(Event)
-class EventAdmin(admin.ModelAdmin):
+class EventAdmin(TenantScopedAdmin):
+    """
+    Admin for Event model.
+    
+    Uses TenantScopedAdmin for multi-tenant filtering.
+    Read-only since events should not be modified.
+    """
     list_display = ["id", "event_type", "source", "status", "created_at"]
     list_filter = ["status", "event_type", "source"]
     ordering = ["-created_at"]
@@ -111,7 +149,13 @@ class EventAdmin(admin.ModelAdmin):
 
 
 @admin.register(Execution)
-class ExecutionAdmin(admin.ModelAdmin):
+class ExecutionAdmin(TenantScopedAdmin):
+    """
+    Admin for Execution model.
+    
+    Uses TenantScopedAdmin for multi-tenant filtering.
+    Includes replay_execution action for re-queuing.
+    """
     list_display = ["id", "automation", "status", "started_at", "attempt"]
     list_filter = ["status", "automation"]
     ordering = ["-started_at"]
@@ -158,13 +202,15 @@ class ExecutionAdmin(admin.ModelAdmin):
 
 
 @admin.register(PromptRelease)
-class PromptReleaseAdmin(admin.ModelAdmin):
+class PromptReleaseAdmin(BaseModelAdmin):
+    """Admin for PromptRelease model."""
     list_display = ["prompt_version", "environment", "deployed_at", "deployed_by"]
     list_filter = ["environment"]
 
 
 @admin.register(BudgetPolicy)
-class BudgetPolicyAdmin(admin.ModelAdmin):
+class BudgetPolicyAdmin(TenantScopedAdmin):
+    """Admin for BudgetPolicy model with tenant filtering."""
     list_display = ["name", "scope", "current_usage_cost", "max_cost_per_day_usd"]
 
 

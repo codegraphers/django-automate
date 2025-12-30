@@ -5,11 +5,25 @@ import uuid
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from automate_core.base.models import ValidatableMixin, SignalMixin
 
-class Automation(models.Model):
+
+class Automation(ValidatableMixin, SignalMixin, models.Model):
     """
     Root entity for a defined automation process.
     Multi-tenant, versioned container.
+
+    Inherits:
+        ValidatableMixin: Provides validate_fields() hook
+        SignalMixin: Provides pre_save_hook() and post_save_hook()
+
+    Override Points:
+        - validate_fields(): Add custom validation
+        - pre_save_hook(): Run logic before save
+        - post_save_hook(created): Run logic after save
+
+    Configuration:
+        Override class attributes to customize behavior.
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -23,6 +37,9 @@ class Automation(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    # Configuration attributes (overrideable)
+    slug_source_field = 'name'
+
     class Meta:
         unique_together = [("tenant_id", "slug")]
         indexes = [
@@ -32,10 +49,32 @@ class Automation(models.Model):
     def __str__(self):
         return f"{self.slug} (v{self.workflows.count()})"
 
+    def validate_fields(self):
+        """Validate automation fields. Override to add custom validation."""
+        errors = super().validate_fields()
+        if self.name and len(self.name) < 2:
+            errors['name'] = 'Name must be at least 2 characters'
+        return errors
 
-class Workflow(models.Model):
+    def get_live_workflow(self):
+        """Get the currently live workflow version."""
+        return self.workflows.filter(is_live=True).first()
+
+    def get_latest_workflow(self):
+        """Get the latest workflow version."""
+        return self.workflows.order_by('-version').first()
+
+
+class Workflow(ValidatableMixin, models.Model):
     """
     Immutable version of an automation logic (DAG).
+
+    Inherits:
+        ValidatableMixin: Provides validate_fields() hook
+
+    Override Points:
+        - validate_graph(): Validate workflow graph structure
+        - compute_hash(): Customize hash computation
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -57,10 +96,34 @@ class Workflow(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.hash:
-            # Calculate deterministic hash of graph
-            serialized = json.dumps(self.graph, sort_keys=True).encode("utf-8")
-            self.hash = hashlib.sha256(serialized).hexdigest()
+            self.hash = self.compute_hash()
         super().save(*args, **kwargs)
+
+    def compute_hash(self) -> str:
+        """Compute deterministic hash of graph. Override to customize."""
+        serialized = json.dumps(self.graph, sort_keys=True).encode("utf-8")
+        return hashlib.sha256(serialized).hexdigest()
+
+    def validate_graph(self) -> dict:
+        """Validate workflow graph structure. Override to customize."""
+        errors = {}
+        if not self.graph.get('nodes'):
+            errors['graph'] = 'Graph must have at least one node'
+        return errors
+
+    def validate_fields(self):
+        errors = super().validate_fields()
+        errors.update(self.validate_graph())
+        return errors
+
+    def get_nodes(self) -> list:
+        """Get workflow nodes."""
+        return self.graph.get('nodes', [])
+
+    def get_edges(self) -> list:
+        """Get workflow edges."""
+        return self.graph.get('edges', [])
+
 
 
 class TriggerTypeChoices(models.TextChoices):
@@ -71,10 +134,17 @@ class TriggerTypeChoices(models.TextChoices):
     EXTERNAL = "external", _("External")
 
 
-class Trigger(models.Model):
+class Trigger(ValidatableMixin, models.Model):
     """
     Configuration for what triggers an automation.
     Links an automation to event matching logic.
+
+    Inherits:
+        ValidatableMixin: Provides validate_fields() hook
+
+    Override Points:
+        - matches(event): Check if event matches this trigger
+        - extract_payload(event): Extract payload from event
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -100,3 +170,18 @@ class Trigger(models.Model):
 
     def __str__(self):
         return f"{self.type}/{self.event_type} -> {self.automation.slug}"
+
+    def matches(self, event) -> bool:
+        """
+        Check if event matches this trigger.
+        Override to customize matching logic.
+        """
+        import fnmatch
+        return fnmatch.fnmatch(event.event_type, self.event_type)
+
+    def extract_payload(self, event) -> dict:
+        """
+        Extract payload from event for workflow execution.
+        Override to customize payload extraction.
+        """
+        return event.payload

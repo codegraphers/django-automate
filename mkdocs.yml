@@ -82,11 +82,14 @@ nav:
                   - Settings: reference/settings.md
                   - Extension Points: reference/extension-points.md
                   - API Base Classes: reference/api-base-classes.md
+                  - Models: reference/models.md
+                  - Admin: reference/admin.md
+                  - Serializers: reference/serializers.md
+                  - Templates: reference/templates.md
                   - Data Models: reference/data-models/index.md
                   - Python API: reference/python-api/index.md
                   - REST API: reference/rest-api/index.md
                   - Views: reference/views.md
-                  - Models: reference/models.md
 
         - Security:
                   - Threat Model: security/threat-model.md

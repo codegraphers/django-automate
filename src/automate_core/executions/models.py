@@ -1,8 +1,10 @@
 import uuid
 
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from automate_core.base.models import ValidatableMixin, SignalMixin
 from ..events.models import Event
 from ..workflows.models import Automation, Trigger
 
@@ -15,10 +17,18 @@ class ExecutionStatusChoices(models.TextChoices):
     CANCELED = "canceled", _("Canceled")
 
 
-class Execution(models.Model):
+class Execution(ValidatableMixin, SignalMixin, models.Model):
     """
     State of a single run of an automation.
     Canonical root of runtime state.
+
+    Inherits:
+        ValidatableMixin: Provides validate_fields() hook
+        SignalMixin: Provides pre_save_hook(), post_save_hook()
+
+    Override Points:
+        - on_status_change(old, new): Handle status transitions
+        - can_transition_to(status): Check valid transitions
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -58,6 +68,12 @@ class Execution(models.Model):
     started_at = models.DateTimeField(null=True, blank=True)
     finished_at = models.DateTimeField(null=True, blank=True)
 
+    # Status transition rules (overrideable)
+    STATUS_TRANSITIONS = {
+        'queued': ['running', 'canceled'],
+        'running': ['success', 'failed', 'canceled'],
+    }
+
     class Meta:
         indexes = [
             models.Index(fields=["tenant_id", "status"]),
@@ -68,6 +84,46 @@ class Execution(models.Model):
             # Ensure only one execution per event/automation tuple (Idempotency)
             models.UniqueConstraint(fields=["tenant_id", "automation", "event"], name="unique_execution_per_event")
         ]
+
+    def can_transition_to(self, new_status: str) -> bool:
+        """Check if transition to new_status is valid. Override to customize."""
+        valid_next = self.STATUS_TRANSITIONS.get(self.status, [])
+        return new_status in valid_next or not self.STATUS_TRANSITIONS
+
+    def transition_to(self, new_status: str, error: str = None) -> bool:
+        """Transition to new status if valid."""
+        old_status = self.status
+        if not self.can_transition_to(new_status):
+            return False
+
+        self.status = new_status
+        if new_status in ['success', 'failed', 'canceled']:
+            self.finished_at = timezone.now()
+        if error:
+            self.error_summary = error
+        self.save()
+        self.on_status_change(old_status, new_status)
+        return True
+
+    def on_status_change(self, old_status: str, new_status: str):
+        """Called when status changes. Override to add custom behavior."""
+        pass
+
+    def start(self):
+        """Mark execution as started."""
+        self.started_at = timezone.now()
+        self.transition_to('running')
+
+    def complete(self, context: dict = None):
+        """Mark execution as completed."""
+        if context:
+            self.context = context
+        self.transition_to('success')
+
+    def fail(self, error: str):
+        """Mark execution as failed."""
+        self.transition_to('failed', error=error)
+
 
 
 class StepRun(models.Model):

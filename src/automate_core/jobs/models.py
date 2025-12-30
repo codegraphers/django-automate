@@ -1,7 +1,10 @@
 import uuid
 
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+
+from automate_core.base.models import ValidatableMixin, SignalMixin
 
 
 class JobStatusChoices(models.TextChoices):
@@ -31,10 +34,19 @@ class BackendTypeChoices(models.TextChoices):
     SQS = "sqs", _("SQS Direct")
 
 
-class Job(models.Model):
+class Job(ValidatableMixin, SignalMixin, models.Model):
     """
     The canonical unit of work.
     Parity model: State is owned here, Backend is just a transport.
+
+    Inherits:
+        ValidatableMixin: Provides validate_fields() hook
+        SignalMixin: Provides pre_save_hook(), post_save_hook()
+
+    Override Points:
+        - on_status_change(old, new): Handle status transitions
+        - can_transition_to(status): Check valid transitions
+        - execute(): Execute job logic
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     tenant_id = models.CharField(max_length=50, blank=True, db_index=True)
@@ -84,6 +96,14 @@ class Job(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    # Status transition rules (overrideable)
+    STATUS_TRANSITIONS = {
+        'created': ['queued'],
+        'queued': ['running', 'canceled'],
+        'running': ['succeeded', 'failed', 'retry_scheduled', 'canceled'],
+        'retry_scheduled': ['queued', 'dlq', 'canceled'],
+    }
+
     class Meta:
         ordering = ["-created_at"]
         indexes = [
@@ -94,6 +114,63 @@ class Job(models.Model):
 
     def __str__(self):
         return f"{self.topic} ({self.id}) - {self.status}"
+
+    def can_transition_to(self, new_status: str) -> bool:
+        """Check if transition to new_status is valid. Override to customize."""
+        valid_next = self.STATUS_TRANSITIONS.get(self.status, [])
+        return new_status in valid_next or not self.STATUS_TRANSITIONS
+
+    def transition_to(self, new_status: str, result: dict = None, error: dict = None) -> bool:
+        """Transition to new status if valid."""
+        old_status = self.status
+        if not self.can_transition_to(new_status):
+            return False
+
+        self.status = new_status
+        if result:
+            self.result_summary = result
+        if error:
+            self.error_redacted = error
+        self.save()
+        self.on_status_change(old_status, new_status)
+        return True
+
+    def on_status_change(self, old_status: str, new_status: str):
+        """Called when status changes. Override to add custom behavior."""
+        pass
+
+    def enqueue(self):
+        """Enqueue job for processing."""
+        self.transition_to('queued')
+
+    def start(self, worker_id: str, lease_seconds: int = 300):
+        """Mark job as started by worker."""
+        self.lease_owner = worker_id
+        self.lease_expires_at = timezone.now() + timezone.timedelta(seconds=lease_seconds)
+        self.transition_to('running')
+
+    def complete(self, result: dict = None):
+        """Mark job as completed."""
+        self.transition_to('succeeded', result=result)
+
+    def fail(self, error: dict):
+        """Mark job as failed."""
+        if self.attempts >= self.max_attempts:
+            self.transition_to('dlq', error=error)
+        else:
+            self.attempts += 1
+            self.transition_to('retry_scheduled', error=error)
+
+    def cancel(self):
+        """Cancel job."""
+        self.transition_to('canceled')
+
+    def heartbeat(self, lease_seconds: int = 300):
+        """Update heartbeat and extend lease."""
+        self.heartbeat_at = timezone.now()
+        self.lease_expires_at = timezone.now() + timezone.timedelta(seconds=lease_seconds)
+        self.save(update_fields=['heartbeat_at', 'lease_expires_at'])
+
 
 
 class JobEventTypeChoices(models.TextChoices):
