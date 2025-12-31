@@ -1,5 +1,6 @@
 import logging
 import traceback
+from datetime import timedelta
 
 from django.utils import timezone
 
@@ -231,7 +232,7 @@ class ExecutionEngine:
         jitter = random.randint(1, 5)
         delay = backoff_seconds + jitter
 
-        next_attempt = timezone.now() + timezone.timedelta(seconds=delay)
+        next_attempt = timezone.now() + timedelta(seconds=delay)
 
         logger.warning(f"Execution {execution.id} crashed. Retrying in {delay}s (Attempt {execution.attempt})")
 

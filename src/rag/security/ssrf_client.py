@@ -3,9 +3,17 @@ SSRF-Safe HTTP Client
 
 Provides HTTP request functionality with protections against:
 - SSRF (Server-Side Request Forgery)
-- Private IP access
+- Private IP access (IPv4 and IPv6)
 - Redirect attacks
-- Response size attacks
+- Response size attacks (streaming with bytearray)
+
+Threat Model / Known Limitations:
+- DNS rebinding: We resolve then check, but requests may re-resolve. For 
+  high-security environments, use the domain allowlist feature exclusively.
+- Time-of-check-to-time-of-use: In theory, DNS could change between our check
+  and the actual request. Domain allowlists mitigate this.
+- Best-effort: This is defense-in-depth, not a guarantee. Consider network-level
+  controls (firewall, egress rules) for production environments.
 
 All external HTTP requests in RAG subsystem should use this client.
 """
@@ -29,8 +37,8 @@ class SSRFError(Exception):
     pass
 
 
-# Private/internal IP ranges to block
-BLOCKED_NETWORKS = [
+# Private/internal IP ranges to block (IPv4)
+BLOCKED_IPV4_NETWORKS = [
     ipaddress.ip_network("127.0.0.0/8"),  # Loopback
     ipaddress.ip_network("10.0.0.0/8"),  # Private Class A
     ipaddress.ip_network("172.16.0.0/12"),  # Private Class B
@@ -46,16 +54,44 @@ BLOCKED_NETWORKS = [
     ipaddress.ip_network("240.0.0.0/4"),  # Reserved
 ]
 
+# Private/internal IP ranges to block (IPv6)
+BLOCKED_IPV6_NETWORKS = [
+    ipaddress.ip_network("::1/128"),  # Loopback
+    ipaddress.ip_network("::/128"),  # Unspecified
+    ipaddress.ip_network("::ffff:0:0/96"),  # IPv4-mapped
+    ipaddress.ip_network("64:ff9b::/96"),  # NAT64
+    ipaddress.ip_network("100::/64"),  # Discard prefix
+    ipaddress.ip_network("2001::/32"),  # Teredo
+    ipaddress.ip_network("2001:db8::/32"),  # Documentation
+    ipaddress.ip_network("2002::/16"),  # 6to4
+    ipaddress.ip_network("fc00::/7"),  # Unique local (private)
+    ipaddress.ip_network("fe80::/10"),  # Link-local
+    ipaddress.ip_network("ff00::/8"),  # Multicast
+]
+
 # Default limits
 DEFAULT_TIMEOUT = 30
 DEFAULT_MAX_SIZE = 10 * 1024 * 1024  # 10MB
 
+# Domain allowlist (configure via Django settings for production)
+# When populated, ONLY these domains are allowed
+ALLOWED_DOMAINS: set[str] = set()
+
+
+def configure_allowlist(domains: list[str]) -> None:
+    """Configure the domain allowlist. When set, only listed domains are allowed."""
+    global ALLOWED_DOMAINS
+    ALLOWED_DOMAINS = set(d.lower() for d in domains)
+
 
 def is_ip_blocked(ip_str: str) -> bool:
-    """Check if an IP address is in a blocked range."""
+    """Check if an IP address (IPv4 or IPv6) is in a blocked range."""
     try:
         ip = ipaddress.ip_address(ip_str)
-        return any(ip in network for network in BLOCKED_NETWORKS)
+        if isinstance(ip, ipaddress.IPv4Address):
+            return any(ip in network for network in BLOCKED_IPV4_NETWORKS)
+        else:  # IPv6
+            return any(ip in network for network in BLOCKED_IPV6_NETWORKS)
     except ValueError:
         # Invalid IP, block it
         return True
@@ -70,6 +106,21 @@ def resolve_hostname(hostname: str) -> str:
         return ip
     except socket.gaierror as e:
         raise SSRFError(f"DNS resolution failed for {hostname}: {e}") from e
+
+
+def _check_domain_allowlist(hostname: str) -> None:
+    """Check if hostname is in allowlist (when allowlist is configured)."""
+    if not ALLOWED_DOMAINS:
+        return  # No allowlist configured, skip check
+    
+    hostname_lower = hostname.lower()
+    # Check exact match or subdomain match
+    if hostname_lower in ALLOWED_DOMAINS:
+        return
+    for allowed in ALLOWED_DOMAINS:
+        if hostname_lower.endswith("." + allowed):
+            return
+    raise SSRFError(f"Domain not in allowlist: {hostname}")
 
 
 def ssrf_safe_request(  # noqa: C901
@@ -87,10 +138,12 @@ def ssrf_safe_request(  # noqa: C901
     Make an HTTP request with SSRF protections.
 
     Protections:
-    - Blocks requests to private/internal IP ranges
+    - Blocks requests to private/internal IP ranges (IPv4 and IPv6)
+    - Domain allowlist (when configured)
     - Disables redirects (prevents redirect-based SSRF)
     - Enforces timeout limits
-    - Limits response size
+    - Limits response size (O(n) streaming, not O(n²))
+    - Disables proxy environment variables (trust_env=False)
 
     Args:
         method: HTTP method (GET, POST, etc.)
@@ -117,6 +170,9 @@ def ssrf_safe_request(  # noqa: C901
     if parsed.scheme not in ("http", "https"):
         raise SSRFError(f"Only http/https URLs allowed: {url}")
 
+    # Check domain allowlist first (if configured)
+    _check_domain_allowlist(parsed.hostname)
+
     # Resolve and validate IP
     resolved_ip = resolve_hostname(parsed.hostname)
     logger.debug(f"Resolved {parsed.hostname} -> {resolved_ip}")
@@ -133,9 +189,13 @@ def ssrf_safe_request(  # noqa: C901
         except Exception as e:
             logger.warning(f"Failed to resolve credentials: {e}")
 
+    # Create session with security settings
+    session = requests.Session()
+    session.trust_env = False  # Ignore proxy env vars (HTTP_PROXY, etc.)
+
     # Make request with safety guards
     try:
-        response = requests.request(
+        response = session.request(
             method,
             url,
             headers=request_headers,
@@ -156,10 +216,10 @@ def ssrf_safe_request(  # noqa: C901
         if content_length and int(content_length) > max_size:
             raise SSRFError(f"Response too large: {content_length} bytes")
 
-        # Read content with size limit
-        content = b""
+        # Read content with size limit using bytearray (O(n) not O(n²))
+        content = bytearray()
         for chunk in response.iter_content(chunk_size=8192):
-            content += chunk
+            content.extend(chunk)
             if len(content) > max_size:
                 raise SSRFError(f"Response exceeded max size: {max_size} bytes")
 
@@ -172,3 +232,6 @@ def ssrf_safe_request(  # noqa: C901
     except requests.RequestException as e:
         logger.error(f"HTTP request failed: {e}")
         raise
+    finally:
+        session.close()
+

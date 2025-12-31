@@ -8,6 +8,7 @@ from typing import Any
 
 from django.conf import settings
 from django.db import transaction
+from django.db.models import F
 from django.utils import timezone
 
 from .models import Job, JobEvent, JobEventTypeChoices, JobStatusChoices
@@ -220,6 +221,10 @@ def _release_lease(job_id: str):
     pass
 
 def _next_seq(job: Job) -> int:
-    # Get max seq + 1. Optimization: could be cached or use Count
-    last = job.events.order_by("-seq").first()
-    return (last.seq + 1) if last else 1
+    """
+    Atomically increment and return the next sequence number.
+    Uses F() expression to avoid race conditions and N+1 queries.
+    """
+    Job.objects.filter(id=job.id).update(last_seq=F("last_seq") + 1)
+    job.refresh_from_db(fields=["last_seq"])
+    return job.last_seq
