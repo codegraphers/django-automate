@@ -128,14 +128,17 @@ class AutomateDataChatConfig(AppConfig):
         DataChatRegistry.register(EmbeddingModel, tags=["rag", "embeddings"])
         DataChatRegistry.register(RAGQueryLog, tags=["rag", "queries", "logs"])
 
-        # automate_rag (V2 RAG)
-        from automate_rag.models import Chunk, Corpus, Document
-        from automate_rag.models import KnowledgeSource as RAGKnowledgeSource
+        # automate_rag (V2 RAG - optional, not shipped in v1)
+        try:
+            from automate_rag.models import Chunk, Corpus, Document
+            from automate_rag.models import KnowledgeSource as RAGKnowledgeSource
 
-        DataChatRegistry.register(Corpus, tags=["rag", "corpus"])
-        DataChatRegistry.register(RAGKnowledgeSource, tags=["rag", "sources"])
-        DataChatRegistry.register(Document, tags=["rag", "documents"])
-        DataChatRegistry.register(Chunk, tags=["rag", "chunks"])
+            DataChatRegistry.register(Corpus, tags=["rag", "corpus"])
+            DataChatRegistry.register(RAGKnowledgeSource, tags=["rag", "sources"])
+            DataChatRegistry.register(Document, tags=["rag", "documents"])
+            DataChatRegistry.register(Chunk, tags=["rag", "chunks"])
+        except ImportError:
+            pass  # automate_rag not available in this distribution
 
         # automate_connectors
         from automate_connectors.models import ConnectorInstance

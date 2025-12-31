@@ -45,7 +45,6 @@ packages = [
     "src/automate_interop",
     "src/automate_modal",
     "src/automate_observability",
-    "src/automate_rag",
     "src/automate_studio",
     "src/automate_datachat",
     "src/rag"
