@@ -1,4 +1,5 @@
 import uuid
+from datetime import timedelta
 
 from django.db import models
 from django.utils import timezone
@@ -83,6 +84,9 @@ class Job(ValidatableMixin, SignalMixin, models.Model):
     lease_owner = models.CharField(max_length=255, null=True, blank=True, help_text="Worker ID owning this job")
     lease_expires_at = models.DateTimeField(null=True, blank=True, db_index=True)
     heartbeat_at = models.DateTimeField(null=True, blank=True)
+    
+    # Event sequencing (atomic increment avoids N+1 queries)
+    last_seq = models.IntegerField(default=0, help_text="Last event sequence number for this job")
 
     # Results
     result_summary = models.JSONField(default=dict, blank=True)
@@ -146,7 +150,7 @@ class Job(ValidatableMixin, SignalMixin, models.Model):
     def start(self, worker_id: str, lease_seconds: int = 300):
         """Mark job as started by worker."""
         self.lease_owner = worker_id
-        self.lease_expires_at = timezone.now() + timezone.timedelta(seconds=lease_seconds)
+        self.lease_expires_at = timezone.now() + timedelta(seconds=lease_seconds)
         self.transition_to('running')
 
     def complete(self, result: dict = None):
@@ -168,7 +172,7 @@ class Job(ValidatableMixin, SignalMixin, models.Model):
     def heartbeat(self, lease_seconds: int = 300):
         """Update heartbeat and extend lease."""
         self.heartbeat_at = timezone.now()
-        self.lease_expires_at = timezone.now() + timezone.timedelta(seconds=lease_seconds)
+        self.lease_expires_at = timezone.now() + timedelta(seconds=lease_seconds)
         self.save(update_fields=['heartbeat_at', 'lease_expires_at'])
 
 

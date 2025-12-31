@@ -37,6 +37,7 @@ dependencies = [
 [tool.hatch.build.targets.wheel]
 packages = [
     "src/automate", 
+    "src/automate_api",
     "src/automate_core", 
     "src/automate_governance", 
     "src/automate_llm", 
@@ -44,6 +45,7 @@ packages = [
     "src/automate_interop",
     "src/automate_modal",
     "src/automate_observability",
+    "src/automate_rag",
     "src/automate_studio",
     "src/automate_datachat",
     "src/rag"

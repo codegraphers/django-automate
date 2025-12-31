@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 
 from django.db import transaction
+from django.db.models import F, Q
 
 from .interfaces import OutboxStore
 from .models import OutboxItem
@@ -18,23 +19,27 @@ class SkipLockedClaimOutboxStore(OutboxStore):
         self.lease_seconds = lease_seconds
 
     def claim_batch(self, owner: str, limit: int, now: datetime) -> list[OutboxItem]:
+        """
+        Claim a batch of items for processing.
+        
+        Claimable items are:
+        1. PENDING/RETRY with next_attempt_at <= now
+        2. RUNNING with lease_expires_at < now (stale - worker crashed)
+        """
         lease_delta = timedelta(seconds=self.lease_seconds)
 
         with transaction.atomic():
-            # Find candidates: PENDING or RETRY due now, or stale leases
-            # Note: We prioritize PENDING/RETRY over stale claims usually,
-            # but simplest query is finding anything claimable.
-
+            # Build query for claimable items:
+            # - PENDING/RETRY that are due
+            # - RUNNING with expired lease (stale)
+            pending_or_retry = Q(status__in=["PENDING", "RETRY"], next_attempt_at__lte=now)
+            stale_running = Q(status="RUNNING", lease_expires_at__lt=now)
+            
             qs = (
                 OutboxItem.objects.select_for_update(skip_locked=True)
-                .filter(status__in=["PENDING", "RETRY"], next_attempt_at__lte=now)
+                .filter(pending_or_retry | stale_running)
                 .order_by("priority", "next_attempt_at", "id")[:limit]
             )
-
-            # Also check for stale locks?
-            # SKIP LOCKED with filters on lease_expires_at is tricky if mixed with status.
-            # Simplified approach: Claim PENDING/RETRY first. Stale locks handled separately or strictly via updates.
-            # For simplicity in this skeleton, we focus on PENDING/RETRY.
 
             items = list(qs)
             if not items:
@@ -62,7 +67,7 @@ class SkipLockedClaimOutboxStore(OutboxStore):
             lease_expires_at=None,
             next_attempt_at=next_attempt_at,
             last_error_code=error_code,
-            attempt_count=models.F("attempt_count") + 1,
+            attempt_count=F("attempt_count") + 1,
         )
 
     def mark_dlq(self, item_id: int, owner: str, error_code: str) -> None:
@@ -81,22 +86,25 @@ class OptimisticLeaseOutboxStore(OutboxStore):
         self.lease_seconds = lease_seconds
 
     def claim_batch(self, owner: str, limit: int, now: datetime) -> list[OutboxItem]:
+        """
+        Claim a batch of items for processing (optimistic locking for DBs without SKIP LOCKED).
+        
+        Claimable items are:
+        1. PENDING/RETRY with next_attempt_at <= now (and no current lease)
+        2. RUNNING with lease_expires_at < now (stale - worker crashed)
+        """
         lease_expires = now + timedelta(seconds=self.lease_seconds)
 
-        # We can't select then update safely without locking the table (bad for concurrency).
-        # Instead, try to UPDATE a batch of rows blindly, then SELECT what we won.
-        # This is strictly "Optimistic Locking".
+        # Build query for claimable items
+        pending_or_retry = Q(
+            status__in=["PENDING", "RETRY"],
+            next_attempt_at__lte=now,
+            lease_owner__isnull=True,
+        )
+        stale_running = Q(status="RUNNING", lease_expires_at__lt=now)
 
-        # SQLite doesn't support UPDATE..LIMIT until recent versions (enabled in Django 4.2+ on some backends but not guaranteed).
-        # We assume standard UPDATE ... LIMIT logic is available or we accept checking via a loop.
-
-        # Strategy: Find IDs capable of being claimed (READ COMMITTED usually safe enough for candidate selection)
         candidates = list(
-            OutboxItem.objects.filter(
-                status__in=["PENDING", "RETRY"],
-                next_attempt_at__lte=now,
-                lease_owner__isnull=True,  # Simplified check
-            )
+            OutboxItem.objects.filter(pending_or_retry | stale_running)
             .values_list("id", flat=True)
             .order_by("priority", "next_attempt_at")[:limit]
         )
@@ -104,8 +112,10 @@ class OptimisticLeaseOutboxStore(OutboxStore):
         if not candidates:
             return []
 
-        # Claim attempts
-        OutboxItem.objects.filter(id__in=candidates, lease_owner__isnull=True).update(
+        # Claim attempts - use Q to match claimable conditions
+        OutboxItem.objects.filter(
+            Q(id__in=candidates) & (Q(lease_owner__isnull=True) | Q(lease_expires_at__lt=now))
+        ).update(
             status="RUNNING", lease_owner=owner, lease_expires_at=lease_expires, updated_at=now
         )
 

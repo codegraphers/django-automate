@@ -1,35 +1,98 @@
-# Python
+# ==============================================================
+# Python bytecode and caches
+# ==============================================================
 __pycache__/
 *.py[cod]
 *.pyd
+*.so
+*.pyo
+
+# ==============================================================
+# Test / lint / type-check caches
+# ==============================================================
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.hypothesis/
+.nox/
+.tox/
 .coverage
+.coverage.*
 coverage.xml
 htmlcov/
-.tox/
+*.cover
+*.lcov
+junit*.xml
+test-results/
+
+# ==============================================================
+# Build / dist artifacts
+# ==============================================================
 dist/
 build/
 *.egg-info/
 .eggs/
+pip-wheel-metadata/
+*.whl
+MANIFEST
 
+# ==============================================================
 # Django
+# ==============================================================
 *.log
 local_settings.py
 db.sqlite3
+db.sqlite3-journal
+staticfiles/
 media/
 
-# MkDocs / docs build
+# ==============================================================
+# MkDocs / docs build (generated in CI, never committed)
+# ==============================================================
 site/
 mkdocs.log
 
-# OS junk
+# ==============================================================
+# IDE / Editor
+# ==============================================================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+*.sublime-project
+*.sublime-workspace
+
+# ==============================================================
+# Environment and secrets
+# ==============================================================
+.env
+.env.local
+.env.*.local
+.venv/
+venv/
+env/
+ENV/
+
+# ==============================================================
+# OS-specific junk
+# ==============================================================
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
 Thumbs.db
+ehthumbs.db
 __MACOSX/
 
-# Environment
-.env
-.venv
-venv/
+# ==============================================================
+# Misc development artifacts (should never be committed)
+# ==============================================================
+*.bak
+*.backup
+*.orig
+*.tmp
+test_output.txt
