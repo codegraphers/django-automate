@@ -14,14 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Check repo hygiene
-        run: |
-          test ! -d dist || (echo "❌ dist/ found" && exit 1)
-          test ! -d site || (echo "❌ site/ found" && exit 1)
-          test ! -d .pytest_cache || (echo "❌ .pytest_cache/ found" && exit 1)
-          test ! -f .coverage || (echo "❌ .coverage found" && exit 1)
-          ! find . -path "*/__pycache__/*" -print -quit | grep -q . || (echo "❌ __pycache__ found" && exit 1)
-          ! find . -name ".DS_Store" -print -quit | grep -q . || (echo "❌ .DS_Store found" && exit 1)
-          echo "✅ Repo is clean"
+        run: ./scripts/check_repo_clean.sh
 
   test:
     runs-on: ubuntu-latest
