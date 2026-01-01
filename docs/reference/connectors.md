@@ -1,16 +1,16 @@
 # Connectors Reference
 
-## Base Connector
-::: automate_connectors.base
+## Base Adapter
+::: automate_connectors.adapters.base
     options:
       show_root_heading: true
 
-## Slack Connector
-::: automate_connectors.providers.slack
+## Slack Adapter
+::: automate_connectors.adapters.slack
     options:
       show_root_heading: true
 
-## Webhook Connector
-::: automate_connectors.providers.webhook
+## Logging Adapter
+::: automate_connectors.adapters.logging
     options:
       show_root_heading: true
