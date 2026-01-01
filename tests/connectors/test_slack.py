@@ -1,75 +1,82 @@
-import hashlib
-import hmac
-import time
-from unittest.mock import MagicMock
+"""
+Tests for Slack adapter using the canonical ConnectorAdapter pattern.
+"""
+
+from unittest.mock import MagicMock, patch
 
 import pytest
 
-from automate_connectors.providers.slack import SlackConnector
-from automate_core.providers.base import ProviderContext
-from automate_core.providers.errors import AutomateError
+from automate_connectors.adapters.slack import SlackAdapter
+from automate_connectors.errors import ConnectorError
 
 
 @pytest.fixture
-def mock_ctx():
-    secrets = MagicMock()
-    secrets.resolve.side_effect = lambda x: x # return the ref as the value
-    return ProviderContext(
-        tenant_id="t1",
-        correlation_id="c1",
-        actor_id="user1",
-        purpose="test",
-        secrets=secrets,
-        policy=None,
-        logger=None,
-        now=lambda: None
+def slack_adapter():
+    """Create a SlackAdapter instance."""
+    return SlackAdapter()
+
+
+def test_slack_adapter_capabilities(slack_adapter):
+    """Adapter should expose its capabilities."""
+    caps = slack_adapter.capabilities
+    assert caps.supports_rate_limit_headers is True
+
+
+def test_slack_adapter_action_specs(slack_adapter):
+    """Adapter should define send_message action."""
+    specs = slack_adapter.action_specs
+    assert "send_message" in specs
+    assert specs["send_message"].name == "send_message"
+
+
+def test_slack_validate_config(slack_adapter):
+    """Config validation should pass for valid config."""
+    result = slack_adapter.validate_config({})
+    assert result.ok is True
+
+
+def test_slack_unknown_action(slack_adapter):
+    """Unknown actions should raise ConnectorError."""
+    with pytest.raises(ConnectorError) as exc:
+        slack_adapter.execute("unknown_action", {}, {})
+    assert "Unknown action" in str(exc.value)
+
+
+def test_slack_missing_token(slack_adapter):
+    """Missing token should raise auth error."""
+    with pytest.raises(ConnectorError) as exc:
+        slack_adapter.execute("send_message", {"channel": "#general"}, {})
+    assert "token" in str(exc.value).lower()
+
+
+@patch("automate_connectors.adapters.slack.requests.post")
+def test_slack_send_message_success(mock_post, slack_adapter):
+    """Successful message send should return data."""
+    mock_post.return_value.status_code = 200
+    mock_post.return_value.json.return_value = {"ok": True, "ts": "123"}
+    mock_post.return_value.raise_for_status = MagicMock()
+
+    result = slack_adapter.execute(
+        "send_message",
+        {"channel": "#general", "message": "Hello!"},
+        {"profile": {"encrypted_secrets": {"token": "xoxb-test-token"}}}
     )
 
-def test_slack_action(mock_ctx):
-    config = {
-        "bot_token": {"ref": "xoxb-valid"},
-        "signing_secret": {"ref": "secret"}
-    }
-    connector = SlackConnector(config, ctx=mock_ctx)
+    assert result.data["ok"] is True
+    mock_post.assert_called_once()
 
-    # Test execute
-    res = connector.execute_action("post_message", {"channel": "#general", "text": "Hello"})
-    assert res["ok"] is True
 
-    # Test Auth Failure
-    config_bad = {
-        "bot_token": {"ref": "invalid"},
-        "signing_secret": {"ref": "secret"}
-    }
-    connector_bad = SlackConnector(config_bad, ctx=mock_ctx)
-    with pytest.raises(AutomateError) as exc:
-        connector_bad.execute_action("post_message", {"text": "hi"})
-    assert str(exc.value.code) == "unauthorized"
+@patch("automate_connectors.adapters.slack.requests.post")
+def test_slack_rate_limit(mock_post, slack_adapter):
+    """Rate limiting should raise retryable error."""
+    mock_post.return_value.status_code = 429
+    mock_post.return_value.headers = {"Retry-After": "5"}
 
-def test_slack_webhook_verify(mock_ctx):
-    signing_secret = "my-secret"
-    config = {
-        "bot_token": {"ref": "xoxb"},
-        "signing_secret": {"ref": signing_secret}
-    }
-    connector = SlackConnector(config, ctx=mock_ctx)
+    with pytest.raises(ConnectorError) as exc:
+        slack_adapter.execute(
+            "send_message",
+            {"channel": "#general"},
+            {"profile": {"encrypted_secrets": {"token": "xoxb-test"}}}
+        )
 
-    req_body = b"foo=bar"
-    ts = str(int(time.time()))
-    basename = f"v0:{ts}:{req_body.decode('utf-8')}"
-
-    sig = "v0=" + hmac.new(
-        signing_secret.encode('utf-8'),
-        basename.encode('utf-8'),
-        hashlib.sha256
-    ).hexdigest()
-
-    headers = {
-        "X-Slack-Request-Timestamp": ts,
-        "X-Slack-Signature": sig
-    }
-
-    assert connector.verify_webhook(headers, req_body) is True
-
-    # Tamper
-    assert connector.verify_webhook(headers, b"foo=baz") is False
+    assert exc.value.retryable is True
