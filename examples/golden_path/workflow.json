@@ -1,0 +1,42 @@
+{
+    "name": "Question Answering Pipeline",
+    "description": "Webhook → RAG → LLM → Slack",
+    "version": "1.0.0",
+    "trigger": {
+        "type": "webhook",
+        "event_type": "question"
+    },
+    "steps": [
+        {
+            "id": "query_rag",
+            "type": "rag_query",
+            "config": {
+                "endpoint": "default",
+                "query": "{{ event.data.text }}",
+                "top_k": 3
+            }
+        },
+        {
+            "id": "generate_answer",
+            "type": "llm_completion",
+            "config": {
+                "provider": "openai",
+                "model": "gpt-4",
+                "prompt": "Based on this context:\n\n{{ steps.query_rag.results }}\n\nAnswer: {{ event.data.text }}",
+                "max_tokens": 500
+            }
+        },
+        {
+            "id": "notify_slack",
+            "type": "connector",
+            "config": {
+                "connector": "slack",
+                "action": "send_message",
+                "params": {
+                    "channel": "#answers",
+                    "message": "{{ steps.generate_answer.content }}"
+                }
+            }
+        }
+    ]
+}

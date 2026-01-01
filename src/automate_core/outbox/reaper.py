@@ -34,7 +34,7 @@ class OutboxReaper:
     SRE Pattern: Reaper runs periodically (cron/celery beat) to prevent
     items from being stuck forever after worker crashes.
     """
-    
+
     def __init__(
         self,
         stale_threshold_seconds: int = 300,
@@ -50,7 +50,7 @@ class OutboxReaper:
         self.stale_threshold_seconds = stale_threshold_seconds
         self.max_reap_batch = max_reap_batch
         self.retry_delay_seconds = retry_delay_seconds
-    
+
     def reap_stale_items(self) -> int:
         """
         Find and recover stuck RUNNING items.
@@ -61,7 +61,7 @@ class OutboxReaper:
         now = timezone.now()
         stale_cutoff = now - timedelta(seconds=self.stale_threshold_seconds)
         next_attempt = now + timedelta(seconds=self.retry_delay_seconds)
-        
+
         with transaction.atomic():
             # Find stale RUNNING items
             stale_items = list(
@@ -72,14 +72,14 @@ class OutboxReaper:
                 )
                 .order_by("lease_expires_at")[:self.max_reap_batch]
             )
-            
+
             if not stale_items:
                 return 0
-            
+
             reaped_count = 0
             for item in stale_items:
                 old_owner = item.lease_owner
-                
+
                 # Move back to RETRY with scheduled next attempt
                 item.status = "RETRY"
                 item.lease_owner = None
@@ -90,15 +90,15 @@ class OutboxReaper:
                     "status", "lease_owner", "lease_expires_at",
                     "next_attempt_at", "last_error_code", "updated_at"
                 ])
-                
+
                 logger.warning(
                     f"Reaped stale outbox item {item.id} "
                     f"(kind={item.kind}, old_owner={old_owner})"
                 )
                 reaped_count += 1
-            
+
             return reaped_count
-    
+
     def get_stale_count(self) -> int:
         """Get count of items that would be reaped (for monitoring)."""
         stale_cutoff = timezone.now() - timedelta(seconds=self.stale_threshold_seconds)

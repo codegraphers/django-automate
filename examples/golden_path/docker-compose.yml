@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/automate
+      - REDIS_URL=redis://redis:6379/0
+      - DEBUG=true
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN:-}
+    depends_on:
+      - db
+      - redis
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+
+  worker:
+    build: .
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/automate
+      - REDIS_URL=redis://redis:6379/0
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN:-}
+    depends_on:
+      - db
+      - redis
+    command: python manage.py automate_dispatch
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=automate
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:

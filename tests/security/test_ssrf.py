@@ -4,15 +4,16 @@ Tests for SSRF-safe HTTP client.
 Verifies blocked IPs, allowlist, and memory-safe streaming.
 """
 
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock
 
 from rag.security.ssrf_client import (
-    is_ip_blocked,
-    SSRFError,
-    ssrf_safe_request,
-    configure_allowlist,
     ALLOWED_DOMAINS,
+    SSRFError,
+    configure_allowlist,
+    is_ip_blocked,
+    ssrf_safe_request,
 )
 
 
@@ -96,14 +97,14 @@ class TestAllowlist:
         """configure_allowlist should set allowed domains."""
         configure_allowlist(["example.com", "api.test.com"])
         # ALLOWED_DOMAINS is populated by configure_allowlist
-        from rag.security.ssrf_client import ALLOWED_DOMAINS as domains
-        assert len(domains) == 2
+        from rag.security.ssrf_client import ALLOWED_DOMAINS
+        assert len(ALLOWED_DOMAINS) == 2
 
     def test_allowlist_case_insensitive(self):
         """Allowlist should be case-insensitive."""
         configure_allowlist(["Example.COM"])
-        from rag.security.ssrf_client import ALLOWED_DOMAINS as domains
-        assert "example.com" in domains
+        from rag.security.ssrf_client import ALLOWED_DOMAINS
+        assert "example.com" in ALLOWED_DOMAINS
 
     @patch("rag.security.ssrf_client.resolve_hostname")
     def test_blocked_when_not_in_allowlist(self, mock_resolve):

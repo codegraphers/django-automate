@@ -84,7 +84,7 @@ class Job(ValidatableMixin, SignalMixin, models.Model):
     lease_owner = models.CharField(max_length=255, null=True, blank=True, help_text="Worker ID owning this job")
     lease_expires_at = models.DateTimeField(null=True, blank=True, db_index=True)
     heartbeat_at = models.DateTimeField(null=True, blank=True)
-    
+
     # Event sequencing (atomic increment avoids N+1 queries)
     last_seq = models.IntegerField(default=0, help_text="Last event sequence number for this job")
 

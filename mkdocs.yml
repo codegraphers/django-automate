@@ -80,6 +80,10 @@ nav:
 
         - Reference:
                   - Settings: reference/settings.md
+                  - Modules: reference/modules.md
+                  - API: reference/api.md
+                  - API Compatibility: reference/api-compatibility.md
+                  - RAG Architecture: reference/rag-architecture.md
                   - Extension Points: reference/extension-points.md
                   - API Base Classes: reference/api-base-classes.md
                   - Models: reference/models.md
@@ -93,6 +97,7 @@ nav:
 
         - Security:
                   - Threat Model: security/threat-model.md
+                  - SSRF Protection: security/ssrf.md
                   - Webhook Signatures: security/webhook-signatures.md
                   - Governance: governance.md
 

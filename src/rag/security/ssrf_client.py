@@ -8,7 +8,7 @@ Provides HTTP request functionality with protections against:
 - Response size attacks (streaming with bytearray)
 
 Threat Model / Known Limitations:
-- DNS rebinding: We resolve then check, but requests may re-resolve. For 
+- DNS rebinding: We resolve then check, but requests may re-resolve. For
   high-security environments, use the domain allowlist feature exclusively.
 - Time-of-check-to-time-of-use: In theory, DNS could change between our check
   and the actual request. Domain allowlists mitigate this.
@@ -80,8 +80,8 @@ ALLOWED_DOMAINS: set[str] = set()
 
 def configure_allowlist(domains: list[str]) -> None:
     """Configure the domain allowlist. When set, only listed domains are allowed."""
-    global ALLOWED_DOMAINS
-    ALLOWED_DOMAINS = set(d.lower() for d in domains)
+    global ALLOWED_DOMAINS  # noqa: PLW0603
+    ALLOWED_DOMAINS = {d.lower() for d in domains}
 
 
 def is_ip_blocked(ip_str: str) -> bool:
@@ -112,7 +112,7 @@ def _check_domain_allowlist(hostname: str) -> None:
     """Check if hostname is in allowlist (when allowlist is configured)."""
     if not ALLOWED_DOMAINS:
         return  # No allowlist configured, skip check
-    
+
     hostname_lower = hostname.lower()
     # Check exact match or subdomain match
     if hostname_lower in ALLOWED_DOMAINS:
