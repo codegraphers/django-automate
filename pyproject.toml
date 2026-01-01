@@ -51,6 +51,7 @@ packages = [
 ]
 
 [project.optional-dependencies]
+# Development dependencies
 dev = [
     "pytest>=7.4",
     "pytest-django>=4.7",
@@ -62,6 +63,35 @@ dev = [
     "django-stubs>=4.2",
     "types-requests>=2.31",
     "tox>=4.11",
+]
+
+# LLM provider backends
+llm-openai = ["openai>=1.0"]
+llm-anthropic = ["anthropic>=0.18"]
+
+# RAG vector store backends
+rag-milvus = ["pymilvus>=2.3"]
+rag-pgvector = ["pgvector>=0.2"]
+rag-qdrant = ["qdrant-client>=1.7"]
+
+# Connectors
+connectors-slack = ["slack-sdk>=3.21"]
+connectors-http = ["httpx>=0.25"]
+
+# Observability
+observability = ["opentelemetry-api>=1.20", "opentelemetry-sdk>=1.20"]
+
+# Full install with all optional providers
+full = [
+    "openai>=1.0",
+    "anthropic>=0.18",
+    "pymilvus>=2.3",
+    "pgvector>=0.2",
+    "qdrant-client>=1.7",
+    "slack-sdk>=3.21",
+    "httpx>=0.25",
+    "opentelemetry-api>=1.20",
+    "opentelemetry-sdk>=1.20",
 ]
 
 [project.urls]
