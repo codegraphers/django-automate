@@ -12,6 +12,22 @@
     pip install django-automate
     ```
 
+## Optional Extras
+
+Install only what you need:
+
+| Extra | Description | Command |
+|-------|-------------|---------|
+| `llm-openai` | OpenAI provider | `pip install django-automate[llm-openai]` |
+| `llm-anthropic` | Anthropic provider | `pip install django-automate[llm-anthropic]` |
+| `rag-milvus` | Milvus vector store | `pip install django-automate[rag-milvus]` |
+| `rag-pgvector` | PostgreSQL pgvector | `pip install django-automate[rag-pgvector]` |
+| `rag-qdrant` | Qdrant vector store | `pip install django-automate[rag-qdrant]` |
+| `observability` | OpenTelemetry | `pip install django-automate[observability]` |
+| `full` | All providers | `pip install django-automate[full]` |
+
+Combine extras: `pip install django-automate[llm-openai,rag-pgvector]`
+
 2. **Update Settings**:
     Add to `INSTALLED_APPS` in `settings.py`:
     ```python
