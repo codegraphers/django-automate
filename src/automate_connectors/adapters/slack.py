@@ -25,6 +25,7 @@ class SlackAdapter(ConnectorAdapter):
         return {
             "send_message": ActionSpec(
                 name="send_message",
+                description="Send a message to a Slack channel",
                 input_schema={
                     "type": "object",
                     "properties": {

@@ -1,71 +1,46 @@
 # Connector Architecture
 
-Django Automate provides two connector patterns for different use cases.
-
-## Pattern 1: BaseProvider (Recommended for Most Cases)
-
-The unified provider pattern, used by LLM, RAG, Modal, and Connectors.
-
-```python
-from automate_connectors.providers.base import BaseProvider, ProviderContext
-
-class MyServiceProvider(BaseProvider):
-    name = "my_service"
-    
-    def execute(self, action: str, params: dict, context: ProviderContext) -> dict:
-        # Implementation
-        return {"result": "ok"}
-```
-
-**Use when:**
-- Building LLM/RAG/Modal integrations
-- Need unified secret resolution via `SecretRef`
-- Want consistent observability/audit
-- Building reusable, enterprise-grade connectors
-
-**Features:**
-- `ProviderContext` with tenant, correlation_id, secrets
-- Automatic RBAC integration
-- Structured `ActionSpec` definitions
+Django Automate uses a single, canonical connector pattern.
 
 ---
 
-## Pattern 2: ConnectorAdapter (Simple Integrations)
+## Canonical Pattern: ConnectorAdapter
 
-Lightweight adapter for simple webhook/API integrations.
+All connectors inherit from `ConnectorAdapter`:
 
 ```python
 from automate_connectors.adapters.base import ConnectorAdapter
 
-class MyWebhookAdapter(ConnectorAdapter):
-    def send(self, payload: dict) -> dict:
-        # Simple HTTP call
-        return {"status": "sent"}
+class MyAdapter(ConnectorAdapter):
+    name = "my_adapter"
+    
+    def connect(self) -> bool:
+        return True
+    
+    def execute(self, action: str, payload: dict) -> dict:
+        return {"result": "ok"}
 ```
-
-**Use when:**
-- Simple webhook/notification integrations
-- One-off, project-specific connectors
-- Minimal ceremony needed
 
 ---
 
-## Decision Guide
+## Key Components
 
-| Requirement | BaseProvider | ConnectorAdapter |
-|-------------|--------------|------------------|
-| Multi-tenant | ✅ | ❌ |
-| Secret management | ✅ SecretRef | Manual |
-| Audit/observability | ✅ Built-in | Manual |
-| Complexity | Higher | Lower |
-| Reusability | High | Project-specific |
+| Component | Purpose |
+|-----------|---------|
+| `adapters.base.ConnectorAdapter` | Base class for all connectors |
+| `registry.connector_registry` | Connector registration |
+| `testing.ConnectorTestCase` | Official test harness |
 
-## Registration
+---
 
-Both patterns support entrypoint-based discovery:
+## Documentation
 
-```toml
-# pyproject.toml
-[project.entry-points."automate.connectors"]
-my_service = "my_package.connectors:MyServiceProvider"
-```
+See the full guide: [Building Connectors](../guides/connectors.md)
+
+---
+
+## Legacy Providers
+
+> ⚠️ The `BaseProvider` pattern from the old `providers/` directory is deprecated.
+
+Legacy examples are in `examples/legacy_connectors/` for reference only.
