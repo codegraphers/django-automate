@@ -1,0 +1,4152 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Admin-first automation framework for LLM, RAG, and Connectors.">
+      
+      
+      
+        <link rel="canonical" href="https://github.com/codegraphers/django-automate/reference/admin/">
+      
+      
+        <link rel="prev" href="../models/">
+      
+      
+        <link rel="next" href="../serializers/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Admin - Django Automate</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#admin-reference" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Django Automate" class="md-header__button md-logo" aria-label="Django Automate" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Django Automate
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Admin
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../00_index/" class="md-tabs__link">
+          
+  
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../quickstart/first-automation/" class="md-tabs__link">
+          
+  
+  
+  Quickstart
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../concepts/architecture/" class="md-tabs__link">
+          
+  
+  
+  Concepts
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../features/" class="md-tabs__link">
+          
+  
+  
+  Features
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/customization/" class="md-tabs__link">
+          
+  
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../connectors/" class="md-tabs__link">
+          
+  
+  
+  Connectors
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../settings/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../security/threat-model/" class="md-tabs__link">
+          
+  
+  
+  Security
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../deployment/checklist/" class="md-tabs__link">
+          
+  
+  
+  Deployment
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../contributing/" class="md-tabs__link">
+          
+  
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Django Automate" class="md-nav__button md-logo" aria-label="Django Automate" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Django Automate
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Overview
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../00_index/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01_quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02_concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03_tutorials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_how_to_guides/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How-To Guides
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../05_reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06_extending/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extending
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07_admin_studio/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Admin Studio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../08_observability_security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability & Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../09_deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../10_examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../09_changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Quickstart
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstart/first-automation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstart/install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/mental-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mental Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    General Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Features
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Features
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/datachat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Chat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/embeddable-widget/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/mcp-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MCP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/rag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RAG
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../llm_gateway/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Gateway
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../llm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/customization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Customization & Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/graph_schema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Graph Schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/rules/jsonlogic-subset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rules (JSONLogic)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/secrets/backends/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secrets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Connectors
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Connectors
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../connectors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../connectors/slack/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Slack
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../connectors/zapier/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zapier
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../connectors/n8n/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    N8N
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/connectors/write-custom-connector/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom Connectors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../settings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-compatibility/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Compatibility
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rag-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RAG Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extension-points/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extension Points
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-base-classes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Base Classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Admin
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Admin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#base-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Base Classes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Base Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basemodeladmin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BaseModelAdmin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tenantscopedadmin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TenantScopedAdmin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#auditablemodeladmin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AuditableModelAdmin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importexportbaseadmin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ImportExportBaseAdmin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softdeleteadmin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SoftDeleteAdmin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inlinebaseadmin-stackedinlinebaseadmin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        InlineBaseAdmin / StackedInlineBaseAdmin
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mixins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mixins
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Mixins">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#exportmixin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ExportMixin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bulkactionsmixin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BulkActionsMixin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#auditmixin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AuditMixin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#searchmixin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SearchMixin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filtermixin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FilterMixin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#permissionmixin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PermissionMixin
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#admin-classes-by-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Admin Classes by Module
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Admin Classes by Module">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#automateadminpy-17-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        automate/admin.py (17 classes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automate_datachatadminpy-3-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        automate_datachat/admin.py (3 classes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automate_modaladminpy-5-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        automate_modal/admin.py (5 classes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ragadminpy-4-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        rag/admin.py (4 classes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automate_interopadminpy-3-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        automate_interop/admin.py (3 classes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-modules-4-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Other Modules (4 classes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#customization-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customization Guide
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Customization Guide">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#override-existing-admin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Override Existing Admin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Actions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-fieldsets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Fieldsets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-change-form-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Change Form Template
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-list-display-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom List Display Methods
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../serializers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../templates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Templates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data-models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../python-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Views
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/threat-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/ssrf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SSRF Protection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/webhook-signatures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Webhook Signatures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../governance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Governance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Deployment
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../deployment/checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../deployment/pypi_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PyPI Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Contributing
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/docs-style-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Style Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#base-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Base Classes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Base Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basemodeladmin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BaseModelAdmin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tenantscopedadmin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TenantScopedAdmin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#auditablemodeladmin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AuditableModelAdmin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importexportbaseadmin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ImportExportBaseAdmin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softdeleteadmin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SoftDeleteAdmin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inlinebaseadmin-stackedinlinebaseadmin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        InlineBaseAdmin / StackedInlineBaseAdmin
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mixins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mixins
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Mixins">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#exportmixin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ExportMixin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bulkactionsmixin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BulkActionsMixin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#auditmixin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AuditMixin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#searchmixin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SearchMixin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filtermixin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FilterMixin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#permissionmixin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PermissionMixin
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#admin-classes-by-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Admin Classes by Module
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Admin Classes by Module">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#automateadminpy-17-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        automate/admin.py (17 classes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automate_datachatadminpy-3-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        automate_datachat/admin.py (3 classes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automate_modaladminpy-5-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        automate_modal/admin.py (5 classes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ragadminpy-4-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        rag/admin.py (4 classes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automate_interopadminpy-3-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        automate_interop/admin.py (3 classes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-modules-4-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Other Modules (4 classes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#customization-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customization Guide
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Customization Guide">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#override-existing-admin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Override Existing Admin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Actions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-fieldsets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Fieldsets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-change-form-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Change Form Template
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-list-display-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom List Display Methods
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="admin-reference">Admin Reference</h1>
+<p>Complete reference for all Django Automate admin classes.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#base-classes">Base Classes</a></li>
+<li><a href="#mixins">Mixins</a></li>
+<li><a href="#admin-classes-by-module">Admin Classes by Module</a></li>
+<li><a href="#customization-guide">Customization Guide</a></li>
+</ol>
+<hr />
+<h2 id="base-classes">Base Classes</h2>
+<p><strong>Import:</strong> <code>from automate_core.base import BaseModelAdmin, TenantScopedAdmin</code></p>
+<h3 id="basemodeladmin">BaseModelAdmin</h3>
+<p>Base admin with sensible defaults and common utilities.</p>
+<pre><code class="language-python">from automate_core.base import BaseModelAdmin
+
+@admin.register(MyModel)
+class MyModelAdmin(BaseModelAdmin):
+    list_display = ['name', 'status']
+    search_fields = ['name']
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>list_per_page</code></td>
+<td>25</td>
+<td>Records per page</td>
+</tr>
+<tr>
+<td><code>date_hierarchy</code></td>
+<td><code>'created_at'</code></td>
+<td>Date navigation</td>
+</tr>
+<tr>
+<td><code>save_on_top</code></td>
+<td>True</td>
+<td>Show save buttons at top</td>
+</tr>
+<tr>
+<td><code>show_timestamps</code></td>
+<td>True</td>
+<td>Show created_at/updated_at</td>
+</tr>
+<tr>
+<td><code>timestamp_readonly</code></td>
+<td>True</td>
+<td>Make timestamps read-only</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Utility Methods:</strong>
+- <code>link_to_object(obj, label)</code>: Generate link to related object
+- <code>colored_status(status, colors)</code>: Render colored status
+- <code>truncated_field(value, max_length)</code>: Truncate long values</p>
+<hr />
+<h3 id="tenantscopedadmin">TenantScopedAdmin</h3>
+<p>Admin with automatic tenant filtering.</p>
+<pre><code class="language-python">from automate_core.base import TenantScopedAdmin
+
+@admin.register(MyTenantModel)
+class MyTenantModelAdmin(TenantScopedAdmin):
+    tenant_field = 'organization_id'
+    show_tenant_column = True
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tenant_field</code></td>
+<td><code>'tenant_id'</code></td>
+<td>Field to filter by</td>
+</tr>
+<tr>
+<td><code>show_tenant_column</code></td>
+<td>False</td>
+<td>Show tenant in list</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Override Points:</strong>
+- <code>get_tenant_for_request(request)</code>: Custom tenant resolution</p>
+<hr />
+<h3 id="auditablemodeladmin">AuditableModelAdmin</h3>
+<p>Admin for auditable models with audit fields.</p>
+<pre><code class="language-python">from automate_core.base import AuditableModelAdmin
+
+@admin.register(MyAuditableModel)
+class MyAuditableModelAdmin(AuditableModelAdmin):
+    show_audit_fields = True
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>audit_fields</code></td>
+<td><code>['created_by', ...]</code></td>
+<td>Fields to show</td>
+</tr>
+<tr>
+<td><code>show_audit_fields</code></td>
+<td>True</td>
+<td>Display in list</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="importexportbaseadmin">ImportExportBaseAdmin</h3>
+<p>Admin with CSV/JSON import/export.</p>
+<pre><code class="language-python">from automate_core.base import ImportExportBaseAdmin
+
+@admin.register(MyModel)
+class MyModelAdmin(ImportExportBaseAdmin):
+    export_formats = ['csv', 'json']
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>import_formats</code></td>
+<td><code>['csv']</code></td>
+<td>Allowed import formats</td>
+</tr>
+<tr>
+<td><code>export_formats</code></td>
+<td><code>['csv', 'json']</code></td>
+<td>Export format actions</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="softdeleteadmin">SoftDeleteAdmin</h3>
+<p>Admin for soft-deletable models.</p>
+<pre><code class="language-python">from automate_core.base import SoftDeleteAdmin
+
+@admin.register(MySoftDeleteModel)
+class MySoftDeleteModelAdmin(SoftDeleteAdmin):
+    show_deleted_toggle = True
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>show_deleted_toggle</code></td>
+<td>True</td>
+<td>Show deleted toggle</td>
+</tr>
+<tr>
+<td><code>show_deleted_by_default</code></td>
+<td>False</td>
+<td>Include deleted by default</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Actions:</strong> <code>restore_selected</code> - Restore soft-deleted records</p>
+<hr />
+<h3 id="inlinebaseadmin-stackedinlinebaseadmin">InlineBaseAdmin / StackedInlineBaseAdmin</h3>
+<p>Base inline admin classes.</p>
+<pre><code class="language-python">from automate_core.base import InlineBaseAdmin
+
+class ItemInline(InlineBaseAdmin):
+    model = Item
+    fields = ['name', 'quantity']
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>extra</code></td>
+<td>0</td>
+<td>Extra blank forms</td>
+</tr>
+<tr>
+<td><code>max_num</code></td>
+<td>10</td>
+<td>Maximum forms</td>
+</tr>
+<tr>
+<td><code>show_change_link</code></td>
+<td>True</td>
+<td>Link to full form</td>
+</tr>
+<tr>
+<td><code>can_delete</code></td>
+<td>True</td>
+<td>Allow deletion</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="mixins">Mixins</h2>
+<h3 id="exportmixin">ExportMixin</h3>
+<p>Add export actions to any admin.</p>
+<pre><code class="language-python">from automate_core.base import ExportMixin, BaseModelAdmin
+
+class MyAdmin(ExportMixin, BaseModelAdmin):
+    export_formats = ['csv', 'json']
+    export_fields = ['name', 'email', 'created_at']
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>export_formats</code></td>
+<td><code>['csv', 'json']</code></td>
+<td>Available formats</td>
+</tr>
+<tr>
+<td><code>export_fields</code></td>
+<td>None</td>
+<td>Fields to export (all if None)</td>
+</tr>
+<tr>
+<td><code>export_exclude</code></td>
+<td><code>[]</code></td>
+<td>Fields to exclude</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="bulkactionsmixin">BulkActionsMixin</h3>
+<p>Add bulk update/delete actions.</p>
+<pre><code class="language-python">from automate_core.base import BulkActionsMixin, BaseModelAdmin
+
+class MyAdmin(BulkActionsMixin, BaseModelAdmin):
+    bulk_update_fields = ['status', 'category']
+</code></pre>
+<p><strong>Actions:</strong>
+- <code>bulk_update_status</code>: Update status field
+- <code>bulk_enable</code>: Enable selected
+- <code>bulk_disable</code>: Disable selected</p>
+<hr />
+<h3 id="auditmixin">AuditMixin</h3>
+<p>Log admin actions to audit trail.</p>
+<pre><code class="language-python">from automate_core.base import AuditMixin, BaseModelAdmin
+
+class MyAdmin(AuditMixin, BaseModelAdmin):
+    audit_log_changes = True
+    audit_log_model = AuditLog  # Your audit model
+</code></pre>
+<hr />
+<h3 id="searchmixin">SearchMixin</h3>
+<p>Enhanced search with field-specific lookups.</p>
+<pre><code class="language-python">from automate_core.base import SearchMixin, BaseModelAdmin
+
+class MyAdmin(SearchMixin, BaseModelAdmin):
+    advanced_search_fields = {
+        'name': 'icontains',
+        'email': 'iexact',
+    }
+</code></pre>
+<hr />
+<h3 id="filtermixin">FilterMixin</h3>
+<p>Dynamic filter generation.</p>
+<pre><code class="language-python">from automate_core.base import FilterMixin, BaseModelAdmin
+
+class MyAdmin(FilterMixin, BaseModelAdmin):
+    auto_filters = True  # Auto-add choice/boolean filters
+    date_filters = ['created_at', 'updated_at']
+</code></pre>
+<hr />
+<h3 id="permissionmixin">PermissionMixin</h3>
+<p>Object-level permission checks.</p>
+<pre><code class="language-python">class MyAdmin(PermissionMixin, BaseModelAdmin):
+    def has_change_permission(self, request, obj=None):
+        if obj and obj.owner != request.user:
+            return False
+        return super().has_change_permission(request, obj)
+</code></pre>
+<hr />
+<h2 id="admin-classes-by-module">Admin Classes by Module</h2>
+<h3 id="automateadminpy-17-classes">automate/admin.py (17 classes)</h3>
+<table>
+<thead>
+<tr>
+<th>Admin Class</th>
+<th>Model</th>
+<th>Base</th>
+<th>Key Features</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AutomationAdmin</code></td>
+<td>Automation</td>
+<td>TenantScopedAdmin</td>
+<td>Workflow inlines, enable/disable action</td>
+</tr>
+<tr>
+<td><code>TriggerSpecAdmin</code></td>
+<td>TriggerSpec</td>
+<td>BaseModelAdmin</td>
+<td>Trigger config display</td>
+</tr>
+<tr>
+<td><code>WorkflowAdmin</code></td>
+<td>Workflow</td>
+<td>BaseModelAdmin</td>
+<td>Graph preview, version history</td>
+</tr>
+<tr>
+<td><code>ExecutionAdmin</code></td>
+<td>Execution</td>
+<td>AuditableModelAdmin</td>
+<td>Status filtering, step inlines</td>
+</tr>
+<tr>
+<td><code>ExecutionStepAdmin</code></td>
+<td>ExecutionStep</td>
+<td>BaseModelAdmin</td>
+<td>Input/output display</td>
+</tr>
+<tr>
+<td><code>EventAdmin</code></td>
+<td>Event</td>
+<td>BaseModelAdmin</td>
+<td>Payload preview, type filter</td>
+</tr>
+<tr>
+<td><code>PromptAdmin</code></td>
+<td>Prompt</td>
+<td>BaseModelAdmin</td>
+<td>Version inlines</td>
+</tr>
+<tr>
+<td><code>PromptVersionAdmin</code></td>
+<td>PromptVersion</td>
+<td>AuditableModelAdmin</td>
+<td>Template preview</td>
+</tr>
+<tr>
+<td><code>PromptReleaseAdmin</code></td>
+<td>PromptRelease</td>
+<td>BaseModelAdmin</td>
+<td>Deploy action</td>
+</tr>
+<tr>
+<td><code>LLMProviderAdmin</code></td>
+<td>LLMProvider</td>
+<td>BaseModelAdmin</td>
+<td>Test connection action</td>
+</tr>
+<tr>
+<td><code>LLMModelConfigAdmin</code></td>
+<td>LLMModelConfig</td>
+<td>BaseModelAdmin</td>
+<td>Provider filter</td>
+</tr>
+<tr>
+<td><code>BudgetPolicyAdmin</code></td>
+<td>BudgetPolicy</td>
+<td>TenantScopedAdmin</td>
+<td>Limit display</td>
+</tr>
+<tr>
+<td><code>TemplateAdmin</code></td>
+<td>Template</td>
+<td>BaseModelAdmin</td>
+<td>Content preview</td>
+</tr>
+<tr>
+<td><code>ConnectionProfileAdmin</code></td>
+<td>ConnectionProfile</td>
+<td>TenantScopedAdmin</td>
+<td>Credentials masked</td>
+</tr>
+<tr>
+<td><code>OutboxAdmin</code></td>
+<td>Outbox</td>
+<td>BaseModelAdmin</td>
+<td>Retry action, status filter</td>
+</tr>
+<tr>
+<td><code>MCPServerAdmin</code></td>
+<td>MCPServer</td>
+<td>BaseModelAdmin</td>
+<td>Health check, sync tools</td>
+</tr>
+<tr>
+<td><code>MCPToolAdmin</code></td>
+<td>MCPTool</td>
+<td>BaseModelAdmin</td>
+<td>Schema display</td>
+</tr>
+</tbody>
+</table>
+<h3 id="automate_datachatadminpy-3-classes">automate_datachat/admin.py (3 classes)</h3>
+<table>
+<thead>
+<tr>
+<th>Admin Class</th>
+<th>Model</th>
+<th>Base</th>
+<th>Key Features</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DataChatSessionAdmin</code></td>
+<td>DataChatSession</td>
+<td>TenantScopedAdmin</td>
+<td>User filter, message count</td>
+</tr>
+<tr>
+<td><code>DataChatMessageAdmin</code></td>
+<td>DataChatMessage</td>
+<td>BaseModelAdmin</td>
+<td>Content preview, SQL display</td>
+</tr>
+<tr>
+<td><code>ChatEmbedAdmin</code></td>
+<td>ChatEmbed</td>
+<td>TenantScopedAdmin</td>
+<td>API key regenerate, domain list</td>
+</tr>
+</tbody>
+</table>
+<h3 id="automate_modaladminpy-5-classes">automate_modal/admin.py (5 classes)</h3>
+<table>
+<thead>
+<tr>
+<th>Admin Class</th>
+<th>Model</th>
+<th>Base</th>
+<th>Key Features</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ModalProviderConfigAdmin</code></td>
+<td>ModalProviderConfig</td>
+<td>ImportExportBaseAdmin</td>
+<td>Config validation</td>
+</tr>
+<tr>
+<td><code>ModalEndpointAdmin</code></td>
+<td>ModalEndpoint</td>
+<td>ImportExportBaseAdmin</td>
+<td>Test console link</td>
+</tr>
+<tr>
+<td><code>ModalJobAdmin</code></td>
+<td>ModalJob</td>
+<td>ImportExportBaseAdmin</td>
+<td>Status filter, cost display</td>
+</tr>
+<tr>
+<td><code>ModalArtifactAdmin</code></td>
+<td>ModalArtifact</td>
+<td>ImportExportBaseAdmin</td>
+<td>Download link</td>
+</tr>
+<tr>
+<td><code>ModalAuditEventAdmin</code></td>
+<td>ModalAuditEvent</td>
+<td>ImportExportBaseAdmin</td>
+<td>Date hierarchy</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ragadminpy-4-classes">rag/admin.py (4 classes)</h3>
+<table>
+<thead>
+<tr>
+<th>Admin Class</th>
+<th>Model</th>
+<th>Base</th>
+<th>Key Features</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RAGEndpointAdmin</code></td>
+<td>RAGEndpoint</td>
+<td>TenantScopedAdmin</td>
+<td>Test query page</td>
+</tr>
+<tr>
+<td><code>KnowledgeSourceAdmin</code></td>
+<td>KnowledgeSource</td>
+<td>TenantScopedAdmin</td>
+<td>Sync action, doc count</td>
+</tr>
+<tr>
+<td><code>EmbeddingModelAdmin</code></td>
+<td>EmbeddingModel</td>
+<td>BaseModelAdmin</td>
+<td>Dimension display</td>
+</tr>
+<tr>
+<td><code>RAGQueryLogAdmin</code></td>
+<td>RAGQueryLog</td>
+<td>BaseModelAdmin</td>
+<td>Query display, latency</td>
+</tr>
+</tbody>
+</table>
+<h3 id="automate_interopadminpy-3-classes">automate_interop/admin.py (3 classes)</h3>
+<table>
+<thead>
+<tr>
+<th>Admin Class</th>
+<th>Model</th>
+<th>Base</th>
+<th>Key Features</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>InteropMappingAdmin</code></td>
+<td>InteropMapping</td>
+<td>BaseModelAdmin</td>
+<td>Platform filter</td>
+</tr>
+<tr>
+<td><code>TemplateCollectionAdmin</code></td>
+<td>TemplateCollection</td>
+<td>BaseModelAdmin</td>
+<td>Template count</td>
+</tr>
+<tr>
+<td><code>TemplateWorkflowAdmin</code></td>
+<td>TemplateWorkflow</td>
+<td>BaseModelAdmin</td>
+<td>Collection filter</td>
+</tr>
+</tbody>
+</table>
+<h3 id="other-modules-4-classes">Other Modules (4 classes)</h3>
+<table>
+<thead>
+<tr>
+<th>Admin Class</th>
+<th>Module</th>
+<th>Model</th>
+<th>Base</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LLMRequestAdmin</code></td>
+<td>automate_llm</td>
+<td>LLMRequest</td>
+<td>AuditableModelAdmin</td>
+</tr>
+<tr>
+<td><code>AuditLogEntryAdmin</code></td>
+<td>automate_observability</td>
+<td>AuditLogEntry</td>
+<td>BaseModelAdmin</td>
+</tr>
+<tr>
+<td><code>ConnectionProfileAdmin</code></td>
+<td>automate_governance</td>
+<td>ConnectionProfile</td>
+<td>TenantScopedAdmin</td>
+</tr>
+<tr>
+<td><code>StoredSecretAdmin</code></td>
+<td>automate_governance</td>
+<td>StoredSecret</td>
+<td>BaseModelAdmin</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="customization-guide">Customization Guide</h2>
+<h3 id="override-existing-admin">Override Existing Admin</h3>
+<pre><code class="language-python"># In your app's admin.py
+from django.contrib import admin
+from automate.admin import AutomationAdmin
+from automate_core.workflows.models import Automation
+
+# Unregister default
+admin.site.unregister(Automation)
+
+# Register custom
+@admin.register(Automation)
+class CustomAutomationAdmin(AutomationAdmin):
+    list_display = ['name', 'enabled', 'department', 'created_at']
+    list_filter = ['enabled', 'department']
+
+    def department(self, obj):
+        return obj.metadata.get('department', '-')
+</code></pre>
+<h3 id="custom-actions">Custom Actions</h3>
+<pre><code class="language-python">@admin.register(MyModel)
+class MyModelAdmin(BaseModelAdmin):
+    actions = ['make_active', 'send_notification']
+
+    @admin.action(description=&quot;Mark as active&quot;)
+    def make_active(self, request, queryset):
+        updated = queryset.update(status='active')
+        self.message_user(request, f&quot;Updated {updated} records&quot;)
+
+    @admin.action(description=&quot;Send notification&quot;)
+    def send_notification(self, request, queryset):
+        for obj in queryset:
+            send_email(obj.user.email, &quot;Notification&quot;, obj.name)
+        self.message_user(request, f&quot;Sent {queryset.count()} notifications&quot;)
+</code></pre>
+<h3 id="custom-fieldsets">Custom Fieldsets</h3>
+<pre><code class="language-python">@admin.register(MyModel)
+class MyModelAdmin(BaseModelAdmin):
+    fieldsets = [
+        (None, {
+            'fields': ['name', 'description']
+        }),
+        ('Configuration', {
+            'fields': ['config', 'options'],
+            'classes': ['collapse']
+        }),
+        ('Audit', {
+            'fields': ['created_at', 'updated_at', 'created_by'],
+            'classes': ['collapse']
+        }),
+    ]
+</code></pre>
+<h3 id="custom-change-form-template">Custom Change Form Template</h3>
+<pre><code class="language-python">@admin.register(MyModel)
+class MyModelAdmin(BaseModelAdmin):
+    change_form_template = 'admin/myapp/mymodel/change_form.html'
+</code></pre>
+<pre><code class="language-html">&lt;!-- templates/admin/myapp/mymodel/change_form.html --&gt;
+{% extends &quot;admin/change_form.html&quot; %}
+
+{% block after_field_sets %}
+&lt;div class=&quot;custom-section&quot;&gt;
+    &lt;h2&gt;Custom Section&lt;/h2&gt;
+    &lt;p&gt;Additional content here&lt;/p&gt;
+&lt;/div&gt;
+{% endblock %}
+</code></pre>
+<h3 id="custom-list-display-methods">Custom List Display Methods</h3>
+<pre><code class="language-python">@admin.register(MyModel)
+class MyModelAdmin(BaseModelAdmin):
+    list_display = ['name', 'status_badge', 'item_count', 'owner_link']
+
+    @admin.display(description=&quot;Status&quot;)
+    def status_badge(self, obj):
+        return self.colored_status(obj.status)
+
+    @admin.display(description=&quot;Items&quot;)
+    def item_count(self, obj):
+        return obj.items.count()
+
+    @admin.display(description=&quot;Owner&quot;)
+    def owner_link(self, obj):
+        return self.link_to_object(obj.owner)
+</code></pre>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
