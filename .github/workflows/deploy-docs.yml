@@ -2,8 +2,7 @@ name: Deploy Documentation
 
 on:
     push:
-        branches:
-            - main
+        branches: [main]
         paths:
             - "docs/**"
             - "mkdocs.yml"
@@ -26,19 +25,17 @@ jobs:
 
             - uses: actions/setup-python@v5
               with:
-                  python-version: 3.x
-
-            - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
-
-            - uses: actions/cache@v4
-              with:
-                  key: mkdocs-material-${{ env.cache_id }}
-                  path: .cache
-                  restore-keys: |
-                      mkdocs-material-
+                  python-version: "3.12"
+                  cache: "pip"
 
             - name: Install dependencies
-              run: pip install mkdocs-material mkdocstrings mkdocstrings-python
+              run: |
+                  python -m pip install --upgrade pip
+                  python -m pip install mkdocs-material mkdocstrings mkdocstrings-python
+                  python -m pip install -e ".[dev]"
+
+            - name: Build documentation (strict)
+              run: mkdocs build --strict
 
             - name: Deploy documentation
-              run: mkdocs gh-deploy --force
+              run: mkdocs gh-deploy --force --clean

@@ -7,13 +7,11 @@ on:
 
 permissions:
   contents: write
-  id-token: write # required for OIDC trusted publishing
+  id-token: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.ver.outputs.version }}
     steps:
       - uses: actions/checkout@v4
 
@@ -21,18 +19,14 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: "pip"
 
-      - name: Extract version from tag
-        id: ver
-        run: |
-          TAG="${GITHUB_REF_NAME}"
-          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
-
-      - name: Build sdist & wheel
+      - name: Build sdist & wheel + validate metadata
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -U build
+          python -m pip install -U build twine
           python -m build
+          python -m twine check dist/*
 
       - name: Upload dist artifacts
         uses: actions/upload-artifact@v4
@@ -40,8 +34,67 @@ jobs:
           name: dist
           path: dist/*
 
-  publish_testpypi:
+  smoke:
     needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install wheel + boot Django
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m venv /tmp/wheeltest
+          source /tmp/wheeltest/bin/activate
+          python -m pip install --upgrade pip
+          python -m pip install dist/*.whl
+          python -m pip install sqlglot openai
+
+          python - <<'PY'
+          from django.conf import settings
+          import django
+          from django.core.management import call_command
+          settings.configure(
+              SECRET_KEY="release",
+              DEBUG=False,
+              USE_TZ=True,
+              DATABASES={"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": ":memory:"}},
+              INSTALLED_APPS=[
+                  "django.contrib.auth",
+                  "django.contrib.contenttypes",
+                  "django.contrib.sessions",
+                  "django.contrib.admin",
+                  "rest_framework",
+                  "automate",
+                  "automate_core",
+                  "automate_governance",
+                  "automate_llm",
+                  "automate_connectors",
+                  "automate_interop",
+                  "automate_observability",
+                  "automate_studio",
+                  "automate_datachat",
+                  "rag",
+                  "automate_api",
+              ],
+              ROOT_URLCONF="automate.urls",
+          )
+          django.setup()
+          call_command("check", verbosity=0)
+          call_command("migrate", verbosity=0)
+          print("✅ release smoke ok")
+          PY
+
+  publish_testpypi:
+    needs: smoke
     runs-on: ubuntu-latest
     environment: testpypi
     steps:
@@ -49,7 +102,6 @@ jobs:
         with:
           name: dist
           path: dist
-
       - name: Publish to TestPyPI (OIDC)
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
@@ -65,7 +117,6 @@ jobs:
         with:
           name: dist
           path: dist
-
       - name: Publish to PyPI (OIDC)
         uses: pypa/gh-action-pypi-publish@release/v1
 
@@ -77,7 +128,6 @@ jobs:
         with:
           name: dist
           path: dist
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
