@@ -1,4 +1,4 @@
-.PHONY: dev test lint format check doctor clean help
+.PHONY: dev test lint format check doctor clean smoke help
 
 # Configuration
 PYTHON ?= python
@@ -9,6 +9,7 @@ help:
 	@echo "---------------------------"
 	@echo "make dev      - Start the full stack (Core + DB + Redis)"
 	@echo "make test     - Run unit tests"
+	@echo "make smoke    - Boot Django with full suite (smoke test)"
 	@echo "make lint     - Run linters (ruff, mypy)"
 	@echo "make format   - Run formatters (ruff format)"
 	@echo "make doctor   - Check system health"
@@ -23,6 +24,9 @@ dev:
 
 test:
 	$(PYTHON) -m pytest tests/
+
+smoke:
+	$(PYTHON) scripts/smoke_django_boot.py
 
 lint:
 	ruff check .
