@@ -2278,22 +2278,78 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#runtime" class="md-nav__link">
+  <a href="#table-of-contents" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Runtime
+        Table of Contents
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Runtime">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#runtime-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runtime Module
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Runtime Module">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#emit_event" class="md-nav__link">
+  <a href="#runtime-class" class="md-nav__link">
     <span class="md-ellipsis">
       
-        emit_event
+        Runtime Class
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Runtime Class">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#run_executionexecution_id-str-none" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        run_execution(execution_id: str) -&gt; None
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#events-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Events Module
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Events Module">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#emit_eventtype-str-payload-dict-dedupe_key-str-none-str" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        emit_event(type: str, payload: dict, dedupe_key: str = None) -&gt; str
       
     </span>
   </a>
@@ -2301,10 +2357,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#run_workflow" class="md-nav__link">
+  <a href="#run_workflowworkflow_slug-str-payload-dict-str" class="md-nav__link">
     <span class="md-ellipsis">
       
-        run_workflow
+        run_workflow(workflow_slug: str, payload: dict) -&gt; str
       
     </span>
   </a>
@@ -2317,22 +2373,44 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#rules" class="md-nav__link">
+  <a href="#rules-module" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Rules
+        Rules Module
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Rules">
+    <nav class="md-nav" aria-label="Rules Module">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#evaluate" class="md-nav__link">
+  <a href="#evaluaterule_spec-dict-context-dict-bool" class="md-nav__link">
     <span class="md-ellipsis">
       
-        evaluate
+        evaluate(rule_spec: dict, context: dict) -&gt; bool
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compile_rulerule_spec-dict-compiledrule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compile_rule(rule_spec: dict) -&gt; CompiledRule
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#supported-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported Operations
       
     </span>
   </a>
@@ -2345,22 +2423,44 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#secrets" class="md-nav__link">
+  <a href="#secrets-module" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Secrets
+        Secrets Module
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Secrets">
+    <nav class="md-nav" aria-label="Secrets Module">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#resolve" class="md-nav__link">
+  <a href="#resolveref-str-str" class="md-nav__link">
     <span class="md-ellipsis">
       
-        resolve
+        resolve(ref: str) -&gt; str
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secretref-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SecretRef Class
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secret-reference-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Secret Reference Formats
       
     </span>
   </a>
@@ -2369,6 +2469,206 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connectors-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connectors Module
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Connectors Module">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#connector-base-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connector Base Class
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Registry
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#llm-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LLM Module
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LLM Module">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chatmessages-listdict-kwargs-str" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        chat(messages: list[dict], **kwargs) -&gt; str
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#count_tokenstext-str-model-str-none-int" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        count_tokens(text: str, model: str = None) -&gt; int
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_providername-str-llmprovider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_provider(name: str) -&gt; LLMProvider
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rag-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RAG Module
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RAG Module">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#queryendpoint-str-query_text-str-kwargs-listdict" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        query(endpoint: str, query_text: str, **kwargs) -&gt; list[dict]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#index_documentsendpoint-str-documents-listdict-int" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        index_documents(endpoint: str, documents: list[dict]) -&gt; int
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#outbox-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Outbox Module
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Outbox Module">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#outboxstore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OutboxStore
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#outboxreaper" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OutboxReaper
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-annotations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Type Annotations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#async-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Async Support
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See Also
+      
+    </span>
+  </a>
   
 </li>
       
@@ -2872,22 +3172,78 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#runtime" class="md-nav__link">
+  <a href="#table-of-contents" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Runtime
+        Table of Contents
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Runtime">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#runtime-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runtime Module
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Runtime Module">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#emit_event" class="md-nav__link">
+  <a href="#runtime-class" class="md-nav__link">
     <span class="md-ellipsis">
       
-        emit_event
+        Runtime Class
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Runtime Class">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#run_executionexecution_id-str-none" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        run_execution(execution_id: str) -&gt; None
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#events-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Events Module
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Events Module">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#emit_eventtype-str-payload-dict-dedupe_key-str-none-str" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        emit_event(type: str, payload: dict, dedupe_key: str = None) -&gt; str
       
     </span>
   </a>
@@ -2895,10 +3251,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#run_workflow" class="md-nav__link">
+  <a href="#run_workflowworkflow_slug-str-payload-dict-str" class="md-nav__link">
     <span class="md-ellipsis">
       
-        run_workflow
+        run_workflow(workflow_slug: str, payload: dict) -&gt; str
       
     </span>
   </a>
@@ -2911,22 +3267,44 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#rules" class="md-nav__link">
+  <a href="#rules-module" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Rules
+        Rules Module
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Rules">
+    <nav class="md-nav" aria-label="Rules Module">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#evaluate" class="md-nav__link">
+  <a href="#evaluaterule_spec-dict-context-dict-bool" class="md-nav__link">
     <span class="md-ellipsis">
       
-        evaluate
+        evaluate(rule_spec: dict, context: dict) -&gt; bool
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compile_rulerule_spec-dict-compiledrule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compile_rule(rule_spec: dict) -&gt; CompiledRule
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#supported-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported Operations
       
     </span>
   </a>
@@ -2939,22 +3317,44 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#secrets" class="md-nav__link">
+  <a href="#secrets-module" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Secrets
+        Secrets Module
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Secrets">
+    <nav class="md-nav" aria-label="Secrets Module">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#resolve" class="md-nav__link">
+  <a href="#resolveref-str-str" class="md-nav__link">
     <span class="md-ellipsis">
       
-        resolve
+        resolve(ref: str) -&gt; str
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secretref-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SecretRef Class
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secret-reference-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Secret Reference Formats
       
     </span>
   </a>
@@ -2963,6 +3363,206 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connectors-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connectors Module
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Connectors Module">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#connector-base-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connector Base Class
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Registry
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#llm-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LLM Module
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LLM Module">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chatmessages-listdict-kwargs-str" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        chat(messages: list[dict], **kwargs) -&gt; str
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#count_tokenstext-str-model-str-none-int" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        count_tokens(text: str, model: str = None) -&gt; int
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_providername-str-llmprovider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_provider(name: str) -&gt; LLMProvider
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rag-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RAG Module
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RAG Module">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#queryendpoint-str-query_text-str-kwargs-listdict" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        query(endpoint: str, query_text: str, **kwargs) -&gt; list[dict]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#index_documentsendpoint-str-documents-listdict-int" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        index_documents(endpoint: str, documents: list[dict]) -&gt; int
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#outbox-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Outbox Module
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Outbox Module">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#outboxstore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OutboxStore
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#outboxreaper" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OutboxReaper
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-annotations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Type Annotations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#async-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Async Support
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See Also
+      
+    </span>
+  </a>
   
 </li>
       
@@ -2984,26 +3584,482 @@
 
 
 <h1 id="python-api-reference">Python API Reference</h1>
-<p>Stable public API surface for <code>django-automate</code>.</p>
-<h2 id="runtime">Runtime</h2>
-<h3 id="emit_event"><code>emit_event</code></h3>
-<pre><code class="language-python">def emit_event(type: str, payload: dict, dedupe_key: str = None) -&gt; str:
+<p>Complete reference for the Django Automate Python API.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#runtime-module">Runtime Module</a></li>
+<li><a href="#events-module">Events Module</a></li>
+<li><a href="#rules-module">Rules Module</a></li>
+<li><a href="#secrets-module">Secrets Module</a></li>
+<li><a href="#connectors-module">Connectors Module</a></li>
+<li><a href="#llm-module">LLM Module</a></li>
+<li><a href="#rag-module">RAG Module</a></li>
+<li><a href="#outbox-module">Outbox Module</a></li>
+</ol>
+<hr />
+<h2 id="runtime-module">Runtime Module</h2>
+<p><strong>Import:</strong> <code>from automate.runtime import Runtime</code></p>
+<h3 id="runtime-class">Runtime Class</h3>
+<p>The core execution engine for running workflows.</p>
+<pre><code class="language-python">from automate.runtime import Runtime
+
+runtime = Runtime()
+runtime.run_execution(execution_id=&quot;550e8400-e29b-41d4-a716-446655440000&quot;)
 </code></pre>
-<p>Ingests an event into the Outbox. Returns the Event UUID.</p>
-<h3 id="run_workflow"><code>run_workflow</code></h3>
-<pre><code class="language-python">def run_workflow(workflow_slug: str, payload: dict) -&gt; str:
+<h4 id="run_executionexecution_id-str-none"><code>run_execution(execution_id: str) -&gt; None</code></h4>
+<p>Execute a workflow by execution ID.</p>
+<p><strong>Parameters:</strong>
+- <code>execution_id</code>: UUID of the execution to run</p>
+<p><strong>Behavior:</strong>
+- Loads the execution and associated workflow
+- Executes each step in the workflow graph
+- Handles retries with exponential backoff
+- Updates execution status (RUNNING → SUCCESS/FAILED)</p>
+<p><strong>Raises:</strong>
+- <code>Execution.DoesNotExist</code>: If execution not found</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-python">from automate.runtime import Runtime
+from automate.models import Execution
+
+# Create an execution
+execution = Execution.objects.create(
+    automation=automation,
+    context={&quot;order_id&quot;: &quot;ORD-123&quot;}
+)
+
+# Run it
+runtime = Runtime()
+runtime.run_execution(execution.id)
+
+# Check result
+execution.refresh_from_db()
+print(f&quot;Status: {execution.status}&quot;)  # SUCCESS or FAILED
 </code></pre>
-<p>Directly bypasses the rule engine and executes a named workflow.</p>
-<h2 id="rules">Rules</h2>
-<h3 id="evaluate"><code>evaluate</code></h3>
-<pre><code class="language-python">def evaluate(rule_spec: dict, context: dict) -&gt; bool:
+<hr />
+<h2 id="events-module">Events Module</h2>
+<p><strong>Import:</strong> <code>from automate.events import emit_event, run_workflow</code></p>
+<h3 id="emit_eventtype-str-payload-dict-dedupe_key-str-none-str"><code>emit_event(type: str, payload: dict, dedupe_key: str = None) -&gt; str</code></h3>
+<p>Ingest an event into the outbox for processing.</p>
+<p><strong>Parameters:</strong>
+- <code>type</code>: Event type identifier (e.g., "order.created")
+- <code>payload</code>: Event data dictionary
+- <code>dedupe_key</code>: Optional deduplication key (prevents duplicate processing)</p>
+<p><strong>Returns:</strong> Event UUID string</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-python">from automate.events import emit_event
+
+# Simple event
+event_id = emit_event(
+    type=&quot;order.created&quot;,
+    payload={
+        &quot;order_id&quot;: &quot;ORD-123&quot;,
+        &quot;amount&quot;: 99.99,
+        &quot;customer_email&quot;: &quot;john@example.com&quot;
+    }
+)
+print(f&quot;Event {event_id} queued for processing&quot;)
+
+# With deduplication (idempotent)
+event_id = emit_event(
+    type=&quot;payment.received&quot;,
+    payload={&quot;payment_id&quot;: &quot;PAY-456&quot;},
+    dedupe_key=&quot;payment-PAY-456&quot;  # Won't create duplicate if called again
+)
 </code></pre>
-<p>Evaluates a JSONLogic rule against a context.</p>
-<h2 id="secrets">Secrets</h2>
-<h3 id="resolve"><code>resolve</code></h3>
-<pre><code class="language-python">def resolve(ref: str) -&gt; str:
+<h3 id="run_workflowworkflow_slug-str-payload-dict-str"><code>run_workflow(workflow_slug: str, payload: dict) -&gt; str</code></h3>
+<p>Directly execute a workflow, bypassing the rule engine.</p>
+<p><strong>Parameters:</strong>
+- <code>workflow_slug</code>: Slug identifier of the workflow
+- <code>payload</code>: Input data for the workflow</p>
+<p><strong>Returns:</strong> Execution UUID string</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-python">from automate.events import run_workflow
+
+# Run workflow directly
+execution_id = run_workflow(
+    workflow_slug=&quot;send-welcome-email&quot;,
+    payload={
+        &quot;user_id&quot;: &quot;USR-123&quot;,
+        &quot;email&quot;: &quot;newuser@example.com&quot;,
+        &quot;name&quot;: &quot;John Doe&quot;
+    }
+)
+print(f&quot;Started execution: {execution_id}&quot;)
 </code></pre>
-<p>Resolves a <code>$secret:</code> reference string. This calls the configured backend.</p>
+<hr />
+<h2 id="rules-module">Rules Module</h2>
+<p><strong>Import:</strong> <code>from automate.rules import evaluate, compile_rule</code></p>
+<h3 id="evaluaterule_spec-dict-context-dict-bool"><code>evaluate(rule_spec: dict, context: dict) -&gt; bool</code></h3>
+<p>Evaluate a JSONLogic rule against a context.</p>
+<p><strong>Parameters:</strong>
+- <code>rule_spec</code>: JSONLogic rule specification
+- <code>context</code>: Data context for evaluation</p>
+<p><strong>Returns:</strong> Boolean result of rule evaluation</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-python">from automate.rules import evaluate
+
+# Simple comparison
+result = evaluate(
+    rule_spec={&quot;&gt;=&quot;: [{&quot;var&quot;: &quot;amount&quot;}, 100]},
+    context={&quot;amount&quot;: 150}
+)
+print(result)  # True
+
+# Complex rule with AND/OR
+rule = {
+    &quot;and&quot;: [
+        {&quot;==&quot;: [{&quot;var&quot;: &quot;status&quot;}, &quot;active&quot;]},
+        {&quot;or&quot;: [
+            {&quot;&gt;&quot;: [{&quot;var&quot;: &quot;amount&quot;}, 1000]},
+            {&quot;==&quot;: [{&quot;var&quot;: &quot;priority&quot;}, &quot;high&quot;]}
+        ]}
+    ]
+}
+context = {&quot;status&quot;: &quot;active&quot;, &quot;amount&quot;: 500, &quot;priority&quot;: &quot;high&quot;}
+result = evaluate(rule, context)
+print(result)  # True
+</code></pre>
+<h3 id="compile_rulerule_spec-dict-compiledrule"><code>compile_rule(rule_spec: dict) -&gt; CompiledRule</code></h3>
+<p>Pre-compile a rule for repeated evaluation.</p>
+<p><strong>Parameters:</strong>
+- <code>rule_spec</code>: JSONLogic rule specification</p>
+<p><strong>Returns:</strong> CompiledRule object with <code>evaluate(context)</code> method</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-python">from automate.rules import compile_rule
+
+# Compile once
+rule = compile_rule({&quot;&gt;=&quot;: [{&quot;var&quot;: &quot;score&quot;}, 80]})
+
+# Evaluate many times
+for student in students:
+    if rule.evaluate({&quot;score&quot;: student.score}):
+        print(f&quot;{student.name} passed!&quot;)
+</code></pre>
+<h3 id="supported-operations">Supported Operations</h3>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Example</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>==</code></td>
+<td><code>{"==": [{"var": "a"}, 1]}</code></td>
+<td>Equality</td>
+</tr>
+<tr>
+<td><code>!=</code></td>
+<td><code>{"!=": [{"var": "a"}, 1]}</code></td>
+<td>Inequality</td>
+</tr>
+<tr>
+<td><code>&gt;</code>, <code>&gt;=</code>, <code>&lt;</code>, <code>&lt;=</code></td>
+<td><code>{"&gt;": [{"var": "a"}, 10]}</code></td>
+<td>Comparison</td>
+</tr>
+<tr>
+<td><code>and</code></td>
+<td><code>{"and": [...]}</code></td>
+<td>Logical AND</td>
+</tr>
+<tr>
+<td><code>or</code></td>
+<td><code>{"or": [...]}</code></td>
+<td>Logical OR</td>
+</tr>
+<tr>
+<td><code>!</code></td>
+<td><code>{"!": {...}}</code></td>
+<td>Logical NOT</td>
+</tr>
+<tr>
+<td><code>in</code></td>
+<td><code>{"in": ["a", {"var": "list"}]}</code></td>
+<td>Contains</td>
+</tr>
+<tr>
+<td><code>var</code></td>
+<td><code>{"var": "path.to.value"}</code></td>
+<td>Variable access</td>
+</tr>
+<tr>
+<td><code>if</code></td>
+<td><code>{"if": [cond, then, else]}</code></td>
+<td>Conditional</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="secrets-module">Secrets Module</h2>
+<p><strong>Import:</strong> <code>from automate.secrets import resolve, SecretRef</code></p>
+<h3 id="resolveref-str-str"><code>resolve(ref: str) -&gt; str</code></h3>
+<p>Resolve a secret reference to its value.</p>
+<p><strong>Parameters:</strong>
+- <code>ref</code>: Secret reference string (e.g., <code>$secret:API_KEY</code>)</p>
+<p><strong>Returns:</strong> Decrypted secret value</p>
+<p><strong>Raises:</strong>
+- <code>SecretNotFoundError</code>: If secret doesn't exist
+- <code>SecretAccessDenied</code>: If access is not permitted</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-python">from automate.secrets import resolve
+
+# Resolve a secret
+api_key = resolve(&quot;$secret:STRIPE_API_KEY&quot;)
+
+# Use in code
+import stripe
+stripe.api_key = api_key
+</code></pre>
+<h3 id="secretref-class"><code>SecretRef</code> Class</h3>
+<p>Type-safe secret reference for configuration.</p>
+<pre><code class="language-python">from automate.secrets import SecretRef
+
+class MyConfig:
+    api_key: SecretRef = SecretRef(&quot;$secret:API_KEY&quot;)
+
+# In Pydantic models
+from pydantic import BaseModel
+
+class ConnectorConfig(BaseModel):
+    api_key: SecretRef
+
+    class Config:
+        arbitrary_types_allowed = True
+</code></pre>
+<h3 id="secret-reference-formats">Secret Reference Formats</h3>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Example</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>$secret:KEY</code></td>
+<td><code>$secret:API_KEY</code></td>
+<td>Database-stored secret</td>
+</tr>
+<tr>
+<td><code>$env:VAR</code></td>
+<td><code>$env:DATABASE_URL</code></td>
+<td>Environment variable</td>
+</tr>
+<tr>
+<td><code>$vault:path</code></td>
+<td><code>$vault:secret/api</code></td>
+<td>HashiCorp Vault</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="connectors-module">Connectors Module</h2>
+<p><strong>Import:</strong> <code>from automate_connectors import Connector, registry</code></p>
+<h3 id="connector-base-class">Connector Base Class</h3>
+<pre><code class="language-python">from automate_connectors.base import Connector, ActionSpec, TriggerSpec
+
+class MyConnector(Connector):
+    key = &quot;my_connector&quot;
+    display_name = &quot;My Connector&quot;
+
+    @classmethod
+    def actions(cls) -&gt; list[ActionSpec]:
+        return [
+            ActionSpec(
+                name=&quot;send_message&quot;,
+                input_schema={&quot;type&quot;: &quot;object&quot;, &quot;properties&quot;: {...}},
+                idempotent=True
+            )
+        ]
+
+    def execute_action(self, action: str, input_data: dict) -&gt; dict:
+        if action == &quot;send_message&quot;:
+            return self._send_message(input_data)
+        raise ValueError(f&quot;Unknown action: {action}&quot;)
+
+    def normalize_error(self, exc: Exception) -&gt; Exception:
+        return AutomateError(ErrorCodes.INTERNAL, str(exc))
+</code></pre>
+<h3 id="registry">Registry</h3>
+<pre><code class="language-python">from automate_connectors.registry import registry
+
+# Get a connector
+connector_cls = registry.get_connector(&quot;slack&quot;)
+connector = connector_cls(config={...}, ctx=context)
+
+# List all connectors
+for key in registry.list_connectors():
+    print(key)
+
+# Register a connector
+registry.register(&quot;my_connector&quot;, MyConnector)
+</code></pre>
+<hr />
+<h2 id="llm-module">LLM Module</h2>
+<p><strong>Import:</strong> <code>from automate_llm import chat, count_tokens, get_provider</code></p>
+<h3 id="chatmessages-listdict-kwargs-str"><code>chat(messages: list[dict], **kwargs) -&gt; str</code></h3>
+<p>Send a chat completion request to the configured LLM.</p>
+<p><strong>Parameters:</strong>
+- <code>messages</code>: List of message dictionaries with <code>role</code> and <code>content</code>
+- <code>**kwargs</code>: Provider-specific options (model, temperature, etc.)</p>
+<p><strong>Returns:</strong> Generated text response</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-python">from automate_llm import chat
+
+response = chat([
+    {&quot;role&quot;: &quot;system&quot;, &quot;content&quot;: &quot;You are a helpful assistant.&quot;},
+    {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;What is the capital of France?&quot;}
+])
+print(response)  # &quot;The capital of France is Paris.&quot;
+
+# With options
+response = chat(
+    messages=[{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Write a haiku.&quot;}],
+    model=&quot;gpt-4&quot;,
+    temperature=0.9,
+    max_tokens=100
+)
+</code></pre>
+<h3 id="count_tokenstext-str-model-str-none-int"><code>count_tokens(text: str, model: str = None) -&gt; int</code></h3>
+<p>Estimate token count for text.</p>
+<p><strong>Parameters:</strong>
+- <code>text</code>: Input text
+- <code>model</code>: Optional model name for accurate counting</p>
+<p><strong>Returns:</strong> Estimated token count</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-python">from automate_llm import count_tokens
+
+tokens = count_tokens(&quot;Hello, world!&quot;)
+print(f&quot;Text uses approximately {tokens} tokens&quot;)
+</code></pre>
+<h3 id="get_providername-str-llmprovider"><code>get_provider(name: str) -&gt; LLMProvider</code></h3>
+<p>Get an LLM provider instance.</p>
+<p><strong>Parameters:</strong>
+- <code>name</code>: Provider name (openai, anthropic, etc.)</p>
+<p><strong>Returns:</strong> LLMProvider instance</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-python">from automate_llm import get_provider
+
+provider = get_provider(&quot;openai&quot;)
+response = provider.chat([
+    {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Hello!&quot;}
+])
+</code></pre>
+<hr />
+<h2 id="rag-module">RAG Module</h2>
+<p><strong>Import:</strong> <code>from rag import query, index_documents</code></p>
+<h3 id="queryendpoint-str-query_text-str-kwargs-listdict"><code>query(endpoint: str, query_text: str, **kwargs) -&gt; list[dict]</code></h3>
+<p>Execute a RAG query.</p>
+<p><strong>Parameters:</strong>
+- <code>endpoint</code>: RAG endpoint slug
+- <code>query_text</code>: Natural language query
+- <code>top_k</code>: Number of results (default: 5)
+- <code>filters</code>: Optional metadata filters</p>
+<p><strong>Returns:</strong> List of matching documents with scores</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-python">from rag import query
+
+results = query(
+    endpoint=&quot;support-docs&quot;,
+    query_text=&quot;How do I reset my password?&quot;,
+    top_k=3,
+    filters={&quot;category&quot;: &quot;authentication&quot;}
+)
+
+for doc in results:
+    print(f&quot;Score: {doc['score']:.2f}&quot;)
+    print(f&quot;Content: {doc['content'][:100]}...&quot;)
+</code></pre>
+<h3 id="index_documentsendpoint-str-documents-listdict-int"><code>index_documents(endpoint: str, documents: list[dict]) -&gt; int</code></h3>
+<p>Index documents into a RAG endpoint.</p>
+<p><strong>Parameters:</strong>
+- <code>endpoint</code>: RAG endpoint slug
+- <code>documents</code>: List of document dictionaries</p>
+<p><strong>Returns:</strong> Number of documents indexed</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-python">from rag import index_documents
+
+count = index_documents(
+    endpoint=&quot;support-docs&quot;,
+    documents=[
+        {
+            &quot;id&quot;: &quot;doc-001&quot;,
+            &quot;content&quot;: &quot;To reset your password, go to Settings...&quot;,
+            &quot;metadata&quot;: {&quot;category&quot;: &quot;authentication&quot;, &quot;author&quot;: &quot;admin&quot;}
+        },
+        {
+            &quot;id&quot;: &quot;doc-002&quot;,
+            &quot;content&quot;: &quot;Two-factor authentication adds an extra layer...&quot;,
+            &quot;metadata&quot;: {&quot;category&quot;: &quot;security&quot;}
+        }
+    ]
+)
+print(f&quot;Indexed {count} documents&quot;)
+</code></pre>
+<hr />
+<h2 id="outbox-module">Outbox Module</h2>
+<p><strong>Import:</strong> <code>from automate_core.outbox import OutboxStore, OutboxReaper</code></p>
+<h3 id="outboxstore">OutboxStore</h3>
+<p>Claim and process outbox items.</p>
+<pre><code class="language-python">from automate_core.outbox.store import SkipLockedClaimOutboxStore
+
+store = SkipLockedClaimOutboxStore(lease_seconds=300)
+
+# Claim items
+items = store.claim_batch(&quot;worker-1&quot;, limit=10)
+
+for item in items:
+    try:
+        process(item)
+        store.mark_success(item.id, &quot;worker-1&quot;)
+    except TransientError as e:
+        store.mark_retry(item.id, &quot;worker-1&quot;, next_attempt, str(e))
+    except PermanentError as e:
+        store.mark_failed(item.id, &quot;worker-1&quot;, str(e))
+</code></pre>
+<h3 id="outboxreaper">OutboxReaper</h3>
+<p>Recover stuck items.</p>
+<pre><code class="language-python">from automate_core.outbox.reaper import OutboxReaper
+
+reaper = OutboxReaper(stale_threshold_seconds=600)
+reaped = reaper.reap_stale_items()
+print(f&quot;Recovered {reaped} stuck items&quot;)
+</code></pre>
+<p>See <a href="../outbox-pattern/">Outbox Pattern Reference</a> for detailed documentation.</p>
+<hr />
+<h2 id="type-annotations">Type Annotations</h2>
+<p>All public APIs include full type annotations:</p>
+<pre><code class="language-python">from typing import Any
+
+def emit_event(
+    type: str,
+    payload: dict[str, Any],
+    dedupe_key: str | None = None
+) -&gt; str: ...
+
+def evaluate(
+    rule_spec: dict[str, Any],
+    context: dict[str, Any]
+) -&gt; bool: ...
+</code></pre>
+<h2 id="async-support">Async Support</h2>
+<p>Most APIs have async variants:</p>
+<pre><code class="language-python">from automate_llm import achat
+
+response = await achat([
+    {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Hello!&quot;}
+])
+</code></pre>
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><a href="../rest-api/">REST API Reference</a></li>
+<li><a href="../extension-points/">Extension Points</a></li>
+<li><a href="../../guides/customization/">Customization Guide</a></li>
+</ul>
 
 
 
