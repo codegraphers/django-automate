@@ -1,0 +1,4184 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Admin-first automation framework for LLM, RAG, and Connectors.">
+      
+      
+      
+        <link rel="canonical" href="https://github.com/codegraphers/django-automate/reference/serializers/">
+      
+      
+        <link rel="prev" href="../admin/">
+      
+      
+        <link rel="next" href="../templates/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Serializers - Django Automate</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#serializers-reference" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Django Automate" class="md-header__button md-logo" aria-label="Django Automate" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Django Automate
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Serializers
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../00_index/" class="md-tabs__link">
+          
+  
+  
+  Overview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../quickstart/first-automation/" class="md-tabs__link">
+          
+  
+  
+  Quickstart
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../concepts/architecture/" class="md-tabs__link">
+          
+  
+  
+  Concepts
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../features/" class="md-tabs__link">
+          
+  
+  
+  Features
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/customization/" class="md-tabs__link">
+          
+  
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../connectors/" class="md-tabs__link">
+          
+  
+  
+  Connectors
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../settings/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../security/threat-model/" class="md-tabs__link">
+          
+  
+  
+  Security
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../deployment/checklist/" class="md-tabs__link">
+          
+  
+  
+  Deployment
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../contributing/" class="md-tabs__link">
+          
+  
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Django Automate" class="md-nav__button md-logo" aria-label="Django Automate" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Django Automate
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Overview
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../00_index/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01_quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02_concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03_tutorials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_how_to_guides/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How-To Guides
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../05_reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06_extending/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extending
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07_admin_studio/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Admin Studio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../08_observability_security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability & Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../09_deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../10_examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../09_changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Quickstart
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstart/first-automation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First Automation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstart/install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/mental-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mental Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    General Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Features
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Features
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/datachat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Chat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/embeddable-widget/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/mcp-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MCP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/rag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RAG
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../llm_gateway/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Gateway
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../llm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/customization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Customization & Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/graph_schema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Graph Schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/rules/jsonlogic-subset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rules (JSONLogic)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/secrets/backends/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secrets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Connectors
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Connectors
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../connectors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../connectors/slack/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Slack
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../connectors/zapier/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zapier
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../connectors/n8n/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    N8N
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/connectors/write-custom-connector/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom Connectors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../settings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-compatibility/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Compatibility
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rag-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RAG Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extension-points/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extension Points
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-base-classes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Base Classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../admin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Admin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializers
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serializers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#base-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Base Classes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Base Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#baseserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BaseSerializer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#basemodelserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BaseModelSerializer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tenantscopedserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TenantScopedSerializer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#auditableserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AuditableSerializer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedwritableserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NestedWritableSerializer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#readonlyserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ReadOnlySerializer
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mixins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mixins
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Mixins">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#validationmixin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ValidationMixin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contextmixin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ContextMixin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynamicfieldsmixin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DynamicFieldsMixin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#expandablemixin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ExpandableMixin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paginationmixin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PaginationMixin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cachemixin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CacheMixin
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#serializers-by-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serializers by Module
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Serializers by Module">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#automate_datachat-8-serializers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        automate_datachat (8 serializers)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automateapiserializersworkflowspy-8-serializers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        automate/api/serializers/workflows.py (8 serializers)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automateapiserializerszapierpy-4-serializers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        automate/api/serializers/zapier.py (4 serializers)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automate_apiv1serializers-10-serializers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        automate_api/v1/serializers/ (10 serializers)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ragapiserializerspy-4-serializers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        rag/api/serializers.py (4 serializers)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automateapiviewsets-4-serializers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        automate/api/viewsets/ (4 serializers)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automate_llmapiserializerspy-1-serializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        automate_llm/api/serializers.py (1 serializer)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automate_modalapiserializerspy-4-serializers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        automate_modal/api/serializers.py (4 serializers)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#customization-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customization Guide
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Customization Guide">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#extending-a-serializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extending a Serializer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-custom-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adding Custom Fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynamic-field-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dynamic Field Selection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nested-createupdate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nested Create/Update
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-in-viewsets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using in ViewSets
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../templates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Templates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data-models/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../python-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../views/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Views
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/threat-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/ssrf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SSRF Protection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/webhook-signatures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Webhook Signatures
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../governance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Governance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Deployment
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../deployment/checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../deployment/pypi_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PyPI Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Contributing
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/docs-style-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Style Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#base-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Base Classes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Base Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#baseserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BaseSerializer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#basemodelserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BaseModelSerializer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tenantscopedserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TenantScopedSerializer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#auditableserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AuditableSerializer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nestedwritableserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NestedWritableSerializer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#readonlyserializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ReadOnlySerializer
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mixins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mixins
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Mixins">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#validationmixin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ValidationMixin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contextmixin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ContextMixin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynamicfieldsmixin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DynamicFieldsMixin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#expandablemixin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ExpandableMixin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paginationmixin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PaginationMixin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cachemixin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CacheMixin
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#serializers-by-module" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serializers by Module
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Serializers by Module">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#automate_datachat-8-serializers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        automate_datachat (8 serializers)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automateapiserializersworkflowspy-8-serializers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        automate/api/serializers/workflows.py (8 serializers)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automateapiserializerszapierpy-4-serializers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        automate/api/serializers/zapier.py (4 serializers)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automate_apiv1serializers-10-serializers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        automate_api/v1/serializers/ (10 serializers)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ragapiserializerspy-4-serializers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        rag/api/serializers.py (4 serializers)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automateapiviewsets-4-serializers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        automate/api/viewsets/ (4 serializers)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automate_llmapiserializerspy-1-serializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        automate_llm/api/serializers.py (1 serializer)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automate_modalapiserializerspy-4-serializers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        automate_modal/api/serializers.py (4 serializers)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#customization-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customization Guide
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Customization Guide">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#extending-a-serializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extending a Serializer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-custom-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adding Custom Fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynamic-field-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dynamic Field Selection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nested-createupdate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nested Create/Update
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-in-viewsets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using in ViewSets
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="serializers-reference">Serializers Reference</h1>
+<p>Complete reference for all Django Automate serializers.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#base-classes">Base Classes</a></li>
+<li><a href="#mixins">Mixins</a></li>
+<li><a href="#serializers-by-module">Serializers by Module</a></li>
+<li><a href="#customization-guide">Customization Guide</a></li>
+</ol>
+<hr />
+<h2 id="base-classes">Base Classes</h2>
+<p><strong>Import:</strong> <code>from automate_core.base import BaseSerializer, BaseModelSerializer</code></p>
+<h3 id="baseserializer">BaseSerializer</h3>
+<p>Base serializer with context awareness and validation.</p>
+<pre><code class="language-python">from automate_core.base import BaseSerializer
+from rest_framework import serializers
+
+class MySerializer(BaseSerializer):
+    name = serializers.CharField(max_length=200)
+    email = serializers.EmailField()
+
+    def validate_name(self, value):
+        if value.lower() == 'admin':
+            raise serializers.ValidationError(&quot;Reserved name&quot;)
+        return value
+</code></pre>
+<p><strong>Features:</strong>
+- <code>self.request</code> - Access request object
+- <code>self.current_user</code> - Access current user
+- <code>self.tenant_id</code> - Access tenant context
+- <code>self.view</code> - Access parent view</p>
+<hr />
+<h3 id="basemodelserializer">BaseModelSerializer</h3>
+<p>Model serializer with enhanced features.</p>
+<pre><code class="language-python">from automate_core.base import BaseModelSerializer
+
+class MyModelSerializer(BaseModelSerializer):
+    class Meta:
+        model = MyModel
+        fields = '__all__'
+        exclude_fields = ['internal_notes']
+        readonly_fields = ['created_at']
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>exclude_fields</code></td>
+<td><code>[]</code></td>
+<td>Always exclude these fields</td>
+</tr>
+<tr>
+<td><code>readonly_fields</code></td>
+<td><code>[]</code></td>
+<td>Always read-only fields</td>
+</tr>
+<tr>
+<td><code>auto_include_timestamps</code></td>
+<td>True</td>
+<td>Include timestamp fields</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="tenantscopedserializer">TenantScopedSerializer</h3>
+<p>Auto-inject tenant on creation.</p>
+<pre><code class="language-python">from automate_core.base import TenantScopedSerializer
+
+class MyTenantSerializer(TenantScopedSerializer):
+    class Meta:
+        model = MyTenantModel
+        fields = '__all__'
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tenant_field</code></td>
+<td><code>'tenant_id'</code></td>
+<td>Tenant field name</td>
+</tr>
+<tr>
+<td><code>auto_set_tenant</code></td>
+<td>True</td>
+<td>Auto-set from context</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="auditableserializer">AuditableSerializer</h3>
+<p>Auto-set audit fields (created_by, modified_by).</p>
+<pre><code class="language-python">from automate_core.base import AuditableSerializer
+
+class MyAuditableSerializer(AuditableSerializer):
+    class Meta:
+        model = MyAuditableModel
+        fields = '__all__'
+</code></pre>
+<hr />
+<h3 id="nestedwritableserializer">NestedWritableSerializer</h3>
+<p>Handle nested create/update automatically.</p>
+<pre><code class="language-python">from automate_core.base import NestedWritableSerializer
+
+class OrderSerializer(NestedWritableSerializer):
+    items = OrderItemSerializer(many=True)
+
+    nested_fields = {
+        'items': {'serializer': OrderItemSerializer, 'many': True}
+    }
+
+    class Meta:
+        model = Order
+        fields = '__all__'
+</code></pre>
+<hr />
+<h3 id="readonlyserializer">ReadOnlySerializer</h3>
+<p>All fields automatically read-only.</p>
+<pre><code class="language-python">from automate_core.base import ReadOnlySerializer
+
+class StatsSerializer(ReadOnlySerializer):
+    total_count = serializers.IntegerField()
+    avg_duration = serializers.FloatField()
+</code></pre>
+<hr />
+<h2 id="mixins">Mixins</h2>
+<h3 id="validationmixin">ValidationMixin</h3>
+<p>Enhanced validation with custom error messages.</p>
+<pre><code class="language-python">from automate_core.base import ValidationMixin
+
+class MySerializer(ValidationMixin, serializers.Serializer):
+    error_messages = {
+        'name': {'required': 'Name is mandatory'},
+    }
+    strict_validation = True  # Fail on unknown fields
+</code></pre>
+<hr />
+<h3 id="contextmixin">ContextMixin</h3>
+<p>Easy access to request context.</p>
+<pre><code class="language-python">class MySerializer(ContextMixin, serializers.Serializer):
+    def validate_owner(self, value):
+        if value != self.current_user.id:
+            raise ValidationError(&quot;Not your resource&quot;)
+        return value
+</code></pre>
+<p><strong>Properties:</strong>
+- <code>self.request</code> - Request object
+- <code>self.current_user</code> - User object
+- <code>self.tenant_id</code> - Tenant identifier
+- <code>self.view</code> - Parent view</p>
+<hr />
+<h3 id="dynamicfieldsmixin">DynamicFieldsMixin</h3>
+<p>Request-based field selection.</p>
+<pre><code class="language-python">class MySerializer(DynamicFieldsMixin, serializers.ModelSerializer):
+    class Meta:
+        model = MyModel
+        fields = '__all__'
+
+# Usage: GET /api/items/?fields=id,name,email
+</code></pre>
+<hr />
+<h3 id="expandablemixin">ExpandableMixin</h3>
+<p>Expand nested relations on request.</p>
+<pre><code class="language-python">class OrderSerializer(ExpandableMixin, serializers.ModelSerializer):
+    expandable_fields = {
+        'customer': CustomerSerializer,
+        'items': OrderItemSerializer,
+    }
+
+    class Meta:
+        model = Order
+        fields = '__all__'
+
+# Usage: GET /api/orders/1/?expand=customer,items
+</code></pre>
+<hr />
+<h3 id="paginationmixin">PaginationMixin</h3>
+<p>Add pagination fields to response.</p>
+<pre><code class="language-python">class MyListSerializer(PaginationMixin, serializers.Serializer):
+    items = MyItemSerializer(many=True)
+    # Automatically includes: page, page_size, total_count, has_next, has_previous
+</code></pre>
+<hr />
+<h3 id="cachemixin">CacheMixin</h3>
+<p>Response caching support.</p>
+<pre><code class="language-python">class MySerializer(CacheMixin, serializers.ModelSerializer):
+    cache_timeout = 300  # 5 minutes
+    cache_key_prefix = 'mymodel'
+</code></pre>
+<hr />
+<h2 id="serializers-by-module">Serializers by Module</h2>
+<h3 id="automate_datachat-8-serializers">automate_datachat (8 serializers)</h3>
+<table>
+<thead>
+<tr>
+<th>Serializer</th>
+<th>Type</th>
+<th>Key Fields</th>
+<th>Validation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ChatRequestSerializer</code></td>
+<td>Request</td>
+<td><code>question</code>, <code>context</code></td>
+<td>Min 1, max 2000 chars</td>
+</tr>
+<tr>
+<td><code>ChatResponseSerializer</code></td>
+<td>Response</td>
+<td><code>answer</code>, <code>sql</code>, <code>data</code>, <code>chart</code>, <code>error</code></td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>HistoryMessageSerializer</code></td>
+<td>Nested</td>
+<td><code>id</code>, <code>role</code>, <code>content</code>, <code>sql</code>, <code>data</code>, <code>created_at</code></td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>HistoryResponseSerializer</code></td>
+<td>Response</td>
+<td><code>messages</code>, <code>has_more</code>, <code>total</code>, <code>page</code></td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>EmbedChatRequestSerializer</code></td>
+<td>Request</td>
+<td><code>question</code></td>
+<td>Max 1000 chars</td>
+</tr>
+<tr>
+<td><code>EmbedChatResponseSerializer</code></td>
+<td>Response</td>
+<td><code>answer</code>, <code>sql</code>, <code>error</code></td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>EmbedConfigSerializer</code></td>
+<td>Response</td>
+<td><code>theme</code>, <code>welcome_message</code>, <code>require_auth</code></td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<h3 id="automateapiserializersworkflowspy-8-serializers">automate/api/serializers/workflows.py (8 serializers)</h3>
+<table>
+<thead>
+<tr>
+<th>Serializer</th>
+<th>Type</th>
+<th>Key Fields</th>
+<th>Validation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>WorkflowNodeSerializer</code></td>
+<td>Nested</td>
+<td><code>id</code>, <code>type</code>, <code>config</code>, <code>position</code></td>
+<td>Type in choices</td>
+</tr>
+<tr>
+<td><code>WorkflowEdgeSerializer</code></td>
+<td>Nested</td>
+<td><code>source</code>, <code>target</code>, <code>condition</code></td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>WorkflowGraphSerializer</code></td>
+<td>Nested</td>
+<td><code>nodes</code>, <code>edges</code></td>
+<td>Graph structure valid</td>
+</tr>
+<tr>
+<td><code>WorkflowCreateRequestSerializer</code></td>
+<td>Request</td>
+<td><code>name</code>, <code>graph</code></td>
+<td>Name max 200</td>
+</tr>
+<tr>
+<td><code>WorkflowCreateResponseSerializer</code></td>
+<td>Response</td>
+<td><code>id</code>, <code>slug</code>, <code>workflow_version</code>, <code>message</code></td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>WorkflowDetailSerializer</code></td>
+<td>Response</td>
+<td><code>id</code>, <code>name</code>, <code>slug</code>, <code>graph</code></td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>WorkflowUpdateRequestSerializer</code></td>
+<td>Request</td>
+<td><code>name</code>, <code>graph</code></td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>WorkflowUpdateResponseSerializer</code></td>
+<td>Response</td>
+<td><code>id</code>, <code>message</code></td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<h3 id="automateapiserializerszapierpy-4-serializers">automate/api/serializers/zapier.py (4 serializers)</h3>
+<table>
+<thead>
+<tr>
+<th>Serializer</th>
+<th>Type</th>
+<th>Key Fields</th>
+<th>Validation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TriggerSerializer</code></td>
+<td>Response</td>
+<td><code>key</code>, <code>label</code></td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>SubscribeRequestSerializer</code></td>
+<td>Request</td>
+<td><code>target_url</code>, <code>event</code></td>
+<td>Valid URL</td>
+</tr>
+<tr>
+<td><code>SubscribeResponseSerializer</code></td>
+<td>Response</td>
+<td><code>id</code>, <code>status</code></td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>UnsubscribeResponseSerializer</code></td>
+<td>Response</td>
+<td><code>status</code></td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<h3 id="automate_apiv1serializers-10-serializers">automate_api/v1/serializers/ (10 serializers)</h3>
+<table>
+<thead>
+<tr>
+<th>Serializer</th>
+<th>Type</th>
+<th>Model/Key Fields</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ProviderSerializer</code></td>
+<td>ModelSerializer</td>
+<td>LLMProvider</td>
+<td>Full provider config</td>
+</tr>
+<tr>
+<td><code>EndpointSerializer</code></td>
+<td>ModelSerializer</td>
+<td>Endpoint</td>
+<td>Endpoint definition</td>
+</tr>
+<tr>
+<td><code>EndpointRunRequest</code></td>
+<td>Request</td>
+<td><code>input</code>, <code>async</code></td>
+<td>Run request</td>
+</tr>
+<tr>
+<td><code>EndpointRunResponse</code></td>
+<td>Response</td>
+<td><code>id</code>, <code>status</code>, <code>output</code></td>
+<td>Run result</td>
+</tr>
+<tr>
+<td><code>JobSerializer</code></td>
+<td>ModelSerializer</td>
+<td>Job</td>
+<td>Job details</td>
+</tr>
+<tr>
+<td><code>CancelResponse</code></td>
+<td>Response</td>
+<td><code>cancelled</code>, <code>message</code></td>
+<td>Cancel result</td>
+</tr>
+<tr>
+<td><code>ExecutionSerializer</code></td>
+<td>ModelSerializer</td>
+<td>Execution</td>
+<td>Execution details</td>
+</tr>
+<tr>
+<td><code>ArtifactSerializer</code></td>
+<td>ModelSerializer</td>
+<td>Artifact</td>
+<td>Artifact metadata</td>
+</tr>
+<tr>
+<td><code>IngestEventSerializer</code></td>
+<td>Request</td>
+<td><code>type</code>, <code>payload</code>, <code>source</code></td>
+<td>Event ingest</td>
+</tr>
+<tr>
+<td><code>IngestEventResponse</code></td>
+<td>Response</td>
+<td><code>id</code>, <code>status</code></td>
+<td>Ingest result</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ragapiserializerspy-4-serializers">rag/api/serializers.py (4 serializers)</h3>
+<table>
+<thead>
+<tr>
+<th>Serializer</th>
+<th>Type</th>
+<th>Key Fields</th>
+<th>Validation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RAGQueryRequestSerializer</code></td>
+<td>Request</td>
+<td><code>query</code>, <code>top_k</code>, <code>filters</code></td>
+<td>Query 1-2000, top_k 1-100</td>
+</tr>
+<tr>
+<td><code>RAGResultSerializer</code></td>
+<td>Nested</td>
+<td><code>text</code>, <code>score</code>, <code>source_id</code>, <code>metadata</code></td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>RAGQueryResponseSerializer</code></td>
+<td>Response</td>
+<td><code>results</code>, <code>trace_id</code>, <code>latency_ms</code></td>
+<td>-</td>
+</tr>
+<tr>
+<td><code>RAGHealthResponseSerializer</code></td>
+<td>Response</td>
+<td><code>healthy</code>, <code>message</code>, <code>status</code></td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<h3 id="automateapiviewsets-4-serializers">automate/api/viewsets/ (4 serializers)</h3>
+<table>
+<thead>
+<tr>
+<th>Serializer</th>
+<th>Type</th>
+<th>Key Fields</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PromptTestRequestSerializer</code></td>
+<td>Request</td>
+<td><code>prompt_slug</code>, <code>version</code>, <code>variables</code></td>
+<td>Test prompt</td>
+</tr>
+<tr>
+<td><code>PromptTestResponseSerializer</code></td>
+<td>Response</td>
+<td><code>system_prompt</code>, <code>user_prompt</code>, <code>status</code></td>
+<td>Test result</td>
+</tr>
+<tr>
+<td><code>PromptMetricsSerializer</code></td>
+<td>Response</td>
+<td><code>daily_stats</code>, <code>recent_failures</code></td>
+<td>Metrics</td>
+</tr>
+<tr>
+<td><code>ManualTriggerSerializer</code></td>
+<td>Request</td>
+<td><code>automation_slug</code>, <code>payload</code></td>
+<td>Manual trigger</td>
+</tr>
+</tbody>
+</table>
+<h3 id="automate_llmapiserializerspy-1-serializer">automate_llm/api/serializers.py (1 serializer)</h3>
+<table>
+<thead>
+<tr>
+<th>Serializer</th>
+<th>Type</th>
+<th>Key Fields</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LlmRunCreateSerializer</code></td>
+<td>Request</td>
+<td><code>prompt_slug</code>, <code>variables</code>, <code>model</code></td>
+<td>LLM run request</td>
+</tr>
+</tbody>
+</table>
+<h3 id="automate_modalapiserializerspy-4-serializers">automate_modal/api/serializers.py (4 serializers)</h3>
+<table>
+<thead>
+<tr>
+<th>Serializer</th>
+<th>Type</th>
+<th>Key Fields</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ModalRunRequestSerializer</code></td>
+<td>Request</td>
+<td><code>endpoint_slug</code>, <code>input</code>, <code>async</code></td>
+<td>Modal run</td>
+</tr>
+<tr>
+<td><code>ModalArtifactSerializer</code></td>
+<td>Response</td>
+<td><code>id</code>, <code>type</code>, <code>path</code>, <code>size</code>, <code>url</code></td>
+<td>Artifact info</td>
+</tr>
+<tr>
+<td><code>ModalResultSerializer</code></td>
+<td>Response</td>
+<td><code>output</code>, <code>artifacts</code>, <code>cost</code>, <code>duration</code></td>
+<td>Run result</td>
+</tr>
+<tr>
+<td><code>ModalJobSerializer</code></td>
+<td>Response</td>
+<td><code>id</code>, <code>status</code>, <code>endpoint</code>, <code>created_at</code></td>
+<td>Job info</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="customization-guide">Customization Guide</h2>
+<h3 id="extending-a-serializer">Extending a Serializer</h3>
+<pre><code class="language-python">from automate_datachat.serializers import ChatRequestSerializer
+
+class ExtendedChatRequestSerializer(ChatRequestSerializer):
+    session_id = serializers.UUIDField(required=False)
+
+    def validate_question(self, value):
+        # Additional validation
+        if 'DROP TABLE' in value.upper():
+            raise serializers.ValidationError(&quot;Invalid query&quot;)
+        return super().validate_question(value)
+</code></pre>
+<h3 id="adding-custom-fields">Adding Custom Fields</h3>
+<pre><code class="language-python">from automate_api.v1.serializers.jobs import JobSerializer
+
+class ExtendedJobSerializer(JobSerializer):
+    owner_name = serializers.SerializerMethodField()
+
+    class Meta(JobSerializer.Meta):
+        fields = JobSerializer.Meta.fields + ['owner_name']
+
+    def get_owner_name(self, obj):
+        return obj.created_by.get_full_name() if obj.created_by else None
+</code></pre>
+<h3 id="custom-validation">Custom Validation</h3>
+<pre><code class="language-python">from automate_core.base import BaseSerializer
+
+class MySerializer(BaseSerializer):
+    start_date = serializers.DateField()
+    end_date = serializers.DateField()
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+
+        if attrs['end_date'] &lt; attrs['start_date']:
+            raise serializers.ValidationError({
+                'end_date': 'End date must be after start date'
+            })
+
+        return attrs
+</code></pre>
+<h3 id="dynamic-field-selection">Dynamic Field Selection</h3>
+<pre><code class="language-python">class FlexibleSerializer(DynamicFieldsMixin, BaseModelSerializer):
+    class Meta:
+        model = MyModel
+        fields = '__all__'
+
+# In view:
+serializer = FlexibleSerializer(
+    queryset,
+    many=True,
+    fields=['id', 'name']  # Only these fields
+)
+</code></pre>
+<h3 id="nested-createupdate">Nested Create/Update</h3>
+<pre><code class="language-python">from automate_core.base import NestedWritableSerializer
+
+class ParentSerializer(NestedWritableSerializer):
+    children = ChildSerializer(many=True)
+
+    nested_fields = {
+        'children': {
+            'serializer': ChildSerializer,
+            'many': True
+        }
+    }
+
+    class Meta:
+        model = Parent
+        fields = '__all__'
+
+# POST /api/parents/
+# {
+#     &quot;name&quot;: &quot;Parent&quot;,
+#     &quot;children&quot;: [
+#         {&quot;name&quot;: &quot;Child 1&quot;},
+#         {&quot;name&quot;: &quot;Child 2&quot;}
+#     ]
+# }
+</code></pre>
+<h3 id="using-in-viewsets">Using in ViewSets</h3>
+<pre><code class="language-python">from rest_framework import viewsets
+from automate_core.base import BaseModelSerializer
+
+class MyModelSerializer(BaseModelSerializer):
+    class Meta:
+        model = MyModel
+        fields = '__all__'
+
+class MyViewSet(viewsets.ModelViewSet):
+    queryset = MyModel.objects.all()
+    serializer_class = MyModelSerializer
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['tenant_id'] = self.request.user.tenant_id
+        return context
+</code></pre>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
