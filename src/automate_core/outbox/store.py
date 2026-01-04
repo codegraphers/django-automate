@@ -34,7 +34,7 @@ class SkipLockedClaimOutboxStore(OutboxStore):
             # - RUNNING with expired lease (stale)
             pending_or_retry = Q(status__in=["PENDING", "RETRY"], next_attempt_at__lte=now)
             stale_running = Q(status="RUNNING", lease_expires_at__lt=now)
-            
+
             qs = (
                 OutboxItem.objects.select_for_update(skip_locked=True)
                 .filter(pending_or_retry | stale_running)

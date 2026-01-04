@@ -13,10 +13,8 @@ from __future__ import annotations
 import os
 import sys
 import traceback
-from typing import List
 
-
-DEFAULT_APPS: List[str] = [
+DEFAULT_APPS: list[str] = [
     # Django essentials
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -39,7 +37,7 @@ DEFAULT_APPS: List[str] = [
 ]
 
 
-def _env_apps() -> List[str]:
+def _env_apps() -> list[str]:
     raw = os.getenv("AUTOMATE_SMOKE_APPS", "").strip()
     if not raw:
         return DEFAULT_APPS

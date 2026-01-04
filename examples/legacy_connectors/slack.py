@@ -46,7 +46,13 @@ class SlackConnector(Connector):
         return [
             ActionSpec(
                 name="post_message",
-                input_schema={"type": "object", "properties": {"channel": {"type": "string"}, "text": {"type": "string"}}},
+                input_schema={
+                    "type": "object",
+                    "properties": {
+                        "channel": {"type": "string"},
+                        "text": {"type": "string"},
+                    },
+                },
                 idempotent=True
             )
         ]
