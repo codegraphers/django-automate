@@ -10,31 +10,31 @@
       
       
       
-        <link rel="canonical" href="https://github.com/codegraphers/django-automate/llm/">
+        <link rel="canonical" href="https://github.com/codegraphers/django-automate/guides/integration/">
       
       
-        <link rel="prev" href="../llm_gateway/">
+        <link rel="prev" href="../customization/">
       
       
-        <link rel="next" href="../guides/customization/">
+        <link rel="next" href="../graph_schema/">
       
       
         
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
     
     
       
-        <title>LLM - Django Automate</title>
+        <title>Integration Patterns - Django Automate</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -53,9 +53,9 @@
       
     
     
-      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#llm-subsystem" class="md-skip">
+        <a href="#integration-patterns" class="md-skip">
           Skip to content
         </a>
       
@@ -94,7 +94,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="Django Automate" class="md-header__button md-logo" aria-label="Django Automate" data-md-component="logo">
+    <a href="../.." title="Django Automate" class="md-header__button md-logo" aria-label="Django Automate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              LLM
+              Integration Patterns
             
           </span>
         </div>
@@ -209,7 +209,7 @@
   
   
     <li class="md-tabs__item">
-      <a href=".." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link">
         
   
   
@@ -230,7 +230,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../00_index/" class="md-tabs__link">
+        <a href="../../00_index/" class="md-tabs__link">
           
   
   
@@ -250,7 +250,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../quickstart/first-automation/" class="md-tabs__link">
+        <a href="../../quickstart/first-automation/" class="md-tabs__link">
           
   
   
@@ -270,11 +270,31 @@
     
     
       <li class="md-tabs__item">
-        <a href="../concepts/architecture/" class="md-tabs__link">
+        <a href="../../concepts/architecture/" class="md-tabs__link">
           
   
   
   Concepts
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../features/" class="md-tabs__link">
+          
+  
+  
+  Features
 
         </a>
       </li>
@@ -292,27 +312,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="../features/" class="md-tabs__link">
-          
-  
-  
-  Features
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-  
-  
-    
-    
-      <li class="md-tabs__item">
-        <a href="../guides/customization/" class="md-tabs__link">
+        <a href="../customization/" class="md-tabs__link">
           
   
   
@@ -332,7 +332,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../reference/connectors/" class="md-tabs__link">
+        <a href="../../reference/connectors/" class="md-tabs__link">
           
   
   
@@ -352,7 +352,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../reference/settings/" class="md-tabs__link">
+        <a href="../../reference/settings/" class="md-tabs__link">
           
   
   
@@ -372,7 +372,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../security/threat-model/" class="md-tabs__link">
+        <a href="../../security/threat-model/" class="md-tabs__link">
           
   
   
@@ -392,7 +392,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../deployment/checklist/" class="md-tabs__link">
+        <a href="../../deployment/checklist/" class="md-tabs__link">
           
   
   
@@ -412,7 +412,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../contributing/" class="md-tabs__link">
+        <a href="../../contributing/" class="md-tabs__link">
           
   
   
@@ -446,7 +446,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="Django Automate" class="md-nav__button md-logo" aria-label="Django Automate" data-md-component="logo">
+    <a href="../.." title="Django Automate" class="md-nav__button md-logo" aria-label="Django Automate" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -464,7 +464,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -543,7 +543,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../00_index/" class="md-nav__link">
+      <a href="../../00_index/" class="md-nav__link">
         
   
   
@@ -571,7 +571,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../01_quickstart/" class="md-nav__link">
+      <a href="../../01_quickstart/" class="md-nav__link">
         
   
   
@@ -599,7 +599,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../02_concepts/" class="md-nav__link">
+      <a href="../../02_concepts/" class="md-nav__link">
         
   
   
@@ -627,7 +627,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../03_tutorials/" class="md-nav__link">
+      <a href="../../03_tutorials/" class="md-nav__link">
         
   
   
@@ -655,7 +655,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../04_how_to_guides/" class="md-nav__link">
+      <a href="../../04_how_to_guides/" class="md-nav__link">
         
   
   
@@ -683,7 +683,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../05_reference/" class="md-nav__link">
+      <a href="../../05_reference/" class="md-nav__link">
         
   
   
@@ -711,7 +711,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../06_extending/" class="md-nav__link">
+      <a href="../../06_extending/" class="md-nav__link">
         
   
   
@@ -739,7 +739,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../07_admin_studio/" class="md-nav__link">
+      <a href="../../07_admin_studio/" class="md-nav__link">
         
   
   
@@ -767,7 +767,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../08_observability_security/" class="md-nav__link">
+      <a href="../../08_observability_security/" class="md-nav__link">
         
   
   
@@ -795,7 +795,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../09_deployment/" class="md-nav__link">
+      <a href="../../09_deployment/" class="md-nav__link">
         
   
   
@@ -823,7 +823,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../10_examples/" class="md-nav__link">
+      <a href="../../10_examples/" class="md-nav__link">
         
   
   
@@ -851,7 +851,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../09_changelog/" class="md-nav__link">
+      <a href="../../09_changelog/" class="md-nav__link">
         
   
   
@@ -938,7 +938,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../quickstart/first-automation/" class="md-nav__link">
+      <a href="../../quickstart/first-automation/" class="md-nav__link">
         
   
   
@@ -966,7 +966,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../quickstart/install/" class="md-nav__link">
+      <a href="../../quickstart/install/" class="md-nav__link">
         
   
   
@@ -1053,7 +1053,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../concepts/architecture/" class="md-nav__link">
+      <a href="../../concepts/architecture/" class="md-nav__link">
         
   
   
@@ -1081,7 +1081,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../concepts/mental-model/" class="md-nav__link">
+      <a href="../../concepts/mental-model/" class="md-nav__link">
         
   
   
@@ -1109,7 +1109,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../concepts/" class="md-nav__link">
+      <a href="../../concepts/" class="md-nav__link">
         
   
   
@@ -1117,6 +1117,261 @@
     
   
     General Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Features
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Features
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/datachat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Chat
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/embeddable-widget/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/mcp-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MCP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/rag/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RAG
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../llm_gateway/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Gateway
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../llm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM
   
 
     
@@ -1162,17 +1417,17 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
     
   
-    Features
+    Guides
   
 
     
@@ -1183,12 +1438,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Features
+    Guides
   
 
           </label>
@@ -1201,154 +1456,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../features/" class="md-nav__link">
+      <a href="../customization/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Overview
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../features/datachat/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Data Chat
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../features/embeddable-widget/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Widgets
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../features/mcp-integration/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    MCP
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../features/rag/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    RAG
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../llm_gateway/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    LLM Gateway
+    Customization & Integration
   
 
     
@@ -1385,7 +1500,7 @@
   <span class="md-ellipsis">
     
   
-    LLM
+    Integration Patterns
   
 
     
@@ -1403,7 +1518,7 @@
   <span class="md-ellipsis">
     
   
-    LLM
+    Integration Patterns
   
 
     
@@ -1429,10 +1544,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#architecture" class="md-nav__link">
+  <a href="#table-of-contents" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Architecture
+        Table of Contents
       
     </span>
   </a>
@@ -1440,33 +1555,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuration-precedence" class="md-nav__link">
+  <a href="#webhook-integration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Configuration Precedence
+        Webhook Integration
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#safety-features" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Safety Features
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Safety Features">
+    <nav class="md-nav" aria-label="Webhook Integration">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#jinja2-sandboxing" class="md-nav__link">
+  <a href="#receiving-webhooks" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Jinja2 Sandboxing
+        Receiving Webhooks
       
     </span>
   </a>
@@ -1474,10 +1578,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#log-redaction" class="md-nav__link">
+  <a href="#webhook-flow" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Log Redaction
+        Webhook Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Verification
       
     </span>
   </a>
@@ -1490,10 +1605,233 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#adding-a-new-provider" class="md-nav__link">
+  <a href="#llm-provider-integration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Adding a New Provider
+        LLM Provider Integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LLM Provider Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#creating-a-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creating a Provider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#registration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Registration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rag-backend-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RAG Backend Integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RAG Backend Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-retrieval-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Retrieval Provider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-embedding-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Embedding Provider
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connector-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connector Development
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Connector Development">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#full-connector-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full Connector Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mcp-server-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MCP Server Integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MCP Server Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#registering-mcp-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Registering MCP Server
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-mcp-tools-in-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using MCP Tools in Workflows
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#external-api-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        External API Integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="External API Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ssrf-safe-requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SSRF-Safe Requests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rate-limiting-external-calls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rate Limiting External Calls
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-integrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing Integrations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing Integrations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#contract-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contract Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-test-fixtures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration Test Fixtures
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See Also
       
     </span>
   </a>
@@ -1509,65 +1847,6 @@
 
               
             
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-      
-      
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
-        
-          
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Guides
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Guides
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
               
                 
   
@@ -1575,63 +1854,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../guides/customization/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Customization & Integration
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../guides/integration/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Integration Patterns
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../guides/graph_schema/" class="md-nav__link">
+      <a href="../graph_schema/" class="md-nav__link">
         
   
   
@@ -1659,7 +1882,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../how-to/rules/jsonlogic-subset/" class="md-nav__link">
+      <a href="../../how-to/rules/jsonlogic-subset/" class="md-nav__link">
         
   
   
@@ -1687,7 +1910,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../how-to/secrets/backends/" class="md-nav__link">
+      <a href="../../how-to/secrets/backends/" class="md-nav__link">
         
   
   
@@ -1774,7 +1997,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/connectors/" class="md-nav__link">
+      <a href="../../reference/connectors/" class="md-nav__link">
         
   
   
@@ -1802,7 +2025,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../connectors/slack/" class="md-nav__link">
+      <a href="../../connectors/slack/" class="md-nav__link">
         
   
   
@@ -1830,7 +2053,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../connectors/zapier/" class="md-nav__link">
+      <a href="../../connectors/zapier/" class="md-nav__link">
         
   
   
@@ -1858,7 +2081,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../connectors/n8n/" class="md-nav__link">
+      <a href="../../connectors/n8n/" class="md-nav__link">
         
   
   
@@ -1886,7 +2109,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../how-to/connectors/write-custom-connector/" class="md-nav__link">
+      <a href="../../how-to/connectors/write-custom-connector/" class="md-nav__link">
         
   
   
@@ -1973,7 +2196,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/settings/" class="md-nav__link">
+      <a href="../../reference/settings/" class="md-nav__link">
         
   
   
@@ -2001,7 +2224,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/modules/" class="md-nav__link">
+      <a href="../../reference/modules/" class="md-nav__link">
         
   
   
@@ -2029,7 +2252,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/api/" class="md-nav__link">
+      <a href="../../reference/api/" class="md-nav__link">
         
   
   
@@ -2057,7 +2280,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/api-compatibility/" class="md-nav__link">
+      <a href="../../reference/api-compatibility/" class="md-nav__link">
         
   
   
@@ -2085,7 +2308,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/rag-architecture/" class="md-nav__link">
+      <a href="../../reference/rag-architecture/" class="md-nav__link">
         
   
   
@@ -2113,7 +2336,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/extension-points/" class="md-nav__link">
+      <a href="../../reference/extension-points/" class="md-nav__link">
         
   
   
@@ -2141,7 +2364,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/outbox-pattern/" class="md-nav__link">
+      <a href="../../reference/outbox-pattern/" class="md-nav__link">
         
   
   
@@ -2169,7 +2392,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/api-base-classes/" class="md-nav__link">
+      <a href="../../reference/api-base-classes/" class="md-nav__link">
         
   
   
@@ -2197,7 +2420,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/models/" class="md-nav__link">
+      <a href="../../reference/models/" class="md-nav__link">
         
   
   
@@ -2225,7 +2448,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/admin/" class="md-nav__link">
+      <a href="../../reference/admin/" class="md-nav__link">
         
   
   
@@ -2253,7 +2476,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/serializers/" class="md-nav__link">
+      <a href="../../reference/serializers/" class="md-nav__link">
         
   
   
@@ -2281,7 +2504,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/templates/" class="md-nav__link">
+      <a href="../../reference/templates/" class="md-nav__link">
         
   
   
@@ -2309,7 +2532,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/data-models/" class="md-nav__link">
+      <a href="../../reference/data-models/" class="md-nav__link">
         
   
   
@@ -2337,7 +2560,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/python-api/" class="md-nav__link">
+      <a href="../../reference/python-api/" class="md-nav__link">
         
   
   
@@ -2365,7 +2588,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/rest-api/" class="md-nav__link">
+      <a href="../../reference/rest-api/" class="md-nav__link">
         
   
   
@@ -2393,7 +2616,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../reference/views/" class="md-nav__link">
+      <a href="../../reference/views/" class="md-nav__link">
         
   
   
@@ -2480,7 +2703,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../security/threat-model/" class="md-nav__link">
+      <a href="../../security/threat-model/" class="md-nav__link">
         
   
   
@@ -2508,7 +2731,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../security/ssrf/" class="md-nav__link">
+      <a href="../../security/ssrf/" class="md-nav__link">
         
   
   
@@ -2536,7 +2759,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../security/webhook-signatures/" class="md-nav__link">
+      <a href="../../security/webhook-signatures/" class="md-nav__link">
         
   
   
@@ -2564,7 +2787,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../governance/" class="md-nav__link">
+      <a href="../../governance/" class="md-nav__link">
         
   
   
@@ -2651,7 +2874,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../deployment/checklist/" class="md-nav__link">
+      <a href="../../deployment/checklist/" class="md-nav__link">
         
   
   
@@ -2679,7 +2902,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../deployment/pypi_setup/" class="md-nav__link">
+      <a href="../../deployment/pypi_setup/" class="md-nav__link">
         
   
   
@@ -2766,7 +2989,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../contributing/" class="md-nav__link">
+      <a href="../../contributing/" class="md-nav__link">
         
   
   
@@ -2794,7 +3017,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../contributing/docs-style-guide/" class="md-nav__link">
+      <a href="../../contributing/docs-style-guide/" class="md-nav__link">
         
   
   
@@ -2849,10 +3072,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#architecture" class="md-nav__link">
+  <a href="#table-of-contents" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Architecture
+        Table of Contents
       
     </span>
   </a>
@@ -2860,33 +3083,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuration-precedence" class="md-nav__link">
+  <a href="#webhook-integration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Configuration Precedence
+        Webhook Integration
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#safety-features" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Safety Features
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Safety Features">
+    <nav class="md-nav" aria-label="Webhook Integration">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#jinja2-sandboxing" class="md-nav__link">
+  <a href="#receiving-webhooks" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Jinja2 Sandboxing
+        Receiving Webhooks
       
     </span>
   </a>
@@ -2894,10 +3106,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#log-redaction" class="md-nav__link">
+  <a href="#webhook-flow" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Log Redaction
+        Webhook Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Verification
       
     </span>
   </a>
@@ -2910,10 +3133,233 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#adding-a-new-provider" class="md-nav__link">
+  <a href="#llm-provider-integration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Adding a New Provider
+        LLM Provider Integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LLM Provider Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#creating-a-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creating a Provider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#registration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Registration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rag-backend-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RAG Backend Integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RAG Backend Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-retrieval-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Retrieval Provider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-embedding-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Embedding Provider
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connector-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connector Development
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Connector Development">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#full-connector-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full Connector Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mcp-server-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MCP Server Integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MCP Server Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#registering-mcp-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Registering MCP Server
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-mcp-tools-in-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using MCP Tools in Workflows
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#external-api-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        External API Integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="External API Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ssrf-safe-requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SSRF-Safe Requests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rate-limiting-external-calls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rate Limiting External Calls
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-integrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing Integrations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing Integrations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#contract-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contract Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-test-fixtures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration Test Fixtures
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See Also
       
     </span>
   </a>
@@ -2937,42 +3383,381 @@
 
 
 
-<h1 id="llm-subsystem">LLM Subsystem</h1>
-<p>The LLM subsystem provides a structured, safe, and efficient way to integrate Large Language Models into your workflows.</p>
-<h2 id="architecture">Architecture</h2>
-<p>The system is built on four core components:</p>
+<h1 id="integration-patterns">Integration Patterns</h1>
+<p>This guide covers common patterns for integrating Django Automate with external systems.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
 <ol>
-<li><strong>Backends (<code>automate.llm.providers</code>)</strong>: Adapters for specific providers (OpenAI, Anthropic, Gemini).</li>
-<li><strong>Configuration (<code>LLMModelConfig</code>)</strong>: Defines model parameters (temperature, max_tokens) and links to a provider.</li>
-<li><strong>Router (<code>LLMRouter</code>)</strong>: Determines the active configuration based on precedence rules.</li>
-<li><strong>Engine (<code>LLMEngine</code>)</strong>: Orchestrates the generation process, including template rendering and backend dispatch.</li>
+<li><a href="#webhook-integration">Webhook Integration</a></li>
+<li><a href="#llm-provider-integration">LLM Provider Integration</a></li>
+<li><a href="#rag-backend-integration">RAG Backend Integration</a></li>
+<li><a href="#connector-development">Connector Development</a></li>
+<li><a href="#mcp-server-integration">MCP Server Integration</a></li>
+<li><a href="#external-api-integration">External API Integration</a></li>
 </ol>
-<h2 id="configuration-precedence">Configuration Precedence</h2>
-<p>When an <code>LLM</code> node executes, the configuration is resolved in the following order:</p>
-<ol>
-<li><strong>Workflow/Runtime Override</strong>: Explicit configuration passed to the execution (highest priority).</li>
-<li><strong>Environment Override (<code>PromptRelease</code>)</strong>: Configuration specific to the deployment environment (e.g., use <code>gpt-4</code> in Prod, <code>gpt-3.5</code> in Dev).</li>
-<li><strong>Default Configuration (<code>PromptVersion</code>)</strong>: The base configuration defined by the prompt author.</li>
-</ol>
-<h2 id="safety-features">Safety Features</h2>
-<h3 id="jinja2-sandboxing">Jinja2 Sandboxing</h3>
-<p>All prompt templates are rendered using a <strong>Sandboxed Environment</strong>. This prevents malicious templates from accessing internal Python objects or executing unsafe code.
-We also enforce <code>StrictUndefined</code>, meaning any variable used in a template <em>must</em> be provided in the input context, effectively preventing silent failures.</p>
-<h3 id="log-redaction">Log Redaction</h3>
-<p>By default, raw prompts and completions are <strong>Redacted</strong> in logs to prevent accidental leakage of PII or sensitive data.
-To enable full logging for debugging, set <code>AUTOMATE_LLM_LOG_PROMPTS = True</code> in your Django settings.</p>
-<h2 id="adding-a-new-provider">Adding a New Provider</h2>
-<p>To add a custom provider:</p>
-<ol>
-<li>Create a subclass of <code>BaseLLMBackend</code> in <code>src/automate/llm/backend.py</code>.</li>
-<li>Implement the <code>complete()</code> method.</li>
-<li>Register it in the <code>LLMEngine</code> backend map.</li>
-</ol>
-<pre><code class="language-python">class MyCustomBackend(BaseLLMBackend):
-    def complete(self, config, messages, **kwargs):
-        # Implementation
-        return {&quot;content&quot;: &quot;...&quot;}
+<hr />
+<h2 id="webhook-integration">Webhook Integration</h2>
+<h3 id="receiving-webhooks">Receiving Webhooks</h3>
+<p>Django Automate provides a unified webhook endpoint with signature verification.</p>
+<pre><code class="language-python"># urls.py
+from automate.views import WebhookView
+
+urlpatterns = [
+    path('webhooks/&lt;str:connector_key&gt;/', WebhookView.as_view()),
+]
 </code></pre>
+<h3 id="webhook-flow">Webhook Flow</h3>
+<pre><code class="language-mermaid">sequenceDiagram
+    participant External
+    participant Webhook as WebhookView
+    participant Connector
+    participant Outbox
+
+    External-&gt;&gt;Webhook: POST /webhooks/stripe/
+    Webhook-&gt;&gt;Connector: verify_webhook(headers, body)
+    Connector--&gt;&gt;Webhook: True
+    Webhook-&gt;&gt;Outbox: Create OutboxItem
+    Webhook--&gt;&gt;External: 202 Accepted + trace_id
+</code></pre>
+<h3 id="custom-verification">Custom Verification</h3>
+<pre><code class="language-python">from automate_connectors.base import Connector
+
+class MyWebhookConnector(Connector):
+    key = &quot;my_service&quot;
+
+    def verify_webhook(self, headers: dict, raw_body: bytes) -&gt; bool:
+        &quot;&quot;&quot;Custom signature verification.&quot;&quot;&quot;
+        signature = headers.get('X-Signature')
+        expected = hmac.new(
+            self.secret.encode(),
+            raw_body,
+            hashlib.sha256
+        ).hexdigest()
+        return hmac.compare_digest(signature, expected)
+</code></pre>
+<hr />
+<h2 id="llm-provider-integration">LLM Provider Integration</h2>
+<h3 id="creating-a-provider">Creating a Provider</h3>
+<pre><code class="language-python">from automate_llm.providers.base import BaseLLMProvider
+from pydantic import BaseModel
+
+class MyLLMConfig(BaseModel):
+    api_key: str
+    endpoint: str
+    model: str = &quot;default&quot;
+
+class MyLLMProvider(BaseLLMProvider):
+    &quot;&quot;&quot;Custom LLM provider.&quot;&quot;&quot;
+
+    key = &quot;my_llm&quot;
+    display_name = &quot;My LLM Service&quot;
+
+    @classmethod
+    def config_schema(cls) -&gt; type[BaseModel]:
+        return MyLLMConfig
+
+    def __init__(self, config: dict, ctx):
+        self.cfg = MyLLMConfig(**config)
+        self.ctx = ctx
+
+    def chat(self, messages: list[dict], **kwargs) -&gt; str:
+        &quot;&quot;&quot;Synchronous chat completion.&quot;&quot;&quot;
+        response = requests.post(
+            f&quot;{self.cfg.endpoint}/chat&quot;,
+            headers={&quot;Authorization&quot;: f&quot;Bearer {self.cfg.api_key}&quot;},
+            json={&quot;messages&quot;: messages, &quot;model&quot;: self.cfg.model}
+        )
+        return response.json()[&quot;content&quot;]
+
+    async def achat(self, messages: list[dict], **kwargs) -&gt; str:
+        &quot;&quot;&quot;Async chat completion.&quot;&quot;&quot;
+        async with httpx.AsyncClient() as client:
+            response = await client.post(...)
+            return response.json()[&quot;content&quot;]
+
+    def count_tokens(self, text: str) -&gt; int:
+        &quot;&quot;&quot;Estimate token count.&quot;&quot;&quot;
+        return len(text) // 4  # Rough estimate
+</code></pre>
+<h3 id="registration">Registration</h3>
+<pre><code class="language-python"># myapp/apps.py
+class MyAppConfig(AppConfig):
+    def ready(self):
+        from automate_llm.registry import register_provider
+        from .providers import MyLLMProvider
+        register_provider(MyLLMProvider)
+</code></pre>
+<hr />
+<h2 id="rag-backend-integration">RAG Backend Integration</h2>
+<h3 id="custom-retrieval-provider">Custom Retrieval Provider</h3>
+<pre><code class="language-python">from rag.providers.base import BaseRetrievalProvider
+
+class PineconeProvider(BaseRetrievalProvider):
+    &quot;&quot;&quot;Pinecone vector database integration.&quot;&quot;&quot;
+
+    key = &quot;pinecone&quot;
+
+    def __init__(self, config: dict):
+        self.index = pinecone.Index(
+            config[&quot;index_name&quot;],
+            api_key=config[&quot;api_key&quot;]
+        )
+
+    def retrieve(
+        self, 
+        query_embedding: list[float], 
+        top_k: int = 5,
+        filters: dict = None
+    ) -&gt; list[dict]:
+        &quot;&quot;&quot;Retrieve similar documents.&quot;&quot;&quot;
+        results = self.index.query(
+            vector=query_embedding,
+            top_k=top_k,
+            filter=filters,
+            include_metadata=True
+        )
+        return [
+            {
+                &quot;id&quot;: match.id,
+                &quot;score&quot;: match.score,
+                &quot;content&quot;: match.metadata.get(&quot;content&quot;),
+                &quot;metadata&quot;: match.metadata,
+            }
+            for match in results.matches
+        ]
+
+    def index_documents(self, documents: list[dict]) -&gt; int:
+        &quot;&quot;&quot;Index documents into vector store.&quot;&quot;&quot;
+        vectors = [
+            {
+                &quot;id&quot;: doc[&quot;id&quot;],
+                &quot;values&quot;: doc[&quot;embedding&quot;],
+                &quot;metadata&quot;: doc[&quot;metadata&quot;],
+            }
+            for doc in documents
+        ]
+        self.index.upsert(vectors)
+        return len(vectors)
+</code></pre>
+<h3 id="custom-embedding-provider">Custom Embedding Provider</h3>
+<pre><code class="language-python">from rag.embeddings.base import BaseEmbeddingProvider
+
+class CohereEmbeddingProvider(BaseEmbeddingProvider):
+    &quot;&quot;&quot;Cohere embeddings integration.&quot;&quot;&quot;
+
+    key = &quot;cohere&quot;
+    dimensions = 1024
+
+    def embed(self, texts: list[str]) -&gt; list[list[float]]:
+        response = cohere.Client(self.api_key).embed(
+            texts=texts,
+            model=&quot;embed-english-v3.0&quot;
+        )
+        return response.embeddings
+</code></pre>
+<hr />
+<h2 id="connector-development">Connector Development</h2>
+<h3 id="full-connector-example">Full Connector Example</h3>
+<pre><code class="language-python">from automate_connectors.base import (
+    Connector, ActionSpec, TriggerSpec, CapabilitySpec
+)
+from automate_core.providers.base import ProviderContext
+from automate_core.providers.errors import AutomateError, ErrorCodes
+from pydantic import BaseModel
+
+class JiraConfig(BaseModel):
+    url: str
+    email: str
+    api_token: str
+    project_key: str = &quot;PROJ&quot;
+
+class JiraConnector(Connector):
+    &quot;&quot;&quot;Jira integration connector.&quot;&quot;&quot;
+
+    key = &quot;jira&quot;
+    display_name = &quot;Jira&quot;
+
+    def __init__(self, config: dict, *, ctx: ProviderContext):
+        self.cfg = JiraConfig(**config)
+        self.ctx = ctx
+        self.client = self._create_client()
+
+    @classmethod
+    def config_schema(cls) -&gt; type[BaseModel]:
+        return JiraConfig
+
+    @classmethod
+    def capabilities(cls) -&gt; list[CapabilitySpec]:
+        return [
+            CapabilitySpec(name=&quot;connector&quot;, modalities={&quot;action&quot;, &quot;trigger&quot;})
+        ]
+
+    @classmethod
+    def actions(cls) -&gt; list[ActionSpec]:
+        return [
+            ActionSpec(
+                name=&quot;create_issue&quot;,
+                input_schema={
+                    &quot;type&quot;: &quot;object&quot;,
+                    &quot;properties&quot;: {
+                        &quot;summary&quot;: {&quot;type&quot;: &quot;string&quot;},
+                        &quot;description&quot;: {&quot;type&quot;: &quot;string&quot;},
+                        &quot;issue_type&quot;: {&quot;type&quot;: &quot;string&quot;, &quot;default&quot;: &quot;Task&quot;},
+                    },
+                    &quot;required&quot;: [&quot;summary&quot;],
+                },
+                idempotent=False,
+            ),
+            ActionSpec(
+                name=&quot;add_comment&quot;,
+                input_schema={
+                    &quot;type&quot;: &quot;object&quot;,
+                    &quot;properties&quot;: {
+                        &quot;issue_key&quot;: {&quot;type&quot;: &quot;string&quot;},
+                        &quot;body&quot;: {&quot;type&quot;: &quot;string&quot;},
+                    },
+                    &quot;required&quot;: [&quot;issue_key&quot;, &quot;body&quot;],
+                },
+                idempotent=True,
+            ),
+        ]
+
+    @classmethod
+    def triggers(cls) -&gt; list[TriggerSpec]:
+        return [
+            TriggerSpec(name=&quot;issue_created&quot;, verification_method=&quot;hmac&quot;),
+            TriggerSpec(name=&quot;issue_updated&quot;, verification_method=&quot;hmac&quot;),
+        ]
+
+    def execute_action(self, action: str, input_data: dict) -&gt; dict:
+        if action == &quot;create_issue&quot;:
+            return self._create_issue(input_data)
+        elif action == &quot;add_comment&quot;:
+            return self._add_comment(input_data)
+        raise AutomateError(ErrorCodes.INVALID_ARGUMENT, f&quot;Unknown: {action}&quot;)
+
+    def _create_issue(self, data: dict) -&gt; dict:
+        response = self.client.post(&quot;/rest/api/3/issue&quot;, json={
+            &quot;fields&quot;: {
+                &quot;project&quot;: {&quot;key&quot;: self.cfg.project_key},
+                &quot;summary&quot;: data[&quot;summary&quot;],
+                &quot;description&quot;: data.get(&quot;description&quot;),
+                &quot;issuetype&quot;: {&quot;name&quot;: data.get(&quot;issue_type&quot;, &quot;Task&quot;)},
+            }
+        })
+        return {&quot;key&quot;: response.json()[&quot;key&quot;], &quot;id&quot;: response.json()[&quot;id&quot;]}
+
+    def normalize_error(self, exc: Exception) -&gt; Exception:
+        return AutomateError(ErrorCodes.INTERNAL, str(exc), provider=self.key)
+</code></pre>
+<hr />
+<h2 id="mcp-server-integration">MCP Server Integration</h2>
+<h3 id="registering-mcp-server">Registering MCP Server</h3>
+<pre><code class="language-python">from automate.models import MCPServer
+
+# Via Admin UI or programmatically
+server = MCPServer.objects.create(
+    name=&quot;My Tools&quot;,
+    url=&quot;http://localhost:3000/mcp&quot;,
+    api_key=&quot;secret&quot;,
+    enabled=True,
+)
+
+# Sync available tools
+server.sync_tools()
+</code></pre>
+<h3 id="using-mcp-tools-in-workflows">Using MCP Tools in Workflows</h3>
+<pre><code class="language-python">from automate.services import WorkflowService
+
+service = WorkflowService()
+workflow = service.create_workflow(
+    name=&quot;MCP Workflow&quot;,
+    steps=[
+        {
+            &quot;name&quot;: &quot;Use MCP Tool&quot;,
+            &quot;type&quot;: &quot;mcp_tool&quot;,
+            &quot;config&quot;: {
+                &quot;server&quot;: &quot;my_tools&quot;,
+                &quot;tool&quot;: &quot;search_documents&quot;,
+                &quot;args&quot;: {&quot;query&quot;: &quot;{{ event.payload.query }}&quot;}
+            }
+        }
+    ]
+)
+</code></pre>
+<hr />
+<h2 id="external-api-integration">External API Integration</h2>
+<h3 id="ssrf-safe-requests">SSRF-Safe Requests</h3>
+<p>Always use the SSRF-safe client for external requests:</p>
+<pre><code class="language-python">from rag.security.ssrf_client import ssrf_safe_request, SSRFError
+
+try:
+    response = ssrf_safe_request(
+        &quot;GET&quot;,
+        url=&quot;https://api.example.com/data&quot;,
+        credentials_ref=&quot;secret://my-api-key&quot;,
+        timeout=30,
+        max_size=10 * 1024 * 1024,  # 10MB
+    )
+except SSRFError as e:
+    # Blocked: private IP, redirect attack, etc.
+    logger.warning(f&quot;SSRF protection blocked request: {e}&quot;)
+</code></pre>
+<h3 id="rate-limiting-external-calls">Rate Limiting External Calls</h3>
+<pre><code class="language-python">from automate_core.throttling import RateLimiter
+
+limiter = RateLimiter(key=&quot;external_api&quot;, rate=&quot;100/min&quot;)
+
+if limiter.allow():
+    response = ssrf_safe_request(&quot;GET&quot;, url)
+else:
+    raise RateLimitExceeded(&quot;External API rate limit&quot;)
+</code></pre>
+<hr />
+<h2 id="testing-integrations">Testing Integrations</h2>
+<h3 id="contract-tests">Contract Tests</h3>
+<pre><code class="language-python">from automate_testing.contracts import ConnectorContractTest
+
+class TestJiraConnector(ConnectorContractTest):
+    connector_class = JiraConnector
+
+    def get_config(self):
+        return {
+            &quot;url&quot;: &quot;https://test.atlassian.net&quot;,
+            &quot;email&quot;: &quot;test@example.com&quot;,
+            &quot;api_token&quot;: &quot;test-token&quot;,
+        }
+
+    def test_create_issue_success(self):
+        with self.mock_http() as mock:
+            mock.post(&quot;/rest/api/3/issue&quot;, json={&quot;key&quot;: &quot;TEST-1&quot;})
+
+            result = self.connector.execute_action(&quot;create_issue&quot;, {
+                &quot;summary&quot;: &quot;Test Issue&quot;
+            })
+
+            assert result[&quot;key&quot;] == &quot;TEST-1&quot;
+</code></pre>
+<h3 id="integration-test-fixtures">Integration Test Fixtures</h3>
+<pre><code class="language-python">import pytest
+from automate_testing.fixtures import connector_factory
+
+@pytest.fixture
+def jira_connector(connector_factory):
+    return connector_factory(
+        JiraConnector,
+        config={&quot;url&quot;: &quot;...&quot;, &quot;email&quot;: &quot;...&quot;, &quot;api_token&quot;: &quot;...&quot;}
+    )
+
+def test_full_flow(jira_connector):
+    result = jira_connector.execute_action(&quot;create_issue&quot;, {...})
+    assert &quot;key&quot; in result
+</code></pre>
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><a href="../../reference/extension-points/">Extension Points</a></li>
+<li><a href="../../how-to/connectors/write-custom-connector/">Custom Connectors</a></li>
+<li><a href="../../security/ssrf/">Security: SSRF Protection</a></li>
+</ul>
 
 
 
@@ -3022,10 +3807,10 @@ To enable full logging for debugging, set <code>AUTOMATE_LLM_LOG_PROMPTS = True<
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>

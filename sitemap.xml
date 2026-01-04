@@ -165,6 +165,10 @@
          <lastmod>2026-01-04</lastmod>
     </url>
     <url>
+         <loc>https://github.com/codegraphers/django-automate/guides/integration/</loc>
+         <lastmod>2026-01-04</lastmod>
+    </url>
+    <url>
          <loc>https://github.com/codegraphers/django-automate/how-to/connectors/write-custom-connector/</loc>
          <lastmod>2026-01-04</lastmod>
     </url>
@@ -226,6 +230,10 @@
     </url>
     <url>
          <loc>https://github.com/codegraphers/django-automate/reference/modules/</loc>
+         <lastmod>2026-01-04</lastmod>
+    </url>
+    <url>
+         <loc>https://github.com/codegraphers/django-automate/reference/outbox-pattern/</loc>
          <lastmod>2026-01-04</lastmod>
     </url>
     <url>

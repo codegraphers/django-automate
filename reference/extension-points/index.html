@@ -16,7 +16,7 @@
         <link rel="prev" href="../rag-architecture/">
       
       
-        <link rel="next" href="../api-base-classes/">
+        <link rel="next" href="../outbox-pattern/">
       
       
         
@@ -1479,6 +1479,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../guides/integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../guides/graph_schema/" class="md-nav__link">
         
   
@@ -2026,6 +2054,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#provider-registry" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2049,10 +2088,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#compatibility" class="md-nav__link">
+  <a href="#provider-interface" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Compatibility
+        Provider Interface
       
     </span>
   </a>
@@ -2087,16 +2126,283 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#registration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Registration
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#connector" class="md-nav__link">
+  <a href="#connectors" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Connector
+        Connectors
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Connectors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#connector-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connector Interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#admin-base-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Admin Base Classes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Admin Base Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#base-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Base Classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mixins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mixins
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#override-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Override Points
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-base-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API Base Classes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API Base Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#base-classes_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Base Classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mixins_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mixins
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#override-points_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Override Points
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#outbox-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Outbox Pattern
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Outbox Pattern">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Components
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#signal-handlers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Signal Handlers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Signal Handlers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#available-signals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Available Signals
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#template-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Template System
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Template System">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#template-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Template Context
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-filters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Filters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#template-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Template Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compatibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See Also
       
     </span>
   </a>
@@ -2107,6 +2413,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../outbox-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Outbox Pattern
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -2799,6 +3133,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#provider-registry" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2822,10 +3167,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#compatibility" class="md-nav__link">
+  <a href="#provider-interface" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Compatibility
+        Provider Interface
       
     </span>
   </a>
@@ -2860,16 +3205,283 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#registration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Registration
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#connector" class="md-nav__link">
+  <a href="#connectors" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Connector
+        Connectors
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Connectors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#connector-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connector Interface
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#admin-base-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Admin Base Classes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Admin Base Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#base-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Base Classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mixins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mixins
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#override-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Override Points
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-base-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API Base Classes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API Base Classes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#base-classes_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Base Classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mixins_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mixins
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#override-points_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Override Points
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#outbox-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Outbox Pattern
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Outbox Pattern">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Components
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#signal-handlers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Signal Handlers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Signal Handlers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#available-signals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Available Signals
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#template-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Template System
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Template System">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#template-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Template Context
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-filters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Filters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#template-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Template Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compatibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See Also
       
     </span>
   </a>
@@ -2894,7 +3506,19 @@
 
 
 <h1 id="extension-points">Extension Points</h1>
-<p>This framework is designed to be extended. Below are the stable interfaces for plugins.</p>
+<p>This framework is designed to be extended. Below are all stable interfaces for plugins and customization.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#provider-registry">Provider Registry</a></li>
+<li><a href="#secrets-backend">Secrets Backend</a></li>
+<li><a href="#connectors">Connectors</a></li>
+<li><a href="#admin-base-classes">Admin Base Classes</a></li>
+<li><a href="#api-base-classes">API Base Classes</a></li>
+<li><a href="#outbox-pattern">Outbox Pattern</a></li>
+<li><a href="#signal-handlers">Signal Handlers</a></li>
+<li><a href="#template-system">Template System</a></li>
+</ol>
+<hr />
 <h2 id="provider-registry">Provider Registry</h2>
 <ul>
 <li><strong>Name</strong>: <code>ProviderRegistry</code></li>
@@ -2903,12 +3527,35 @@
 <li><strong>Interface</strong>: <code>automate_core.providers.base.BaseProvider</code></li>
 </ul>
 <h3 id="how-to-register">How to Register</h3>
-<p>Add your provider class path to <code>AUTOMATE_PROVIDERS</code> in settings, or use the <code>django_automate.providers</code> entrypoint in <code>pyproject.toml</code>.</p>
-<h3 id="compatibility">Compatibility</h3>
-<ul>
-<li>Django 4.2+</li>
-<li>Python 3.10+</li>
-</ul>
+<p><strong>Method 1: Settings</strong></p>
+<pre><code class="language-python"># settings.py
+AUTOMATE_PROVIDERS = [
+    'myapp.providers.MyCustomProvider',
+]
+</code></pre>
+<p><strong>Method 2: Entry Points</strong></p>
+<pre><code class="language-toml"># pyproject.toml
+[project.entry-points.&quot;django_automate.providers&quot;]
+my_provider = &quot;myapp.providers:MyCustomProvider&quot;
+</code></pre>
+<h3 id="provider-interface">Provider Interface</h3>
+<pre><code class="language-python">from automate_core.providers.base import BaseProvider
+
+class MyProvider(BaseProvider):
+    key = &quot;my_provider&quot;
+    display_name = &quot;My Custom Provider&quot;
+
+    def __init__(self, config: dict, *, ctx: ProviderContext):
+        self.config = config
+        self.ctx = ctx
+
+    @classmethod
+    def config_schema(cls) -&gt; type[BaseModel]:
+        return MyProviderConfig
+
+    def normalize_error(self, exc: Exception) -&gt; Exception:
+        return AutomateError(ErrorCodes.INTERNAL, str(exc))
+</code></pre>
 <hr />
 <h2 id="secrets-backend">Secrets Backend</h2>
 <ul>
@@ -2918,14 +3565,400 @@
 <li><strong>Interface</strong>: <code>automate.secrets_backend.SecretsBackend</code></li>
 </ul>
 <h3 id="implementation">Implementation</h3>
-<p>Override <code>resolve(self, key: str) -&gt; str</code>.</p>
+<pre><code class="language-python">from automate_governance.secrets.interfaces import SecretsBackend
+
+class VaultBackend(SecretsBackend):
+    &quot;&quot;&quot;HashiCorp Vault integration.&quot;&quot;&quot;
+
+    def get_secret(self, key: str) -&gt; str:
+        &quot;&quot;&quot;Return the raw secret value.&quot;&quot;&quot;
+        # Connect to Vault
+        response = self.vault_client.read(f&quot;secret/data/{key}&quot;)
+        if not response:
+            raise SecretNotFoundError(key)
+        return response['data']['value']
+</code></pre>
+<h3 id="registration">Registration</h3>
+<pre><code class="language-toml"># pyproject.toml
+[project.entry-points.&quot;django_automate.secrets.backends&quot;]
+vault = &quot;myapp.secrets:VaultBackend&quot;
+</code></pre>
 <hr />
-<h2 id="connector">Connector</h2>
+<h2 id="connectors">Connectors</h2>
 <ul>
 <li><strong>Name</strong>: <code>Connector</code></li>
 <li><strong>Stability</strong>: <strong>Beta</strong></li>
 <li><strong>Purpose</strong>: Defines Actions and Triggers for external services.</li>
 <li><strong>Interface</strong>: <code>automate_connectors.base.Connector</code></li>
+</ul>
+<h3 id="connector-interface">Connector Interface</h3>
+<pre><code class="language-python">from automate_connectors.base import Connector, ActionSpec, TriggerSpec
+
+class SlackConnector(Connector):
+    key = &quot;slack&quot;
+    display_name = &quot;Slack&quot;
+
+    @classmethod
+    def actions(cls) -&gt; list[ActionSpec]:
+        return [
+            ActionSpec(
+                name=&quot;post_message&quot;,
+                input_schema={
+                    &quot;type&quot;: &quot;object&quot;,
+                    &quot;properties&quot;: {
+                        &quot;channel&quot;: {&quot;type&quot;: &quot;string&quot;},
+                        &quot;text&quot;: {&quot;type&quot;: &quot;string&quot;},
+                    },
+                },
+                idempotent=True
+            )
+        ]
+
+    @classmethod
+    def triggers(cls) -&gt; list[TriggerSpec]:
+        return [
+            TriggerSpec(name=&quot;message_created&quot;, verification_method=&quot;hmac&quot;)
+        ]
+
+    def execute_action(self, action: str, input_data: dict) -&gt; Any:
+        if action == &quot;post_message&quot;:
+            return self._post_message(input_data)
+        raise AutomateError(ErrorCodes.INVALID_ARGUMENT, f&quot;Unknown action: {action}&quot;)
+
+    def verify_webhook(self, headers: dict, raw_body: bytes) -&gt; bool:
+        # Signature verification
+        pass
+</code></pre>
+<hr />
+<h2 id="admin-base-classes">Admin Base Classes</h2>
+<ul>
+<li><strong>Stability</strong>: <strong>Stable</strong></li>
+<li><strong>Purpose</strong>: Reusable admin components with sensible defaults.</li>
+<li><strong>Interface</strong>: <code>automate_core.base.admin</code></li>
+</ul>
+<h3 id="base-classes">Base Classes</h3>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Purpose</th>
+<th>Key Features</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BaseModelAdmin</code></td>
+<td>Base for all admins</td>
+<td>Timestamps, utilities, pagination</td>
+</tr>
+<tr>
+<td><code>TenantScopedAdmin</code></td>
+<td>Multi-tenant filtering</td>
+<td>Auto-filter by tenant_id</td>
+</tr>
+<tr>
+<td><code>AuditableModelAdmin</code></td>
+<td>Audit trail</td>
+<td>Logs all changes</td>
+</tr>
+<tr>
+<td><code>ImportExportBaseAdmin</code></td>
+<td>CSV/JSON import/export</td>
+<td>Export actions</td>
+</tr>
+<tr>
+<td><code>SoftDeleteAdmin</code></td>
+<td>Soft-delete support</td>
+<td>Restore action</td>
+</tr>
+<tr>
+<td><code>InlineBaseAdmin</code></td>
+<td>Tabular inlines</td>
+<td>Sensible defaults</td>
+</tr>
+<tr>
+<td><code>StackedInlineBaseAdmin</code></td>
+<td>Stacked inlines</td>
+<td>Sensible defaults</td>
+</tr>
+</tbody>
+</table>
+<h3 id="mixins">Mixins</h3>
+<table>
+<thead>
+<tr>
+<th>Mixin</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ExportMixin</code></td>
+<td>Add export actions (CSV, JSON)</td>
+</tr>
+<tr>
+<td><code>BulkActionsMixin</code></td>
+<td>Bulk enable/disable/status</td>
+</tr>
+<tr>
+<td><code>AuditMixin</code></td>
+<td>Audit logging</td>
+</tr>
+<tr>
+<td><code>SearchMixin</code></td>
+<td>Advanced search lookups</td>
+</tr>
+<tr>
+<td><code>FilterMixin</code></td>
+<td>Auto-generate filters</td>
+</tr>
+<tr>
+<td><code>PermissionMixin</code></td>
+<td>Object-level permissions</td>
+</tr>
+</tbody>
+</table>
+<h3 id="override-points">Override Points</h3>
+<pre><code class="language-python">from automate_core.base.admin import BaseModelAdmin
+
+@admin.register(MyModel)
+class MyModelAdmin(BaseModelAdmin):
+    # Override list display
+    def get_list_display(self, request):
+        display = super().get_list_display(request)
+        return ['custom_field'] + display
+
+    # Override queryset
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if not request.user.is_superuser:
+            qs = qs.filter(owner=request.user)
+        return qs
+
+    # Override readonly fields
+    def get_readonly_fields(self, request, obj=None):
+        readonly = super().get_readonly_fields(request, obj)
+        if obj and obj.is_locked:
+            readonly = readonly + ['name', 'config']
+        return readonly
+</code></pre>
+<hr />
+<h2 id="api-base-classes">API Base Classes</h2>
+<ul>
+<li><strong>Stability</strong>: <strong>Stable</strong></li>
+<li><strong>Purpose</strong>: Reusable API components with authentication, permissions, throttling.</li>
+<li><strong>Interface</strong>: <code>automate_api.v1.base</code></li>
+</ul>
+<h3 id="base-classes_1">Base Classes</h3>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BaseAPIView</code></td>
+<td>Single-endpoint views</td>
+</tr>
+<tr>
+<td><code>BaseViewSet</code></td>
+<td>ViewSet operations</td>
+</tr>
+<tr>
+<td><code>BaseModelViewSet</code></td>
+<td>Full CRUD</td>
+</tr>
+<tr>
+<td><code>BaseReadOnlyViewSet</code></td>
+<td>Read-only resources</td>
+</tr>
+</tbody>
+</table>
+<h3 id="mixins_1">Mixins</h3>
+<table>
+<thead>
+<tr>
+<th>Mixin</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CORSMixin</code></td>
+<td>CORS headers</td>
+</tr>
+<tr>
+<td><code>TenantFilterMixin</code></td>
+<td>Filter by tenant</td>
+</tr>
+<tr>
+<td><code>RateLimitMixin</code></td>
+<td>Custom rate limiting</td>
+</tr>
+<tr>
+<td><code>PaginationMixin</code></td>
+<td>Cursor/offset pagination</td>
+</tr>
+</tbody>
+</table>
+<h3 id="override-points_1">Override Points</h3>
+<pre><code class="language-python">from automate_api.v1.base import BaseViewSet, TenantFilterMixin
+
+class MyViewSet(TenantFilterMixin, BaseViewSet):
+    tenant_field = 'organization_id'
+
+    def get_permissions(self):
+        &quot;&quot;&quot;Dynamic permissions based on action.&quot;&quot;&quot;
+        if self.action == 'destroy':
+            return [IsAdminUser()]
+        return super().get_permissions()
+
+    def get_throttles(self):
+        &quot;&quot;&quot;Custom throttling.&quot;&quot;&quot;
+        if self.action == 'create':
+            return [CreateThrottle()]
+        return super().get_throttles()
+</code></pre>
+<hr />
+<h2 id="outbox-pattern">Outbox Pattern</h2>
+<ul>
+<li><strong>Stability</strong>: <strong>Stable</strong></li>
+<li><strong>Purpose</strong>: Reliable async processing with transactional guarantees.</li>
+<li><strong>Interface</strong>: <code>automate_core.outbox</code></li>
+</ul>
+<h3 id="components">Components</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>OutboxItem</code></td>
+<td>Model storing work items</td>
+</tr>
+<tr>
+<td><code>SkipLockedClaimOutboxStore</code></td>
+<td>High-performance claiming (PostgreSQL)</td>
+</tr>
+<tr>
+<td><code>OptimisticClaimOutboxStore</code></td>
+<td>SQLite-compatible claiming</td>
+</tr>
+<tr>
+<td><code>OutboxReaper</code></td>
+<td>Recovery of stuck items</td>
+</tr>
+</tbody>
+</table>
+<h3 id="usage">Usage</h3>
+<pre><code class="language-python">from automate_core.outbox.store import SkipLockedClaimOutboxStore
+from automate_core.outbox.reaper import OutboxReaper
+
+# Claim items for processing
+store = SkipLockedClaimOutboxStore(lease_seconds=300)
+items = store.claim_batch(&quot;worker-1&quot;, limit=10)
+
+for item in items:
+    try:
+        process(item)
+        store.mark_success(item.id, &quot;worker-1&quot;)
+    except TransientError:
+        store.mark_retry(item.id, &quot;worker-1&quot;, next_attempt, &quot;TRANSIENT&quot;)
+    except PermanentError:
+        store.mark_failed(item.id, &quot;worker-1&quot;, &quot;PERMANENT&quot;)
+
+# Recover stuck items (run periodically)
+reaper = OutboxReaper(stale_threshold_seconds=600)
+reaped_count = reaper.reap_stale_items()
+</code></pre>
+<p>See <a href="../outbox-pattern/">Outbox Pattern Reference</a> for detailed documentation.</p>
+<hr />
+<h2 id="signal-handlers">Signal Handlers</h2>
+<ul>
+<li><strong>Stability</strong>: <strong>Stable</strong></li>
+<li><strong>Purpose</strong>: React to workflow and execution events.</li>
+<li><strong>Interface</strong>: Django signals</li>
+</ul>
+<h3 id="available-signals">Available Signals</h3>
+<pre><code class="language-python">from automate.signals import (
+    workflow_started,
+    workflow_completed,
+    workflow_failed,
+    step_started,
+    step_completed,
+    step_failed,
+    event_received,
+)
+
+# Connect handler
+@receiver(workflow_completed)
+def on_workflow_complete(sender, execution, **kwargs):
+    send_notification(execution.owner, f&quot;Workflow {execution.name} completed&quot;)
+
+@receiver(step_failed)
+def on_step_failure(sender, step, error, **kwargs):
+    log_to_sentry(error, extra={'step_id': step.id})
+</code></pre>
+<hr />
+<h2 id="template-system">Template System</h2>
+<ul>
+<li><strong>Stability</strong>: <strong>Stable</strong></li>
+<li><strong>Purpose</strong>: Jinja2 templates for dynamic step inputs.</li>
+<li><strong>Interface</strong>: <code>automate.templates</code></li>
+</ul>
+<h3 id="template-context">Template Context</h3>
+<pre><code class="language-python"># Available in all templates
+{
+    &quot;event&quot;: {
+        &quot;payload&quot;: {...},
+        &quot;type&quot;: &quot;webhook&quot;,
+        &quot;source&quot;: &quot;stripe&quot;,
+    },
+    &quot;execution&quot;: {
+        &quot;id&quot;: &quot;uuid&quot;,
+        &quot;name&quot;: &quot;My Workflow&quot;,
+    },
+    &quot;steps&quot;: {
+        &quot;step_1&quot;: {&quot;output&quot;: {...}},  # Previous step outputs
+    },
+    &quot;secrets&quot;: SecretResolver,  # $secret:KEY → resolved value
+    &quot;env&quot;: EnvironmentResolver,  # $env:VAR → env value
+}
+</code></pre>
+<h3 id="custom-filters">Custom Filters</h3>
+<pre><code class="language-python"># In your app's apps.py
+from automate.templates import register_filter
+
+@register_filter('format_currency')
+def format_currency(value, currency='USD'):
+    return f&quot;{currency} {value:,.2f}&quot;
+</code></pre>
+<h3 id="template-usage">Template Usage</h3>
+<pre><code class="language-jinja">{# In workflow step inputs #}
+{
+  &quot;channel&quot;: &quot;{{ event.payload.channel_id }}&quot;,
+  &quot;message&quot;: &quot;Order total: {{ steps.calculate.output.total | format_currency('EUR') }}&quot;
+}
+</code></pre>
+<hr />
+<h2 id="compatibility">Compatibility</h2>
+<p>All extension points maintain:</p>
+<ul>
+<li><strong>Django</strong>: 4.2 (LTS), 5.0+</li>
+<li><strong>Python</strong>: 3.10, 3.11, 3.12</li>
+<li><strong>DRF</strong>: 3.14+</li>
+</ul>
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><a href="../../guides/customization/">Customization Guide</a></li>
+<li><a href="../admin/">Admin Reference</a></li>
+<li><a href="../api-base-classes/">API Base Classes</a></li>
+<li><a href="../outbox-pattern/">Outbox Pattern</a></li>
 </ul>
 
 
