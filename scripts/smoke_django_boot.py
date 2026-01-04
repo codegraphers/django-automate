@@ -27,6 +27,7 @@ DEFAULT_APPS: list[str] = [
     "automate_core",
     "automate_governance",
     "automate_llm",
+    "automate_modal",  # Required before automate_datachat (imports models)
     "automate_connectors",
     "automate_interop",
     "automate_observability",
