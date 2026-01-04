@@ -19,6 +19,7 @@ DEFAULT_APPS: list[str] = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
+    "django.contrib.messages",
     "django.contrib.admin",
     # 3rd-party
     "rest_framework",
