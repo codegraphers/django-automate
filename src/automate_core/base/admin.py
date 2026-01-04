@@ -376,7 +376,7 @@ class BaseModelAdmin(admin.ModelAdmin):
 
     # Defaults
     list_per_page = 25
-    date_hierarchy = 'created_at'
+    date_hierarchy = None  # Set to 'created_at' in subclasses if model has this field
     save_on_top = True
     show_full_result_count = True
 
