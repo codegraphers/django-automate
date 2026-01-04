@@ -67,6 +67,7 @@ nav:
 
         - Guides:
                   - Customization & Integration: guides/customization.md
+                  - Integration Patterns: guides/integration.md
                   - Graph Schema: guides/graph_schema.md
                   - Rules (JSONLogic): how-to/rules/jsonlogic-subset.md
                   - Secrets: how-to/secrets/backends.md
@@ -85,6 +86,7 @@ nav:
                   - API Compatibility: reference/api-compatibility.md
                   - RAG Architecture: reference/rag-architecture.md
                   - Extension Points: reference/extension-points.md
+                  - Outbox Pattern: reference/outbox-pattern.md
                   - API Base Classes: reference/api-base-classes.md
                   - Models: reference/models.md
                   - Admin: reference/admin.md

@@ -31,7 +31,7 @@ class MyModelAdmin(BaseModelAdmin):
 | Attribute | Default | Description |
 |-----------|---------|-------------|
 | `list_per_page` | 25 | Records per page |
-| `date_hierarchy` | `'created_at'` | Date navigation |
+| `date_hierarchy` | `None` | Date navigation (set to `'created_at'` if model has field) |
 | `save_on_top` | True | Show save buttons at top |
 | `show_timestamps` | True | Show created_at/updated_at |
 | `timestamp_readonly` | True | Make timestamps read-only |
