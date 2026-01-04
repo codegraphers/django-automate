@@ -604,6 +604,6 @@ Full OpenAPI 3.0 specification is available at:
 
 ## See Also
 
-- [Python API Reference](python-api/index.md)
-- [Authentication Guide](../guides/customization.md#configuration-via-settings)
-- [API Base Classes](api-base-classes.md)
+- [Python API Reference](../python-api/index.md)
+- [Authentication Guide](../../guides/customization.md#configuration-via-settings)
+- [API Base Classes](../api-base-classes.md)
