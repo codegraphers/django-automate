@@ -4,15 +4,16 @@ Tests for SSRF-safe HTTP client.
 Verifies blocked IPs, allowlist, and memory-safe streaming.
 """
 
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock
 
 from rag.security.ssrf_client import (
-    is_ip_blocked,
-    SSRFError,
-    ssrf_safe_request,
-    configure_allowlist,
     ALLOWED_DOMAINS,
+    SSRFError,
+    configure_allowlist,
+    is_ip_blocked,
+    ssrf_safe_request,
 )
 
 
