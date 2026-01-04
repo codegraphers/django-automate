@@ -9,8 +9,9 @@ These tests verify that core reliability paths don't crash:
 Related to: PR-03 Runtime Crash Fixes
 """
 
-import pytest
 from datetime import timedelta
+
+import pytest
 from django.utils import timezone
 
 from automate_core.jobs.models import Job, JobStatusChoices
@@ -29,10 +30,10 @@ class TestJobLeaseOperations:
             kind="custom",
             status=JobStatusChoices.QUEUED,
         )
-        
+
         # This would crash if timezone.timedelta was used (it doesn't exist)
         job.start(worker_id="test-worker-1", lease_seconds=300)
-        
+
         job.refresh_from_db()
         assert job.lease_owner == "test-worker-1"
         assert job.lease_expires_at is not None
@@ -47,12 +48,12 @@ class TestJobLeaseOperations:
             lease_owner="test-worker-1",
             lease_expires_at=timezone.now() + timedelta(seconds=60),
         )
-        
+
         original_expires = job.lease_expires_at
-        
+
         # This would crash if timezone.timedelta was used
         job.heartbeat(lease_seconds=600)
-        
+
         job.refresh_from_db()
         assert job.heartbeat_at is not None
         assert job.lease_expires_at > original_expires
@@ -64,10 +65,10 @@ class TestJobLeaseOperations:
             kind="custom",
             status=JobStatusChoices.QUEUED,
         )
-        
+
         before_start = timezone.now()
         job.start(worker_id="worker-2", lease_seconds=1800)  # 30 minutes
-        
+
         job.refresh_from_db()
         # Lease should be ~30 minutes from now
         expected_min = before_start + timedelta(seconds=1790)
@@ -87,13 +88,13 @@ class TestOutboxRetryOperations:
             lease_owner="test-worker",
             attempt_count=1,
         )
-        
+
         store = SkipLockedClaimOutboxStore(lease_seconds=60)
         next_attempt = timezone.now() + timedelta(seconds=60)
-        
+
         # This would crash if models.F was used without importing F
         store.mark_retry(item.id, "test-worker", next_attempt, "TRANSIENT_ERROR")
-        
+
         item.refresh_from_db()
         assert item.status == "RETRY"
         assert item.attempt_count == 2
@@ -109,9 +110,9 @@ class TestOutboxRetryOperations:
             lease_owner="worker-a",
             attempt_count=0,
         )
-        
+
         store = SkipLockedClaimOutboxStore()
-        
+
         # First retry
         item.status = "RUNNING"
         item.lease_owner = "worker-a"
@@ -119,7 +120,7 @@ class TestOutboxRetryOperations:
         store.mark_retry(item.id, "worker-a", timezone.now() + timedelta(seconds=10), "ERR1")
         item.refresh_from_db()
         assert item.attempt_count == 1
-        
+
         # Second retry (simulate re-claim)
         item.status = "RUNNING"
         item.lease_owner = "worker-b"
@@ -145,13 +146,13 @@ class TestOutboxStaleLeaseClaim:
             lease_expires_at=expired_time,
             next_attempt_at=expired_time,
         )
-        
+
         store = SkipLockedClaimOutboxStore(lease_seconds=60)
         now = timezone.now()
-        
+
         # Should claim the stale item
         claimed = store.claim_batch("new-worker", limit=10, now=now)
-        
+
         assert len(claimed) == 1
         assert claimed[0].id == item.id
         assert claimed[0].lease_owner == "new-worker"
