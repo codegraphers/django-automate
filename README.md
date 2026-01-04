@@ -9,15 +9,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/codegraphers/django-automate/actions/workflows/ci.yml">
-    <img src="https://github.com/codegraphers/django-automate/actions/workflows/ci.yml/badge.svg" alt="CI Status">
-  </a>
-  <a href="https://pypi.org/project/django-automate/">
-    <img src="https://img.shields.io/pypi/v/django-automate.svg" alt="PyPI Version">
-  </a>
-  <a href="https://pypi.org/project/django-automate/">
-    <img src="https://img.shields.io/pypi/pyversions/django-automate.svg" alt="Python Versions">
-  </a>
+  <img src="https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg" alt="Python Versions">
+  <img src="https://img.shields.io/badge/django-4.2%20%7C%205.0-green.svg" alt="Django Versions">
   <a href="https://github.com/codegraphers/django-automate/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License">
   </a>
